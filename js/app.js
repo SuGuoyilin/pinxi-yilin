@@ -362,6 +362,15 @@ const App = {
       tiersHtml = `<p>上线值班：&yen;${p.onlineRate}/小时/人</p><p>未上线值班：&yen;${p.offlineRate}/小时/人</p>`;
     }
 
+    let contractHtml = '';
+    if (p.contractStartDate) {
+      const start = new Date(p.contractStartDate);
+      const end = new Date(start);
+      end.setFullYear(end.getFullYear() + 1);
+      const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
+      contractHtml = `<div class="form-row"><label>合作期限</label><span>${p.contractStartDate} 至 ${endStr}（合同期1年）</span></div>`;
+    }
+
     const html = `
       <div class="modal-overlay" onclick="if(event.target===this)this.remove()">
         <div class="modal">
@@ -371,6 +380,7 @@ const App = {
           </div>
           <div class="form-row"><label>结算方式</label><span>${typeLabels[p.calculationType]}</span></div>
           <div class="form-row"><label>工作时间</label><span>${p.workTime}</span></div>
+          ${contractHtml}
           <div class="form-row"><label>月休天数</label><span>${p.restDays}天</span></div>
           <div class="form-row"><label>节假日规则</label><span>${ruleLabels[p.holidayRule] || p.holidayRule} ${holidayDetailHtml}</span></div>
           <div class="form-row"><label>加班计薪</label><span>&yen;${p.overtimeRate}/小时</span></div>
@@ -403,7 +413,8 @@ const App = {
       workTime: '', restDays: 0,
       holidayRule: 'standard', holidayPayMethod: 'standard',
       overtimeRate: 20, invoiceRate: 0.01, description: '',
-      onlineRate: 30.30, offlineRate: 20.20
+      onlineRate: 30.30, offlineRate: 20.20,
+      contractStartDate: ''
     };
 
     const html = `
@@ -422,6 +433,7 @@ const App = {
             </select>
           </div>
           <div class="form-row"><label>工作时间</label><input id="pf-worktime" value="${p.workTime}"></div>
+          <div class="form-row"><label>合作开始日期</label><input type="date" id="pf-start-date" value="${p.contractStartDate || ''}"></div>
           <div class="form-row"><label>月休天数</label><input type="number" id="pf-rest" value="${p.restDays}"></div>
           <div class="form-row"><label>节假日规则</label>
             <select id="pf-holiday">
@@ -467,6 +479,7 @@ const App = {
       name,
       calculationType: document.getElementById('pf-type').value,
       workTime: document.getElementById('pf-worktime').value,
+      contractStartDate: document.getElementById('pf-start-date').value || '',
       restDays: parseInt(document.getElementById('pf-rest').value) || 0,
       holidayRule: document.getElementById('pf-holiday').value,
       holidayPayMethod: document.getElementById('pf-holiday').value,
@@ -771,11 +784,31 @@ const App = {
         <button class="btn btn-primary" onclick="App.saveMonthlyData()" style="padding:8px 20px;font-size:14px;">保存并计算</button>
       </div>
       ${collabDaysInput}
-      <div class="form-row" style="background:#e3f2fd;padding:8px;border-radius:4px;margin-top:8px;">
-        <label>当月实际出勤天数</label>
-        <input type="number" id="actual-work-days" value="${record && record.actualWorkDays != null ? record.actualWorkDays : daysInMonth}" style="width:80px;" min="1">
-        <span style="font-size:12px;color:#1976d2;">（默认<b>${daysInMonth}</b>天，若项目非1号开始合作，请修改为实际出勤天数。日薪=基础费/实际出勤天数）</span>
-      </div>
+      ${(() => {
+        let autoWorkDays = daysInMonth;
+        let workDaysHint = `默认<b>${daysInMonth}</b>天`;
+        if (project.contractStartDate) {
+          const start = new Date(project.contractStartDate);
+          const startYear = start.getFullYear();
+          const startMonth = start.getMonth() + 1;
+          const startDay = start.getDate();
+          if (year === startYear && month === startMonth) {
+            autoWorkDays = daysInMonth - startDay + 1;
+            workDaysHint = `项目${startYear}-${String(startMonth).padStart(2,'0')}-${String(startDay).padStart(2,'0')}开始，自动计算<b>${autoWorkDays}</b>天`;
+          } else if (year < startYear || (year === startYear && month < startMonth)) {
+            autoWorkDays = 0;
+            workDaysHint = `<b style="color:#e94560;">项目尚未开始（${project.contractStartDate}起合作）</b>`;
+          } else {
+            workDaysHint = `默认<b>${daysInMonth}</b>天（项目已正常合作）`;
+          }
+        }
+        const savedDays = record && record.actualWorkDays != null ? record.actualWorkDays : autoWorkDays;
+        return `<div class="form-row" style="background:#e3f2fd;padding:8px;border-radius:4px;margin-top:8px;">
+          <label>当月实际出勤天数</label>
+          <input type="number" id="actual-work-days" value="${savedDays}" style="width:80px;" min="0">
+          <span style="font-size:12px;color:#1976d2;">（${workDaysHint}，日薪=基础费/实际出勤天数）</span>
+        </div>`;
+      })()}
       <div class="card" style="margin-top:16px;">
         <div class="card-title" style="font-size:15px;padding:14px 16px;">各店铺月接待量录入 <span style="font-weight:normal;color:#999;font-size:12px;">填写每个店铺该月的总接待量，系统自动汇总</span></div>
         <table style="width:100%;border-collapse:separate;border-spacing:0;">
