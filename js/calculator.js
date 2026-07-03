@@ -34,7 +34,7 @@ const Calculator = {
     return project.tiers[0];
   },
 
-  async calculate(project, year, month, dailyData, shopCount, collabDays) {
+  async calculate(project, year, month, dailyData, shopCount, collabDays, actualWorkDays) {
     const daysInMonth = this.getDaysInMonth(year, month);
     let totalVolume = 0;
     let workDays = 0;
@@ -61,6 +61,8 @@ const Calculator = {
     }
 
     const totalDays = workDays + holidayDays;
+    // 实际出勤天数：默认等于当月总天数，项目月中开始时可手动调整
+    const effectiveWorkDays = actualWorkDays || daysInMonth;
 
     let baseFee = 0;
     let avgDaily = totalDays > 0 ? Math.round(totalVolume / totalDays) : 0;
@@ -79,7 +81,7 @@ const Calculator = {
     let holidayExtra = 0;
     let holidayCalcDetail = '';
     if (baseFee > 0 && holidayDays > 0) {
-      const dailyBase = totalDays > 0 ? baseFee / totalDays : 0;
+      const dailyBase = effectiveWorkDays > 0 ? baseFee / effectiveWorkDays : 0;
       const holidayTable = project.holidayTable || [];
       const isStandard = project.holidayPayMethod === 'standard';
       const methodLabel = isStandard ? '标准计薪' : '合作计薪';
@@ -107,7 +109,7 @@ const Calculator = {
 
       holidayExtra = Math.round(totalExtra);
       if (detailParts.length > 0) {
-        holidayCalcDetail = `${methodLabel}：日薪¥${dailyBase.toFixed(2)} × 计薪${totalPayDays}天 × 平均额外${totalPayDays > 0 ? (totalExtra / (dailyBase * totalPayDays)).toFixed(1) : 0}倍 = 额外¥${holidayExtra.toLocaleString()}（${detailParts.join('、')}）`;
+        holidayCalcDetail = `${methodLabel}：日薪¥${dailyBase.toFixed(2)}(基础费¥${baseFee}/${effectiveWorkDays}天) × 计薪${totalPayDays}天 × 额外${totalPayDays > 0 ? (totalExtra / (dailyBase * totalPayDays)).toFixed(1) : 0}倍 = 额外¥${holidayExtra.toLocaleString()}（${detailParts.join('、')}）`;
       }
     }
 

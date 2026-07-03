@@ -757,6 +757,11 @@ const App = {
         <button class="btn btn-primary" onclick="App.saveMonthlyData()" style="padding:8px 20px;font-size:14px;">保存并计算</button>
       </div>
       ${collabDaysInput}
+      <div class="form-row" style="background:#e3f2fd;padding:8px;border-radius:4px;margin-top:8px;">
+        <label>当月实际出勤天数</label>
+        <input type="number" id="actual-work-days" value="${record && record.actualWorkDays != null ? record.actualWorkDays : daysInMonth}" style="width:80px;" min="1">
+        <span style="font-size:12px;color:#1976d2;">（默认<b>${daysInMonth}</b>天，若项目非1号开始合作，请修改为实际出勤天数。日薪=基础费/实际出勤天数）</span>
+      </div>
       <div class="card" style="margin-top:16px;">
         <div class="card-title" style="font-size:15px;padding:14px 16px;">各店铺月接待量录入 <span style="font-weight:normal;color:#999;font-size:12px;">填写每个店铺该月的总接待量，系统自动汇总</span></div>
         <table style="width:100%;border-collapse:separate;border-spacing:0;">
@@ -1105,6 +1110,8 @@ const App = {
     const shopCount = parseInt(document.getElementById('shop-count').value) || 5;
     const collabDaysEl = document.getElementById('collab-days');
     const collabDays = collabDaysEl ? parseInt(collabDaysEl.value) || 0 : 0;
+    const actualWorkDaysEl = document.getElementById('actual-work-days');
+    const actualWorkDays = actualWorkDaysEl ? parseInt(actualWorkDaysEl.value) || daysInMonth : daysInMonth;
 
     // 汇总各店铺月接待量
     const shopVolumes = {};
@@ -1131,13 +1138,14 @@ const App = {
       dailyData[dateStr] = { volume: dailyAvg };
     }
 
-    const calculated = await Calculator.calculate(project, year, month, dailyData, shopCount, collabDays);
+    const calculated = await Calculator.calculate(project, year, month, dailyData, shopCount, collabDays, actualWorkDays);
 
     // 覆盖totalVolume为实际汇总值
     calculated.totalVolume = totalVolume;
     calculated.avgDaily = dailyAvg;
+    calculated.actualWorkDays = actualWorkDays;
 
-    await DB.saveMonthlyRecord({ projectId, year, month, shopVolumes, totalVolume, shopCount, collabDays, shopScreenshots, calculated });
+    await DB.saveMonthlyRecord({ projectId, year, month, shopVolumes, totalVolume, shopCount, collabDays, actualWorkDays, shopScreenshots, calculated });
     // 清空临时截图缓存
     this._shopScreenshots = {};
 
@@ -1150,6 +1158,7 @@ const App = {
         <table class="statement-table">
           <tr><td>月总接待量（汇总）</td><td>${calculated.totalVolume.toLocaleString()}</td></tr>
           <tr><td>日均接待量</td><td>${calculated.avgDaily}（${calculated.totalVolume} / ${daysInMonth}天）</td></tr>
+          <tr><td>实际出勤天数</td><td>${calculated.actualWorkDays || daysInMonth}天（日薪=基础费/${calculated.actualWorkDays || daysInMonth}天）</td></tr>
           <tr><td>工作日天数</td><td>${calculated.workDays}天</td></tr>
           <tr><td>节假日天数</td><td>${calculated.holidayDays}天</td></tr>
           ${calculated.holidayCalcDetail ? `<tr><td colspan="2" style="font-size:12px;color:#e94560;padding:0;">${calculated.holidayCalcDetail}</td></tr>` : ''}
@@ -1244,6 +1253,7 @@ const App = {
           <table class="statement-table">
             <tr><td>月总接待量</td><td>${c.totalVolume.toLocaleString()}</td></tr>
             <tr><td>日均接待量</td><td>${c.avgDaily}</td></tr>
+            <tr><td>实际出勤天数</td><td>${c.actualWorkDays || rec.actualWorkDays || '-'}天</td></tr>
             <tr><td>工作日</td><td>${c.workDays}天</td></tr>
             <tr><td>节假日</td><td>${c.holidayDays}天</td></tr>
             <tr><td>店铺数量</td><td>${rec.shopCount}个</td></tr>
