@@ -173,70 +173,77 @@ const App = {
   renderHolidayTableHtml(p) {
     const ht = p.holidayTable;
     if (!ht || ht.length === 0) return '';
-    const isCollab = p.holidayRule === 'collab_days';
+    const isCoop = p.holidayPayMethod === 'cooperative';
+    const methodLabel = isCoop ? '合作计薪' : '标准计薪';
     let rows = ht.map(h => {
-      const highlight = isCollab && h.collabDays !== h.standardDays
-        ? 'background:#e8f5e9;font-weight:bold;'
-        : '';
-      return `<tr>
+      const highlight = isCoop ? 'background:#e8f5e9;' : '';
+      return `<tr style="${highlight}">
         <td>${h.name}</td>
-        <td>${h.standardDays}天</td>
-        <td style="${highlight}">${h.collabDays}天</td>
+        <td>${h.daysOff}天</td>
+        <td>${h.standardPayDays}天</td>
+        <td>${h.standardPayMultiplier}倍</td>
+        <td>${h.coopPayDays}天</td>
+        <td>${h.coopPayMultiplier}倍</td>
       </tr>`;
     }).join('');
-    const totalStd = ht.reduce((s, h) => s + h.standardDays, 0);
-    const totalCollab = ht.reduce((s, h) => s + h.collabDays, 0);
     return `
-      <h4 style="margin:16px 0 8px;">法定节假日配置</h4>
+      <h4 style="margin:16px 0 8px;">法定节假日配置（计薪方式：<span style="color:#e94560;">${methodLabel}</span>）</h4>
       <table style="font-size:13px;margin-bottom:8px;">
         <thead><tr>
           <th>法定节假日</th>
-          <th>标准天数</th>
-          <th>${isCollab ? '合作天数' : '计薪天数'}</th>
+          <th>放假天数</th>
+          <th>标准计薪天数</th>
+          <th>标准倍数</th>
+          <th>合作计薪天数</th>
+          <th>合作倍数</th>
         </tr></thead>
-        <tbody>${rows}
-          <tr style="border-top:2px solid #e8e8e8;font-weight:bold;">
-            <td>合计</td>
-            <td>${totalStd}天</td>
-            <td>${totalCollab}天</td>
-          </tr>
-        </tbody>
+        <tbody>${rows}</tbody>
       </table>
-      ${isCollab ? '<div style="font-size:12px;color:#999;margin-bottom:8px;">绿色高亮行表示合作天数与标准天数不同</div>' : ''}
+      ${isCoop ? '<div style="font-size:12px;color:#999;margin-bottom:8px;">绿色高亮表示当前使用合作计薪方式</div>' : ''}
     `;
   },
 
   renderEditableHolidayTable(p) {
     const ht = p.holidayTable || [
-      { name: '元旦', standardDays: 1, collabDays: 1 },
-      { name: '春节', standardDays: 7, collabDays: 7 },
-      { name: '清明节', standardDays: 3, collabDays: 3 },
-      { name: '劳动节', standardDays: 5, collabDays: 5 },
-      { name: '端午节', standardDays: 3, collabDays: 3 },
-      { name: '中秋节', standardDays: 3, collabDays: 3 },
-      { name: '国庆节', standardDays: 7, collabDays: 7 }
+      { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '春节', daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
+      { name: '清明节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '劳动节', daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 2, coopPayMultiplier: 3 },
+      { name: '端午节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '中秋节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 }
     ];
-    const isCollab = p.holidayRule === 'collab_days';
-    const colLabel = isCollab ? '合作天数' : '计薪天数';
+    const methodValue = p.holidayPayMethod || 'standard';
     let rows = ht.map((h, i) => {
-      const highlight = isCollab && h.collabDays !== h.standardDays
-        ? 'background:#e8f5e9;' : '';
-      return `<tr style="${highlight}">
+      return `<tr>
         <td>${h.name}</td>
-        <td><input type="number" class="ht-std" data-idx="${i}" value="${h.standardDays}" style="width:60px;text-align:center;" min="0"></td>
-        <td><input type="number" class="ht-collab" data-idx="${i}" value="${h.collabDays}" style="width:60px;text-align:center;" min="0"></td>
+        <td><input type="number" class="ht-daysOff" data-idx="${i}" value="${h.daysOff}" style="width:50px;text-align:center;" min="0"></td>
+        <td><input type="number" class="ht-standardPayDays" data-idx="${i}" value="${h.standardPayDays}" style="width:50px;text-align:center;" min="0"></td>
+        <td><input type="number" class="ht-standardPayMultiplier" data-idx="${i}" value="${h.standardPayMultiplier}" style="width:50px;text-align:center;" min="0" step="0.1"></td>
+        <td><input type="number" class="ht-coopPayDays" data-idx="${i}" value="${h.coopPayDays}" style="width:50px;text-align:center;" min="0"></td>
+        <td><input type="number" class="ht-coopPayMultiplier" data-idx="${i}" value="${h.coopPayMultiplier}" style="width:50px;text-align:center;" min="0" step="0.1"></td>
       </tr>`;
     }).join('');
     return `
+      <div class="form-row" style="margin-bottom:8px;">
+        <label>节假日计薪方式</label>
+        <select id="pf-holiday-pay-method-table">
+          <option value="standard" ${methodValue === 'standard' ? 'selected' : ''}>标准计薪</option>
+          <option value="cooperative" ${methodValue === 'cooperative' ? 'selected' : ''}>合作计薪</option>
+        </select>
+      </div>
       <table style="font-size:13px;" id="edit-holiday-table">
         <thead><tr>
           <th>法定节假日</th>
-          <th>标准天数</th>
-          <th>${colLabel}</th>
+          <th>放假天数</th>
+          <th>标准计薪天数</th>
+          <th>标准倍数</th>
+          <th>合作计薪天数</th>
+          <th>合作倍数</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div style="font-size:12px;color:#999;margin-top:4px;">${isCollab ? '绿色行为合作天数与标准天数不同' : '双倍薪资项目：计薪天数通常等于标准天数'}</div>
+      <div style="font-size:12px;color:#999;margin-top:4px;">标准计薪：按标准计薪天数 x 标准倍数计算；合作计薪：按合作计薪天数 x 合作倍数计算</div>
     `;
   },
 
@@ -303,14 +310,20 @@ const App = {
   },
 
   readHolidayTableFromForm() {
-    const stdInputs = document.querySelectorAll('.ht-std');
-    const collabInputs = document.querySelectorAll('.ht-collab');
+    const daysOffInputs = document.querySelectorAll('.ht-daysOff');
+    const standardPayDaysInputs = document.querySelectorAll('.ht-standardPayDays');
+    const standardPayMultiplierInputs = document.querySelectorAll('.ht-standardPayMultiplier');
+    const coopPayDaysInputs = document.querySelectorAll('.ht-coopPayDays');
+    const coopPayMultiplierInputs = document.querySelectorAll('.ht-coopPayMultiplier');
     const table = [];
-    stdInputs.forEach((el, i) => {
+    daysOffInputs.forEach((el, i) => {
       table.push({
         name: el.closest('tr').cells[0].textContent,
-        standardDays: parseInt(el.value) || 0,
-        collabDays: parseInt(collabInputs[i].value) || 0
+        daysOff: parseInt(el.value) || 0,
+        standardPayDays: parseInt(standardPayDaysInputs[i].value) || 0,
+        standardPayMultiplier: parseFloat(standardPayMultiplierInputs[i].value) || 0,
+        coopPayDays: parseInt(coopPayDaysInputs[i].value) || 0,
+        coopPayMultiplier: parseFloat(coopPayMultiplierInputs[i].value) || 0
       });
     });
     return table;
@@ -322,12 +335,8 @@ const App = {
     const typeLabels = { daily_avg: '日均接待量', monthly_total: '月总接待量', hourly: '按小时计费' };
     const ruleLabels = { double_pay: '额外薪资', collab_days: '合作天数' };
 
-    let holidayDetailHtml = '';
-    if (p.holidayRule === 'double_pay') {
-      holidayDetailHtml = `<span style="font-size:12px;color:#999;">（法定节假日当天额外${p.holidayMultiplier - 1}倍薪资，基本+额外=共${p.holidayMultiplier}倍）</span>`;
-    } else if (p.holidayRule === 'collab_days') {
-      holidayDetailHtml = `<span style="font-size:12px;color:#999;">（每月录入时配置合作天数，默认等于当月法定假日天数）</span>`;
-    }
+    const payMethodLabel = p.holidayPayMethod === 'cooperative' ? '合作计薪' : '标准计薪';
+    let holidayDetailHtml = `<span style="font-size:12px;color:#999;">（计薪方式：${payMethodLabel}）</span>`;
     let tiersHtml = '';
     if (p.tiers && p.tiers.length > 0) {
       tiersHtml = `<table><thead><tr><th>区间最小</th><th>区间最大</th><th>月费(元)</th><th>店铺限制</th></tr></thead><tbody>`;
@@ -378,7 +387,7 @@ const App = {
       name: '', calculationType: 'daily_avg', tiers: [],
       extraShopFee: 100, baseShopLimit: 5,
       workTime: '', restDays: 0,
-      holidayRule: 'double_pay', holidayMultiplier: 2,
+      holidayRule: 'double_pay', holidayPayMethod: 'standard',
       overtimeRate: 20, invoiceRate: 0.01, description: '',
       onlineRate: 30.30, offlineRate: 20.20
     };
@@ -402,12 +411,15 @@ const App = {
           <div class="form-row"><label>月休天数</label><input type="number" id="pf-rest" value="${p.restDays}"></div>
           <div class="form-row"><label>节假日规则</label>
             <select id="pf-holiday">
-              <option value="double_pay" ${p.holidayRule === 'double_pay' ? 'selected' : ''}>法定假日额外薪资（可配置倍数）</option>
-              <option value="collab_days" ${p.holidayRule === 'collab_days' ? 'selected' : ''}>合作天数计算（额外1倍=共2倍）</option>
+              <option value="double_pay" ${p.holidayRule === 'double_pay' ? 'selected' : ''}>法定假日额外薪资</option>
+              <option value="collab_days" ${p.holidayRule === 'collab_days' ? 'selected' : ''}>合作天数计算</option>
             </select>
           </div>
-          <div id="pf-doublepay-section" style="${p.holidayRule === 'double_pay' ? '' : 'display:none'}">
-            <div class="form-row"><label>薪资倍数</label><input type="number" id="pf-multiplier" value="${p.holidayMultiplier || 2}"></div>
+          <div class="form-row"><label>节假日计薪方式</label>
+            <select id="pf-holiday-pay-method">
+              <option value="standard" ${p.holidayPayMethod === 'standard' ? 'selected' : ''}>标准计薪</option>
+              <option value="cooperative" ${p.holidayPayMethod === 'cooperative' ? 'selected' : ''}>合作计薪</option>
+            </select>
           </div>
           <div class="form-row"><label>加班计薪(元/h)</label><input type="number" id="pf-overtime" value="${p.overtimeRate}"></div>
           <div class="form-row"><label>发票税点(%)</label><input type="number" step="0.1" id="pf-invoice" value="${p.invoiceRate * 100}"><span style="font-size:12px;color:#999;margin-left:8px;">仅作记录，金额已含税不再累加</span></div>
@@ -436,22 +448,20 @@ const App = {
     document.getElementById('pf-type').addEventListener('change', (e) => {
       document.getElementById('pf-hourly-section').style.display = e.target.value === 'hourly' ? '' : 'none';
     });
-    document.getElementById('pf-holiday').addEventListener('change', (e) => {
-      document.getElementById('pf-doublepay-section').style.display = e.target.value === 'double_pay' ? '' : 'none';
-    });
   },
 
   async saveProject(editId) {
     const name = document.getElementById('pf-name').value.trim();
     if (!name) { alert('请输入项目名称'); return; }
 
+    const payMethodEl = document.getElementById('pf-holiday-pay-method') || document.getElementById('pf-holiday-pay-method-table');
     const data = {
       name,
       calculationType: document.getElementById('pf-type').value,
       workTime: document.getElementById('pf-worktime').value,
       restDays: parseInt(document.getElementById('pf-rest').value) || 0,
       holidayRule: document.getElementById('pf-holiday').value,
-      holidayMultiplier: parseInt(document.getElementById('pf-multiplier').value) || 2,
+      holidayPayMethod: payMethodEl ? payMethodEl.value : 'standard',
       overtimeRate: parseInt(document.getElementById('pf-overtime').value) || 20,
       invoiceRate: (parseFloat(document.getElementById('pf-invoice').value) || 1) / 100,
       baseShopLimit: parseInt(document.getElementById('pf-shoplimit').value) || 5,
@@ -661,7 +671,7 @@ const App = {
       for (const [name, count] of Object.entries(holidayDayCount)) {
         const config = project.holidayTable.find(ht => ht.name === name);
         if (config) {
-          autoCollabDays += config.collabDays;
+          autoCollabDays += config.coopPayDays;
         } else {
           autoCollabDays += count; // 无配置则按实际天数
         }
@@ -734,8 +744,10 @@ const App = {
       shopRows = `<tr><td colspan="5" style="color:#999;text-align:center;padding:16px;">该项目暂无店铺，请先在"店铺管理"中添加</td></tr>`;
     }
 
-    const holidayRule = project.holidayRule === 'double_pay' ? `共${project.holidayMultiplier}倍薪资(额外${project.holidayMultiplier - 1}倍)` :
-                        project.holidayRule === 'collab_days' ? `合作天数(额外1倍=共2倍)` : project.holidayRule;
+    const holidayRuleText = project.holidayRule === 'double_pay' ? '法定假日额外薪资' :
+                            project.holidayRule === 'collab_days' ? '合作天数计算' : project.holidayRule;
+    const holidayPayMethodText = project.holidayPayMethod === 'cooperative' ? '合作计薪' : '标准计薪';
+    const holidayRule = `${holidayRuleText}(${holidayPayMethodText})`;
 
     document.getElementById('input-form-container').innerHTML = `
       <div style="margin-bottom:16px;padding:14px 16px;background:linear-gradient(135deg,#f8f9fa,#fff);border-radius:8px;border:1px solid #e8e8e8;font-size:13px;color:#666;line-height:1.8;">
@@ -1241,7 +1253,7 @@ const App = {
             <tr><td>月总接待量</td><td>${c.totalVolume.toLocaleString()}</td></tr>
             <tr><td>日均接待量</td><td>${c.avgDaily}</td></tr>
             <tr><td>工作日</td><td>${c.workDays}天</td></tr>
-            <tr><td>节假日</td><td>${c.holidayDays}天${rec.collabDays ? ' (合作' + rec.collabDays + '天)' : ''}</td></tr>
+            <tr><td>节假日</td><td>${c.holidayDays}天</td></tr>
             <tr><td>店铺数量</td><td>${rec.shopCount}个</td></tr>
             ${c.holidayCalcDetail ? `<tr><td colspan="2" style="font-size:12px;color:#e94560;padding:0;">${c.holidayCalcDetail}</td></tr>` : ''}
             <tr style="border-top:2px solid #e8e8e8;"><td><strong>基础服务费</strong></td><td><strong>&yen;${c.baseFee.toLocaleString()}</strong></td></tr>

@@ -17,15 +17,15 @@ const INITIAL_PROJECTS = [
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
     holidayRule: 'double_pay',
-    holidayMultiplier: 3,
+    holidayPayMethod: 'standard',
     holidayTable: [
-      { name: '元旦', standardDays: 1, collabDays: 1 },
-      { name: '春节', standardDays: 7, collabDays: 7 },
-      { name: '清明节', standardDays: 3, collabDays: 3 },
-      { name: '劳动节', standardDays: 5, collabDays: 5 },
-      { name: '端午节', standardDays: 3, collabDays: 3 },
-      { name: '中秋节', standardDays: 3, collabDays: 3 },
-      { name: '国庆节', standardDays: 7, collabDays: 7 }
+      { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '春节', daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
+      { name: '清明节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '劳动节', daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 2, coopPayMultiplier: 3 },
+      { name: '端午节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '中秋节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 }
     ],
     overtimeRate: 20,
     invoiceRate: 0.01,
@@ -44,14 +44,15 @@ const INITIAL_PROJECTS = [
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
     holidayRule: 'collab_days',
+    holidayPayMethod: 'cooperative',
     holidayTable: [
-      { name: '元旦', standardDays: 3, collabDays: 1 },
-      { name: '春节', standardDays: 7, collabDays: 7 },
-      { name: '清明节', standardDays: 3, collabDays: 1 },
-      { name: '劳动节', standardDays: 5, collabDays: 1 },
-      { name: '端午节', standardDays: 3, collabDays: 1 },
-      { name: '中秋节', standardDays: 3, collabDays: 1 },
-      { name: '国庆节', standardDays: 7, collabDays: 1 }
+      { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '春节', daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 7, coopPayMultiplier: 3 },
+      { name: '清明节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '劳动节', daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '端午节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '中秋节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 }
     ],
     overtimeRate: 20,
     invoiceRate: 0.01,
@@ -72,15 +73,15 @@ const INITIAL_PROJECTS = [
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
     holidayRule: 'double_pay',
-    holidayMultiplier: 3,
+    holidayPayMethod: 'standard',
     holidayTable: [
-      { name: '元旦', standardDays: 1, collabDays: 1 },
-      { name: '春节', standardDays: 7, collabDays: 7 },
-      { name: '清明节', standardDays: 3, collabDays: 3 },
-      { name: '劳动节', standardDays: 5, collabDays: 5 },
-      { name: '端午节', standardDays: 3, collabDays: 3 },
-      { name: '中秋节', standardDays: 3, collabDays: 3 },
-      { name: '国庆节', standardDays: 7, collabDays: 7 }
+      { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '春节', daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
+      { name: '清明节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '劳动节', daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 2, coopPayMultiplier: 3 },
+      { name: '端午节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '中秋节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 }
     ],
     overtimeRate: 20,
     invoiceRate: 0.01,
@@ -103,14 +104,15 @@ const INITIAL_PROJECTS = [
     workTime: '08:00-24:00',
     restDays: 0,
     holidayRule: 'collab_days',
+    holidayPayMethod: 'cooperative',
     holidayTable: [
-      { name: '元旦', standardDays: 3, collabDays: 1 },
-      { name: '春节', standardDays: 7, collabDays: 7 },
-      { name: '清明节', standardDays: 3, collabDays: 1 },
-      { name: '劳动节', standardDays: 5, collabDays: 1 },
-      { name: '端午节', standardDays: 3, collabDays: 1 },
-      { name: '中秋节', standardDays: 3, collabDays: 1 },
-      { name: '国庆节', standardDays: 7, collabDays: 1 }
+      { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '春节', daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 7, coopPayMultiplier: 3 },
+      { name: '清明节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '劳动节', daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '端午节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '中秋节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+      { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 }
     ],
     overtimeRate: 20,
     invoiceRate: 0.01,
@@ -127,7 +129,16 @@ const INITIAL_PROJECTS = [
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
     holidayRule: 'double_pay',
-    holidayMultiplier: 2,
+    holidayPayMethod: 'standard',
+    holidayTable: [
+      { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '春节', daysOff: 8, standardPayDays: 3, standardPayMultiplier: 2, coopPayDays: 3, coopPayMultiplier: 2 },
+      { name: '清明节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '劳动节', daysOff: 5, standardPayDays: 2, standardPayMultiplier: 2, coopPayDays: 2, coopPayMultiplier: 2 },
+      { name: '端午节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '中秋节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 2, coopPayDays: 3, coopPayMultiplier: 2 }
+    ],
     overtimeRate: 20,
     invoiceRate: 0.01,
     description: '按小时计费，上线值班30.30元/小时/人，未上线值班20.20元/小时/人'
@@ -147,15 +158,15 @@ const INITIAL_PROJECTS = [
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
     holidayRule: 'double_pay',
-    holidayMultiplier: 2,
+    holidayPayMethod: 'standard',
     holidayTable: [
-      { name: '元旦', standardDays: 1, collabDays: 1 },
-      { name: '春节', standardDays: 7, collabDays: 7 },
-      { name: '清明节', standardDays: 3, collabDays: 3 },
-      { name: '劳动节', standardDays: 5, collabDays: 5 },
-      { name: '端午节', standardDays: 3, collabDays: 3 },
-      { name: '中秋节', standardDays: 3, collabDays: 3 },
-      { name: '国庆节', standardDays: 7, collabDays: 7 }
+      { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '春节', daysOff: 8, standardPayDays: 3, standardPayMultiplier: 2, coopPayDays: 3, coopPayMultiplier: 2 },
+      { name: '清明节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '劳动节', daysOff: 5, standardPayDays: 2, standardPayMultiplier: 2, coopPayDays: 2, coopPayMultiplier: 2 },
+      { name: '端午节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '中秋节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 2, coopPayDays: 3, coopPayMultiplier: 2 }
     ],
     overtimeRate: 20,
     invoiceRate: 0.01,
@@ -202,45 +213,45 @@ const INITIAL_SHOPS = [
 ];
 
 const INITIAL_HOLIDAYS = [
-  { year: 2024, name: '元旦', dates: ['2024-01-01'] },
-  { year: 2024, name: '春节', dates: ['2024-02-10','2024-02-11','2024-02-12','2024-02-13','2024-02-14','2024-02-15','2024-02-16','2024-02-17'] },
-  { year: 2024, name: '清明节', dates: ['2024-04-04','2024-04-05','2024-04-06'] },
-  { year: 2024, name: '劳动节', dates: ['2024-05-01','2024-05-02','2024-05-03','2024-05-04','2024-05-05'] },
-  { year: 2024, name: '端午节', dates: ['2024-06-10'] },
-  { year: 2024, name: '中秋节', dates: ['2024-09-15','2024-09-16','2024-09-17'] },
-  { year: 2024, name: '国庆节', dates: ['2024-10-01','2024-10-02','2024-10-03','2024-10-04','2024-10-05','2024-10-06','2024-10-07'] },
+  { year: 2024, name: '元旦', dates: ['2024-01-01'], daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2024, name: '春节', dates: ['2024-02-10','2024-02-11','2024-02-12','2024-02-13','2024-02-14','2024-02-15','2024-02-16','2024-02-17'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
+  { year: 2024, name: '清明节', dates: ['2024-04-04','2024-04-05','2024-04-06'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2024, name: '劳动节', dates: ['2024-05-01','2024-05-02','2024-05-03','2024-05-04','2024-05-05'], daysOff: 5, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2024, name: '端午节', dates: ['2024-06-10'], daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2024, name: '中秋节', dates: ['2024-09-15','2024-09-16','2024-09-17'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2024, name: '国庆节', dates: ['2024-10-01','2024-10-02','2024-10-03','2024-10-04','2024-10-05','2024-10-06','2024-10-07'], daysOff: 7, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
 
-  { year: 2025, name: '元旦', dates: ['2025-01-01'] },
-  { year: 2025, name: '春节', dates: ['2025-01-28','2025-01-29','2025-01-30','2025-01-31','2025-02-01','2025-02-02','2025-02-03','2025-02-04'] },
-  { year: 2025, name: '清明节', dates: ['2025-04-04','2025-04-05','2025-04-06'] },
-  { year: 2025, name: '劳动节', dates: ['2025-05-01','2025-05-02','2025-05-03','2025-05-04','2025-05-05'] },
-  { year: 2025, name: '端午节', dates: ['2025-05-31','2025-06-01','2025-06-02'] },
-  { year: 2025, name: '中秋节', dates: ['2025-10-06'] },
-  { year: 2025, name: '国庆节', dates: ['2025-10-01','2025-10-02','2025-10-03','2025-10-04','2025-10-05','2025-10-06','2025-10-07','2025-10-08'] },
+  { year: 2025, name: '元旦', dates: ['2025-01-01'], daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2025, name: '春节', dates: ['2025-01-28','2025-01-29','2025-01-30','2025-01-31','2025-02-01','2025-02-02','2025-02-03','2025-02-04'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
+  { year: 2025, name: '清明节', dates: ['2025-04-04','2025-04-05','2025-04-06'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2025, name: '劳动节', dates: ['2025-05-01','2025-05-02','2025-05-03','2025-05-04','2025-05-05'], daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 2, coopPayMultiplier: 3 },
+  { year: 2025, name: '端午节', dates: ['2025-05-31','2025-06-01','2025-06-02'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2025, name: '中秋节', dates: ['2025-10-06'], daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2025, name: '国庆节', dates: ['2025-10-01','2025-10-02','2025-10-03','2025-10-04','2025-10-05','2025-10-06','2025-10-07','2025-10-08'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
 
-  { year: 2026, name: '元旦', dates: ['2026-01-01','2026-01-02','2026-01-03'] },
-  { year: 2026, name: '春节', dates: ['2026-02-17','2026-02-18','2026-02-19','2026-02-20','2026-02-21','2026-02-22','2026-02-23','2026-02-24'] },
-  { year: 2026, name: '清明节', dates: ['2026-04-04','2026-04-05','2026-04-06'] },
-  { year: 2026, name: '劳动节', dates: ['2026-05-01','2026-05-02','2026-05-03','2026-05-04','2026-05-05'] },
-  { year: 2026, name: '端午节', dates: ['2026-06-19','2026-06-20','2026-06-21'] },
-  { year: 2026, name: '中秋节', dates: ['2026-09-25'] },
-  { year: 2026, name: '国庆节', dates: ['2026-10-01','2026-10-02','2026-10-03','2026-10-04','2026-10-05','2026-10-06','2026-10-07','2026-10-08'] },
+  { year: 2026, name: '元旦', dates: ['2026-01-01','2026-01-02','2026-01-03'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2026, name: '春节', dates: ['2026-02-17','2026-02-18','2026-02-19','2026-02-20','2026-02-21','2026-02-22','2026-02-23','2026-02-24'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
+  { year: 2026, name: '清明节', dates: ['2026-04-04','2026-04-05','2026-04-06'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2026, name: '劳动节', dates: ['2026-05-01','2026-05-02','2026-05-03','2026-05-04','2026-05-05'], daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 2, coopPayMultiplier: 3 },
+  { year: 2026, name: '端午节', dates: ['2026-06-19','2026-06-20','2026-06-21'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2026, name: '中秋节', dates: ['2026-09-25'], daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2026, name: '国庆节', dates: ['2026-10-01','2026-10-02','2026-10-03','2026-10-04','2026-10-05','2026-10-06','2026-10-07','2026-10-08'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
 
-  { year: 2027, name: '元旦', dates: ['2027-01-01','2027-01-02','2027-01-03'] },
-  { year: 2027, name: '春节', dates: ['2027-02-06','2027-02-07','2027-02-08','2027-02-09','2027-02-10','2027-02-11','2027-02-12','2027-02-13'] },
-  { year: 2027, name: '清明节', dates: ['2027-04-03','2027-04-04','2027-04-05'] },
-  { year: 2027, name: '劳动节', dates: ['2027-05-01','2027-05-02','2027-05-03','2027-05-04','2027-05-05'] },
-  { year: 2027, name: '端午节', dates: ['2027-06-09','2027-06-10','2027-06-11'] },
-  { year: 2027, name: '中秋节', dates: ['2027-09-15'] },
-  { year: 2027, name: '国庆节', dates: ['2027-10-01','2027-10-02','2027-10-03','2027-10-04','2027-10-05','2027-10-06','2027-10-07','2027-10-08'] },
+  { year: 2027, name: '元旦', dates: ['2027-01-01','2027-01-02','2027-01-03'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2027, name: '春节', dates: ['2027-02-06','2027-02-07','2027-02-08','2027-02-09','2027-02-10','2027-02-11','2027-02-12','2027-02-13'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
+  { year: 2027, name: '清明节', dates: ['2027-04-03','2027-04-04','2027-04-05'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2027, name: '劳动节', dates: ['2027-05-01','2027-05-02','2027-05-03','2027-05-04','2027-05-05'], daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 2, coopPayMultiplier: 3 },
+  { year: 2027, name: '端午节', dates: ['2027-06-09','2027-06-10','2027-06-11'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2027, name: '中秋节', dates: ['2027-09-15'], daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2027, name: '国庆节', dates: ['2027-10-01','2027-10-02','2027-10-03','2027-10-04','2027-10-05','2027-10-06','2027-10-07','2027-10-08'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
 
-  { year: 2028, name: '元旦', dates: ['2028-01-01'] },
-  { year: 2028, name: '春节', dates: ['2028-01-26','2028-01-27','2028-01-28','2028-01-29','2028-01-30','2028-01-31','2028-02-01','2028-02-02'] },
-  { year: 2028, name: '清明节', dates: ['2028-04-04','2028-04-05','2028-04-06'] },
-  { year: 2028, name: '劳动节', dates: ['2028-05-01','2028-05-02','2028-05-03','2028-05-04','2028-05-05'] },
-  { year: 2028, name: '端午节', dates: ['2028-05-28','2028-05-29','2028-05-30'] },
-  { year: 2028, name: '中秋节', dates: ['2028-10-03'] },
-  { year: 2028, name: '国庆节', dates: ['2028-10-01','2028-10-02','2028-10-03','2028-10-04','2028-10-05','2028-10-06','2028-10-07','2028-10-08'] }
+  { year: 2028, name: '元旦', dates: ['2028-01-01'], daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2028, name: '春节', dates: ['2028-01-26','2028-01-27','2028-01-28','2028-01-29','2028-01-30','2028-01-31','2028-02-01','2028-02-02'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 },
+  { year: 2028, name: '清明节', dates: ['2028-04-04','2028-04-05','2028-04-06'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2028, name: '劳动节', dates: ['2028-05-01','2028-05-02','2028-05-03','2028-05-04','2028-05-05'], daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 2, coopPayMultiplier: 3 },
+  { year: 2028, name: '端午节', dates: ['2028-05-28','2028-05-29','2028-05-30'], daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2028, name: '中秋节', dates: ['2028-10-03'], daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
+  { year: 2028, name: '国庆节', dates: ['2028-10-01','2028-10-02','2028-10-03','2028-10-04','2028-10-05','2028-10-06','2028-10-07','2028-10-08'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 }
 ];
 
 async function initData() {
@@ -265,12 +276,12 @@ async function initData() {
         const updates = {};
         if (existing.name === '母婴项目') updates.name = '博思项目';
         if (existing.holidayRule === 'double_pay_or_rest') updates.holidayRule = 'collab_days';
-        // 同步节假日倍数和规则：确保与最新配置一致
+        // 同步节假日计薪方式和规则：确保与最新配置一致
         if (match.holidayRule && existing.holidayRule !== match.holidayRule) {
           updates.holidayRule = match.holidayRule;
         }
-        if (match.holidayMultiplier && existing.holidayMultiplier !== match.holidayMultiplier) {
-          updates.holidayMultiplier = match.holidayMultiplier;
+        if (match.holidayPayMethod && existing.holidayPayMethod !== match.holidayPayMethod) {
+          updates.holidayPayMethod = match.holidayPayMethod;
         }
         if (match.holidayTable && JSON.stringify(existing.holidayTable) !== JSON.stringify(match.holidayTable)) {
           updates.holidayTable = match.holidayTable;

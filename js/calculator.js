@@ -78,20 +78,37 @@ const Calculator = {
 
     let holidayExtra = 0;
     let holidayCalcDetail = '';
-    if (baseFee > 0) {
-      if (project.holidayRule === 'double_pay') {
-        // 所有法定节假日双倍薪资，按当月实际法定假日天数
-        const dailyBase = totalDays > 0 ? baseFee / totalDays : 0;
-        holidayExtra = Math.round(dailyBase * holidayDays * (project.holidayMultiplier - 1));
-        const totalPay = project.holidayMultiplier === 3 ? '三倍' : '双倍';
-        holidayCalcDetail = `${totalPay}薪资（额外${project.holidayMultiplier - 1}倍）：日薪¥${dailyBase.toFixed(2)} x ${holidayDays}个假日 x 额外${project.holidayMultiplier - 1}倍 = 额外¥${holidayExtra.toLocaleString()}`;
-      } else if (project.holidayRule === 'collab_days') {
-          // 按合作天数计算：日薪 x 当月合作天数
-          const days = collabDays || 0;
-          const dailyBase = totalDays > 0 ? baseFee / totalDays : 0;
-          holidayExtra = Math.round(dailyBase * days);
-          holidayCalcDetail = `合作天数计算（额外1倍）：日薪¥${dailyBase.toFixed(2)} x 合作${days}天 = 额外¥${holidayExtra.toLocaleString()}（当月法定假日${holidayDays}天）`;
+    if (baseFee > 0 && holidayDays > 0) {
+      const dailyBase = totalDays > 0 ? baseFee / totalDays : 0;
+      const holidayTable = project.holidayTable || [];
+      const isStandard = project.holidayPayMethod === 'standard';
+      const methodLabel = isStandard ? '标准计薪' : '合作计薪';
+
+      let totalPayDays = 0;
+      let totalExtra = 0;
+      const detailParts = [];
+
+      for (const d of holidayDetails) {
+        const config = holidayTable.find(ht => ht.name === d.name);
+        const payDays = isStandard
+          ? (config?.standardPayDays ?? d.standardPayDays ?? 0)
+          : (config?.coopPayDays ?? d.coopPayDays ?? 0);
+        const multiplier = isStandard
+          ? (config?.standardPayMultiplier ?? d.standardPayMultiplier ?? 1)
+          : (config?.coopPayMultiplier ?? d.coopPayMultiplier ?? 1);
+
+        if (payDays > 0 && multiplier > 1) {
+          totalPayDays += payDays;
+          const extra = dailyBase * payDays * (multiplier - 1);
+          totalExtra += extra;
+          detailParts.push(`${d.name}${payDays}天×${multiplier}倍(额外${multiplier-1}倍)`);
         }
+      }
+
+      holidayExtra = Math.round(totalExtra);
+      if (detailParts.length > 0) {
+        holidayCalcDetail = `${methodLabel}：日薪¥${dailyBase.toFixed(2)} × 计薪${totalPayDays}天 × 平均额外${totalPayDays > 0 ? (totalExtra / (dailyBase * totalPayDays)).toFixed(1) : 0}倍 = 额外¥${holidayExtra.toLocaleString()}（${detailParts.join('、')}）`;
+      }
     }
 
     let shopExtra = 0;

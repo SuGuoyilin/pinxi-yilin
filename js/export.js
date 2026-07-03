@@ -82,7 +82,7 @@ const Export = {
       ['日均接待量', c.avgDaily],
       ['工作日天数', `${c.workDays}天`],
       ['节假日天数', `${c.holidayDays}天`],
-      ['合作天数', record.collabDays || '-'],
+      ['节假日计薪方式', record.calculated?.holidayCalcDetail?.includes('标准计薪') ? '标准计薪' : '合作计薪'],
       [],
       ['--- 费用明细 ---'],
       ['基础服务费', c.baseFee],
@@ -243,7 +243,7 @@ img { max-width: 100%; }
   <div><div class="label">月总接待量</div><div class="val">${c.totalVolume.toLocaleString()}</div></div>
   <div><div class="label">日均接待量</div><div class="val">${c.avgDaily}</div></div>
   <div><div class="label">工作日</div><div class="val">${c.workDays}天</div></div>
-  <div><div class="label">节假日</div><div class="val">${c.holidayDays}天${record.collabDays ? '(合作' + record.collabDays + '天)' : ''}</div></div>
+  <div><div class="label">节假日</div><div class="val">${c.holidayDays}天</div></div>
 </div>
 <h2>店铺接待量明细</h2>
 <table>
