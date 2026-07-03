@@ -299,6 +299,10 @@ async function initData() {
         if (match.tiers && (!existing.tiers || existing.tiers.length === 0 || JSON.stringify(existing.tiers) !== JSON.stringify(match.tiers))) {
           updates.tiers = match.tiers;
         }
+        // 同步合作开始日期
+        if (match.contractStartDate && existing.contractStartDate !== match.contractStartDate) {
+          updates.contractStartDate = match.contractStartDate;
+        }
         // 同步其他关键字段
         for (const field of ['calculationType', 'extraShopFee', 'baseShopLimit', 'onlineRate', 'offlineRate']) {
           if (match[field] !== undefined && existing[field] !== match[field]) {
