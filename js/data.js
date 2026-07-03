@@ -192,8 +192,9 @@ const INITIAL_SHOPS = [
   { projectId: 3, name: '讨师的小店', platform: '天猫' },
   { projectId: 3, name: '讨师的小店', platform: '小红书' },
   // 森昊项目店铺
+  { projectId: 4, name: '安吉小鸭童装', platform: '1688' },
   { projectId: 4, name: '米恬恬母婴', platform: '1688' },
-  { projectId: 4, name: '米恬恬母婴', platform: '1688' },
+  { projectId: 4, name: '安小丫童装', platform: '1688' },
   { projectId: 4, name: '安吉小鸭母婴', platform: '抖音' },
   { projectId: 4, name: '安吉小鸭母婴旗舰店', platform: '拼多多' },
   { projectId: 4, name: '卓森母婴童装', platform: '拼多多' },

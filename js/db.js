@@ -1,10 +1,11 @@
 const db = new Dexie('SettlementDB');
 
-db.version(2).stores({
+db.version(3).stores({
   projects: '++id, name',
   shops: '++id, projectId, name, platform',
   monthlyRecords: '[projectId+year+month], projectId, year, month',
-  holidays: '++id, year, name'
+  holidays: '++id, year, name',
+  accounts: '++id, projectName, platform, shopName, account, status'
 });
 
 const DB = {
@@ -59,26 +60,36 @@ const DB = {
   async getAllHolidays() { return await db.holidays.toArray(); },
   async saveHoliday(holiday) { return await db.holidays.add(holiday); },
   async saveHolidaysBatch(holidays) { return await db.holidays.bulkAdd(holidays); },
+
+  async getAllAccounts() { return await db.accounts.toArray(); },
+  async addAccount(account) { return await db.accounts.add(account); },
+  async updateAccount(id, changes) { return await db.accounts.update(id, changes); },
+  async deleteAccount(id) { return await db.accounts.delete(id); },
+
   async clearAll() {
     await db.projects.clear(); await db.shops.clear();
     await db.monthlyRecords.clear(); await db.holidays.clear();
+    await db.accounts.clear();
   },
   async exportAll() {
     return {
       projects: await db.projects.toArray(),
       shops: await db.shops.toArray(),
       monthlyRecords: await db.monthlyRecords.toArray(),
-      holidays: await db.holidays.toArray()
+      holidays: await db.holidays.toArray(),
+      accounts: await db.accounts.toArray()
     };
   },
   async importAll(data) {
-    await db.transaction('rw', db.projects, db.shops, db.monthlyRecords, db.holidays, async () => {
+    await db.transaction('rw', db.projects, db.shops, db.monthlyRecords, db.holidays, db.accounts, async () => {
       await db.projects.clear(); await db.shops.clear();
       await db.monthlyRecords.clear(); await db.holidays.clear();
+      await db.accounts.clear();
       if (data.projects?.length) await db.projects.bulkAdd(data.projects);
       if (data.shops?.length) await db.shops.bulkAdd(data.shops);
       if (data.monthlyRecords?.length) await db.monthlyRecords.bulkAdd(data.monthlyRecords);
       if (data.holidays?.length) await db.holidays.bulkAdd(data.holidays);
+      if (data.accounts?.length) await db.accounts.bulkAdd(data.accounts);
     });
   }
 };
