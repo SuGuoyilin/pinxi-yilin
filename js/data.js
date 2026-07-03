@@ -16,7 +16,7 @@ const INITIAL_PROJECTS = [
     baseShopLimit: 5,
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
-    holidayRule: 'double_pay',
+    holidayRule: 'standard',
     holidayPayMethod: 'standard',
     holidayTable: [
       { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
@@ -43,7 +43,7 @@ const INITIAL_PROJECTS = [
     baseShopLimit: 5,
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
-    holidayRule: 'collab_days',
+    holidayRule: 'cooperative',
     holidayPayMethod: 'cooperative',
     holidayTable: [
       { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
@@ -72,7 +72,7 @@ const INITIAL_PROJECTS = [
     baseShopLimit: 5,
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
-    holidayRule: 'double_pay',
+    holidayRule: 'standard',
     holidayPayMethod: 'standard',
     holidayTable: [
       { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
@@ -103,7 +103,7 @@ const INITIAL_PROJECTS = [
     baseShopLimit: 6,
     workTime: '08:00-24:00',
     restDays: 0,
-    holidayRule: 'collab_days',
+    holidayRule: 'cooperative',
     holidayPayMethod: 'cooperative',
     holidayTable: [
       { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
@@ -128,7 +128,7 @@ const INITIAL_PROJECTS = [
     extraShopFee: 0,
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
-    holidayRule: 'double_pay',
+    holidayRule: 'standard',
     holidayPayMethod: 'standard',
     holidayTable: [
       { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
@@ -157,7 +157,7 @@ const INITIAL_PROJECTS = [
     baseShopLimit: 5,
     workTime: '早班08:00-16:00 / 晚班16:00-24:00',
     restDays: 0,
-    holidayRule: 'double_pay',
+    holidayRule: 'standard',
     holidayPayMethod: 'standard',
     holidayTable: [
       { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 2, coopPayDays: 1, coopPayMultiplier: 2 },
@@ -275,7 +275,9 @@ async function initData() {
       if (match) {
         const updates = {};
         if (existing.name === '母婴项目') updates.name = '博思项目';
-        if (existing.holidayRule === 'double_pay_or_rest') updates.holidayRule = 'collab_days';
+        if (existing.holidayRule === 'double_pay_or_rest') updates.holidayRule = 'cooperative';
+        if (existing.holidayRule === 'double_pay') updates.holidayRule = 'standard';
+        if (existing.holidayRule === 'collab_days') updates.holidayRule = 'cooperative';
         // 同步节假日计薪方式和规则：确保与最新配置一致
         if (match.holidayRule && existing.holidayRule !== match.holidayRule) {
           updates.holidayRule = match.holidayRule;

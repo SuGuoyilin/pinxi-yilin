@@ -123,7 +123,7 @@ const App = {
   async renderProjects(el) {
     const projects = await DB.getAllProjects();
     const typeLabels = { daily_avg: '日均接待量', monthly_total: '月总接待量', hourly: '按小时计费' };
-    const ruleLabels = { double_pay: '额外薪资', collab_days: '合作天数' };
+    const ruleLabels = { standard: '标准计薪', cooperative: '合作计薪' };
 
     let html = `
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
@@ -333,7 +333,7 @@ const App = {
     const p = await DB.getProject(id);
     if (!p) return;
     const typeLabels = { daily_avg: '日均接待量', monthly_total: '月总接待量', hourly: '按小时计费' };
-    const ruleLabels = { double_pay: '额外薪资', collab_days: '合作天数' };
+    const ruleLabels = { standard: '标准计薪', cooperative: '合作计薪' };
 
     const payMethodLabel = p.holidayPayMethod === 'cooperative' ? '合作计薪' : '标准计薪';
     let holidayDetailHtml = `<span style="font-size:12px;color:#999;">（计薪方式：${payMethodLabel}）</span>`;
@@ -387,7 +387,7 @@ const App = {
       name: '', calculationType: 'daily_avg', tiers: [],
       extraShopFee: 100, baseShopLimit: 5,
       workTime: '', restDays: 0,
-      holidayRule: 'double_pay', holidayPayMethod: 'standard',
+      holidayRule: 'standard', holidayPayMethod: 'standard',
       overtimeRate: 20, invoiceRate: 0.01, description: '',
       onlineRate: 30.30, offlineRate: 20.20
     };
@@ -411,14 +411,8 @@ const App = {
           <div class="form-row"><label>月休天数</label><input type="number" id="pf-rest" value="${p.restDays}"></div>
           <div class="form-row"><label>节假日规则</label>
             <select id="pf-holiday">
-              <option value="double_pay" ${p.holidayRule === 'double_pay' ? 'selected' : ''}>法定假日额外薪资</option>
-              <option value="collab_days" ${p.holidayRule === 'collab_days' ? 'selected' : ''}>合作天数计算</option>
-            </select>
-          </div>
-          <div class="form-row"><label>节假日计薪方式</label>
-            <select id="pf-holiday-pay-method">
-              <option value="standard" ${p.holidayPayMethod === 'standard' ? 'selected' : ''}>标准计薪</option>
-              <option value="cooperative" ${p.holidayPayMethod === 'cooperative' ? 'selected' : ''}>合作计薪</option>
+              <option value="standard" ${p.holidayRule === 'standard' ? 'selected' : ''}>标准计薪</option>
+              <option value="cooperative" ${p.holidayRule === 'cooperative' ? 'selected' : ''}>合作计薪</option>
             </select>
           </div>
           <div class="form-row"><label>加班计薪(元/h)</label><input type="number" id="pf-overtime" value="${p.overtimeRate}"></div>
@@ -461,7 +455,7 @@ const App = {
       workTime: document.getElementById('pf-worktime').value,
       restDays: parseInt(document.getElementById('pf-rest').value) || 0,
       holidayRule: document.getElementById('pf-holiday').value,
-      holidayPayMethod: payMethodEl ? payMethodEl.value : 'standard',
+      holidayPayMethod: document.getElementById('pf-holiday').value,
       overtimeRate: parseInt(document.getElementById('pf-overtime').value) || 20,
       invoiceRate: (parseFloat(document.getElementById('pf-invoice').value) || 1) / 100,
       baseShopLimit: parseInt(document.getElementById('pf-shoplimit').value) || 5,
@@ -680,9 +674,9 @@ const App = {
 
     // 优先用已保存的值，否则用自动计算的值
     const savedCollabDays = record && record.collabDays != null ? record.collabDays : autoCollabDays;
-    const collabDaysInput = project.holidayRule === 'collab_days' ? `
+    const collabDaysInput = project.holidayRule === 'cooperative' ? `
       <div class="form-row" style="background:#fff8e1;padding:8px;border-radius:4px;">
-        <label>当月合作天数</label>
+        <label>当月合作计薪天数</label>
         <input type="number" id="collab-days" value="${savedCollabDays}" style="width:80px;" min="0">
         <span style="font-size:12px;color:#e94560;">（系统根据项目配置自动计算为<b>${autoCollabDays}</b>天，当月法定假日共<b>${monthHolidayCount}</b>天：${monthHolidayNames.join('、')}，如需调整可手动修改）</span>
       </div>
@@ -744,16 +738,14 @@ const App = {
       shopRows = `<tr><td colspan="5" style="color:#999;text-align:center;padding:16px;">该项目暂无店铺，请先在"店铺管理"中添加</td></tr>`;
     }
 
-    const holidayRuleText = project.holidayRule === 'double_pay' ? '法定假日额外薪资' :
-                            project.holidayRule === 'collab_days' ? '合作天数计算' : project.holidayRule;
-    const holidayPayMethodText = project.holidayPayMethod === 'cooperative' ? '合作计薪' : '标准计薪';
-    const holidayRule = `${holidayRuleText}(${holidayPayMethodText})`;
+    const holidayRuleText = project.holidayRule === 'standard' ? '标准计薪' :
+                            project.holidayRule === 'cooperative' ? '合作计薪' : project.holidayRule;
 
     document.getElementById('input-form-container').innerHTML = `
       <div style="margin-bottom:16px;padding:14px 16px;background:linear-gradient(135deg,#f8f9fa,#fff);border-radius:8px;border:1px solid #e8e8e8;font-size:13px;color:#666;line-height:1.8;">
         <strong style="font-size:15px;color:#1a1a2e;">${project.name}</strong>
         <span style="margin-left:12px;">结算方式：${typeLabel}</span>
-        <span style="margin-left:12px;">假日规则：${holidayRule}</span>
+        <span style="margin-left:12px;">假日规则：${holidayRuleText}</span>
         <span style="margin-left:12px;">${project.workTime}</span>
         <div style="margin-top:4px;color:#999;font-size:12px;">公式：所有店铺月接待量之和 / ${daysInMonth}天 = 日均接待量</div>
       </div>
