@@ -199,7 +199,9 @@ const App = {
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      ${isCoop ? '<div style="font-size:12px;color:#999;margin-bottom:8px;">绿色高亮表示当前使用合作计薪方式</div>' : ''}
+      <div style="font-size:12px;color:#999;margin-top:4px;padding:8px 10px;background:#f5f7ff;border-radius:4px;">
+        <strong>节假日额外费用</strong> = (基础服务费 / 当月实际出勤天数) × ${isCoop ? '合作' : '标准'}计薪天数 × (${isCoop ? '合作' : '标准'}倍数 - 1)
+      </div>
     `;
   },
 
@@ -225,13 +227,6 @@ const App = {
       </tr>`;
     }).join('');
     return `
-      <div class="form-row" style="margin-bottom:8px;">
-        <label>节假日计薪方式</label>
-        <select id="pf-holiday-pay-method-table">
-          <option value="standard" ${methodValue === 'standard' ? 'selected' : ''}>标准计薪</option>
-          <option value="cooperative" ${methodValue === 'cooperative' ? 'selected' : ''}>合作计薪</option>
-        </select>
-      </div>
       <table style="font-size:13px;" id="edit-holiday-table">
         <thead><tr>
           <th>法定节假日</th>
@@ -243,7 +238,26 @@ const App = {
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <div style="font-size:12px;color:#999;margin-top:4px;">标准计薪：按标准计薪天数 x 标准倍数计算；合作计薪：按合作计薪天数 x 合作倍数计算</div>
+      <div style="margin-top:8px;padding:10px 12px;background:#f5f7ff;border-radius:6px;font-size:12px;color:#555;line-height:1.8;border:1px solid #e0e4f0;">
+        <div style="font-weight:bold;color:#1a1a2e;margin-bottom:4px;">计算公式与字段说明</div>
+        <div style="margin-bottom:6px;">
+          <strong>结算金额</strong> = 基础服务费 + 节假日额外费用 + 超店铺附加费
+        </div>
+        <div style="margin-bottom:6px;">
+          <strong>节假日额外费用</strong> = (基础服务费 / 当月实际出勤天数) × 计薪天数 × (倍数 - 1)
+        </div>
+        <div style="margin-bottom:4px;color:#888;">字段含义：</div>
+        <div style="padding-left:8px;">
+          <div><strong>放假天数</strong>：该节日实际放假的总天数（含调休）</div>
+          <div><strong>标准计薪天数</strong>：国务院规定的法定3倍薪资天数（如国庆3天）</div>
+          <div><strong>标准倍数</strong>：法定薪资共计倍数（填3=总计3倍，额外2倍；填2=总计2倍，额外1倍）</div>
+          <div><strong>合作计薪天数</strong>：与品牌签约约定的计薪天数（可与标准不同）</div>
+          <div><strong>合作倍数</strong>：与品牌签约约定的薪资倍数（共计倍数）</div>
+        </div>
+        <div style="margin-top:6px;color:#e94560;">
+          示例：基础费2500元，10月31天，标准计薪3天，标准倍数3 → 节假日额外费用 = 2500/31 × 3 × (3-1) = 483.87元
+        </div>
+      </div>
     `;
   },
 
