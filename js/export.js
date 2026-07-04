@@ -97,12 +97,19 @@ const Export = {
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
     ws['!cols'] = [
-      { width: 6 },
-      { width: 28 },
-      { width: 12 },
+      { width: 8 },
+      { width: 32 },
       { width: 14 },
-      { width: 10 },
-      { width: 10 }
+      { width: 16 },
+      { width: 12 },
+      { width: 12 }
+    ];
+    // 合并标题行
+    ws['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } },
+      { s: { r: 4, c: 0 }, e: { r: 4, c: 5 } },
+      { s: { r: rows.length - 6, c: 0 }, e: { r: rows.length - 6, c: 5 } },
+      { s: { r: rows.length - 1, c: 0 }, e: { r: rows.length - 1, c: 5 } }
     ];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, '结算单');

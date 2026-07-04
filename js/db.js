@@ -36,9 +36,9 @@ const DB = {
   async saveMonthlyRecord(record) {
     try {
       const existing = await db.monthlyRecords.get([record.projectId, record.year, record.month]);
-      if (existing) return await db.monthlyRecords.update(existing.id || existing, record);
+      if (existing) return await db.monthlyRecords.update([record.projectId, record.year, record.month], record);
     } catch(e) {
-      // fallback
+      console.error('saveMonthlyRecord error:', e);
     }
     return await db.monthlyRecords.add(record);
   },

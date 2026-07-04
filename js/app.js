@@ -819,10 +819,10 @@ const App = {
             workDaysHint = `默认<b>${daysInMonth}</b>天（正常合作月）`;
           }
         }
-        const savedDays = record && record.actualWorkDays != null ? record.actualWorkDays : autoWorkDays;
+        // 始终按自动计算值显示，不沿用旧记录（让用户每次都能看到正确的当月天数）
         return `<div class="form-row" style="background:#e3f2fd;padding:8px;border-radius:4px;margin-top:8px;">
           <label>当月实际出勤天数</label>
-          <input type="number" id="actual-work-days" value="${savedDays}" style="width:80px;" min="0">
+          <input type="number" id="actual-work-days" value="${autoWorkDays}" style="width:80px;" min="0">
           <span style="font-size:12px;color:#1976d2;">（${workDaysHint}，日薪=基础费/实际出勤天数）</span>
         </div>`;
       })()}
