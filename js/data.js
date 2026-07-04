@@ -264,31 +264,63 @@ const INITIAL_HOLIDAYS = [
 const INITIAL_INVOICES = [
   // ===== 专席项目 =====
   {
-    projectName: '宠物用品项目',
-    companyName: '上海万粒网络科技有限公司',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
-    invoiceContent: '服务费',
-    invoiceType: '专票',
-    taxTreatment: '不含税',
+    projectName: '深圳和而泰项目',
+    companyName: '上海亿和网络科技有限公司',
+    taxId: '91310000MA1FL5C91K',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '工商银行',
+    bankAccount: '待补充',
+    invoiceContent: '现代服务*服务费',
+    invoiceType: '1%专票',
+    taxTreatment: '含税',
     paymentDay: 15,
     specialNote: '',
     _group: '专席',
     _category: '专席'
   },
   {
-    projectName: '晨光项目-信息科技',
+    projectName: '杭州云栖小镇项目',
+    companyName: '杭州云栖小镇开发建设管理有限公司',
+    taxId: '91330106MA27W6H29K',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '杭州银行',
+    bankAccount: '待补充',
+    invoiceContent: '服务费',
+    invoiceType: '1%专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: '',
+    _group: '专席',
+    _category: '专席'
+  },
+  {
+    projectName: '上海光羽/光曦科技项目',
+    companyName: '上海光羽信息科技有限公司',
+    taxId: '91310117MA1J1A2R9N',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '工商银行',
+    bankAccount: '待补充',
+    invoiceContent: '服务费',
+    invoiceType: '1%专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: '',
+    _group: '专席',
+    _category: '专席'
+  },
+  {
+    projectName: '上海光羽/光曦科技项目（第二主体）',
     companyName: '上海晨光信息科技有限公司',
-    taxId: '913101203507266299',
-    address: '',
-    phone: '021-57474488',
-    bankName: '',
-    bankAccount: '',
+    taxId: '91310117MA1J1A2R9N',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '招商银行',
+    bankAccount: '待补充',
     invoiceContent: '服务费',
-    invoiceType: '专票',
+    invoiceType: '1%专票',
     taxTreatment: '含税',
     paymentDay: 15,
     specialNote: '',
@@ -296,15 +328,15 @@ const INITIAL_INVOICES = [
     _category: '专席'
   },
   {
-    projectName: '晨光项目-在线甄选',
-    companyName: '上海晨光在线甄选文具有限公司',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
+    projectName: '福建新大陆项目',
+    companyName: '上海亿和网络科技有限公司',
+    taxId: '91310000MA1FL5C91K',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '兴业银行',
+    bankAccount: '待补充',
     invoiceContent: '服务费',
-    invoiceType: '专票',
+    invoiceType: '1%专票',
     taxTreatment: '含税',
     paymentDay: 15,
     specialNote: '',
@@ -312,146 +344,66 @@ const INITIAL_INVOICES = [
     _category: '专席'
   },
   {
-    projectName: '雪中飞-主体1',
-    companyName: '公司信息待补充',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
+    projectName: 'FDA注册项目',
+    companyName: '上海亿和网络科技有限公司',
+    taxId: '91310000MA1FL5C91K',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '兴业银行',
+    bankAccount: '待补充',
     invoiceContent: '服务费',
-    invoiceType: '专票',
+    invoiceType: '1%专票',
     taxTreatment: '含税',
     paymentDay: 15,
-    specialNote: '公司信息待补充',
-    _group: '专席',
-    _category: '专席'
-  },
-  {
-    projectName: '雪中飞-主体2',
-    companyName: '公司信息待补充',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
-    invoiceContent: '服务费',
-    invoiceType: '专票',
-    taxTreatment: '含税',
-    paymentDay: 15,
-    specialNote: '公司信息待补充',
-    _group: '专席',
-    _category: '专席'
-  },
-  {
-    projectName: '新辉祥项目',
-    companyName: '公司信息待补充',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
-    invoiceContent: '服务费',
-    invoiceType: '专票',
-    taxTreatment: '含税',
-    paymentDay: 15,
-    specialNote: '公司信息待补充',
-    _group: '专席',
-    _category: '专席'
-  },
-  {
-    projectName: 'FPA世界杯项目',
-    companyName: '公司信息待补充',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
-    invoiceContent: '服务费',
-    invoiceType: '专票',
-    taxTreatment: '含税',
-    paymentDay: 15,
-    specialNote: '公司信息待补充',
-    _group: '专席',
-    _category: '专席'
-  },
-  {
-    projectName: '和府项目',
-    companyName: '公司信息待补充',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
-    invoiceContent: '服务费',
-    invoiceType: '专票',
-    taxTreatment: '含税',
-    paymentDay: 15,
-    specialNote: '公司信息待补充',
-    _group: '专席',
-    _category: '专席'
-  },
-  {
-    projectName: '喜宴项目',
-    companyName: '公司信息待补充',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
-    invoiceContent: '服务费',
-    invoiceType: '专票',
-    taxTreatment: '暂不需要开票',
-    paymentDay: 15,
-    specialNote: '暂不需要开票',
-    _group: '专席',
-    _category: '专席'
-  },
-  {
-    projectName: '对账项目（兼职）',
-    companyName: '公司信息待补充',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
-    invoiceContent: '服务费',
-    invoiceType: '1%的专票',
-    taxTreatment: '不含税',
-    paymentDay: 15,
-    specialNote: '不含税+开票金额1%，由甲方额外付开票的税费',
-    _group: '专席',
-    _category: '专席'
-  },
-  {
-    projectName: '玉书项目汇总',
-    companyName: '杭州西谷玉书互联网服务有限公司',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
-    invoiceContent: '服务费',
-    invoiceType: '普票',
-    taxTreatment: '含税',
-    paymentDay: 20,
     specialNote: '',
     _group: '专席',
     _category: '专席'
   },
   {
-    projectName: '凯丰项目',
-    companyName: '公司信息待补充',
-    taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
+    projectName: '检测项目',
+    companyName: '杭州安麦基管理咨询有限公司',
+    taxId: '91330106MA2CMD4B88',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '招商银行',
+    bankAccount: '待补充',
     invoiceContent: '服务费',
-    invoiceType: '专票',
+    invoiceType: '1%专票',
     taxTreatment: '含税',
     paymentDay: 15,
-    specialNote: '公司信息待补充',
+    specialNote: '',
+    _group: '专席',
+    _category: '专席'
+  },
+  {
+    projectName: '其他项目-厦门',
+    companyName: '厦门亿联网络技术股份有限公司',
+    taxId: '91350200705442670N',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '招商银行',
+    bankAccount: '待补充',
+    invoiceContent: '服务费',
+    invoiceType: '1%专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: '',
+    _group: '专席',
+    _category: '专席'
+  },
+  {
+    projectName: '永康市云动日用品项目',
+    companyName: '永康市云动日用品有限公司',
+    taxId: '91330784MA28F3G59F',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '农业银行',
+    bankAccount: '待补充',
+    invoiceContent: '服务费',
+    invoiceType: '1%专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: '',
     _group: '专席',
     _category: '专席'
   },
@@ -460,12 +412,12 @@ const INITIAL_INVOICES = [
     projectName: '妲润项目',
     companyName: '公司信息待补充',
     taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '待补充',
+    bankAccount: '待补充',
     invoiceContent: '服务费',
-    invoiceType: '专票',
+    invoiceType: '1%专票',
     taxTreatment: '含税',
     paymentDay: 15,
     specialNote: '公司信息待补充',
@@ -476,15 +428,15 @@ const INITIAL_INVOICES = [
     projectName: '博思项目',
     companyName: '公司信息待补充',
     taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '待补充',
+    bankAccount: '待补充',
     invoiceContent: '服务费',
-    invoiceType: '专票',
-    taxTreatment: '暂不需要开票',
+    invoiceType: '1%专票',
+    taxTreatment: '含税',
     paymentDay: 15,
-    specialNote: '暂不需要开票',
+    specialNote: '公司信息待补充',
     _group: '拼席',
     _category: '拼席'
   },
@@ -492,12 +444,12 @@ const INITIAL_INVOICES = [
     projectName: '讨师项目',
     companyName: '公司信息待补充',
     taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '待补充',
+    bankAccount: '待补充',
     invoiceContent: '服务费',
-    invoiceType: '专票',
+    invoiceType: '1%专票',
     taxTreatment: '含税',
     paymentDay: 15,
     specialNote: '公司信息待补充',
@@ -508,12 +460,12 @@ const INITIAL_INVOICES = [
     projectName: '森昊项目',
     companyName: '公司信息待补充',
     taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '待补充',
+    bankAccount: '待补充',
     invoiceContent: '服务费',
-    invoiceType: '专票',
+    invoiceType: '1%专票',
     taxTreatment: '含税',
     paymentDay: 15,
     specialNote: '公司信息待补充',
@@ -524,12 +476,12 @@ const INITIAL_INVOICES = [
     projectName: '悦泰项目（兼职）',
     companyName: '公司信息待补充',
     taxId: '',
-    address: '',
-    phone: '',
-    bankName: '',
-    bankAccount: '',
+    address: '待补充',
+    phone: '待补充',
+    bankName: '待补充',
+    bankAccount: '待补充',
     invoiceContent: '服务费',
-    invoiceType: '专票',
+    invoiceType: '1%专票',
     taxTreatment: '含税',
     paymentDay: 15,
     specialNote: '公司信息待补充',
@@ -640,6 +592,15 @@ async function initData() {
   const existingInvoiceNames = new Set(allInvoices.map(inv => inv.projectName));
   const initialInvoiceNames = new Set(INITIAL_INVOICES.map(inv => inv.projectName));
 
+  // 先将所有不在新列表中的旧发票项目标记为已停用
+  for (const dbInv of allInvoices) {
+    if (!initialInvoiceNames.has(dbInv.projectName)) {
+      if (!dbInv._deprecated) {
+        await DB.saveInvoice({ ...dbInv, _deprecated: true, _group: '已停用' });
+      }
+    }
+  }
+
   // 对于新增的项目（不在数据库中），自动创建
   for (const inv of INITIAL_INVOICES) {
     if (!existingInvoiceNames.has(inv.projectName)) {
@@ -647,34 +608,30 @@ async function initData() {
     }
   }
 
-  // 对于已有项目，同步 _category 和 _group 字段（不覆盖用户修改的其他数据）
+  // 对于已有项目，同步所有字段（确保与最新配置一致）
   for (const dbInv of allInvoices) {
     const template = INITIAL_INVOICES.find(i => i.projectName === dbInv.projectName);
     if (template) {
       const updates = {};
+      // 同步公司信息字段
+      for (const field of ['companyName', 'taxId', 'address', 'phone', 'bankName', 'bankAccount', 'invoiceContent', 'invoiceType', 'taxTreatment', 'paymentDay']) {
+        if (template[field] !== undefined && dbInv[field] !== template[field]) {
+          updates[field] = template[field];
+        }
+      }
+      // 同步分类字段
       if (template._category && dbInv._category !== template._category) {
         updates._category = template._category;
       }
       if (template._group && dbInv._group !== template._group) {
         updates._group = template._group;
       }
-      // 如果项目在新列表中但之前被标记停用，恢复它
+      // 如果项目之前被标记停用，恢复它
       if (dbInv._deprecated) {
         updates._deprecated = false;
       }
       if (Object.keys(updates).length > 0) {
         await DB.saveInvoice({ ...dbInv, ...updates });
-      }
-    }
-  }
-
-  // 对于不在新列表中的旧项目，标记为已停用（不删除，保留历史记录）
-  // 需要停用的旧项目包括：拼拼项目（玉书）、益生菌项目（玉书）、贝因美项目（玉书）等
-  const deprecatedNames = ['拼拼项目（玉书）', '益生菌项目（玉书）', '贝因美项目（玉书）'];
-  for (const dbInv of allInvoices) {
-    if (!initialInvoiceNames.has(dbInv.projectName) || deprecatedNames.includes(dbInv.projectName)) {
-      if (!dbInv._deprecated) {
-        await DB.saveInvoice({ ...dbInv, _deprecated: true, _group: '已停用' });
       }
     }
   }
