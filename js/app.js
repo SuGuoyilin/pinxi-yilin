@@ -418,7 +418,8 @@ const App = {
       holidayRule: 'standard', holidayPayMethod: 'standard',
       overtimeRate: 20, invoiceRate: 0.01, description: '',
       onlineRate: 30.30, offlineRate: 20.20,
-      contractStartDate: ''
+      contractStartDate: '',
+      invoiceRate: 0.01
     };
 
     const html = `
@@ -446,7 +447,7 @@ const App = {
             </select>
           </div>
           <div class="form-row"><label>加班计薪(元/h)</label><input type="number" id="pf-overtime" value="${p.overtimeRate}"></div>
-          <div class="form-row"><label>发票税点(%)</label><input type="number" step="0.1" id="pf-invoice" value="${p.invoiceRate * 100}"><span style="font-size:12px;color:#999;margin-left:8px;">填0=含税不加税；填1=不含税加收1%税费</span></div>
+          <div class="form-row"><label>发票税点(%)</label><input type="number" step="0.1" id="pf-invoice" value="${(p.invoiceRate || 0.01) * 100}"><span style="font-size:12px;color:#999;margin-left:8px;">填0=含税不加税；填1=不含税加收1%税费</span></div>
           <div class="form-row"><label>基础店铺数</label><input type="number" id="pf-shoplimit" value="${p.baseShopLimit || 5}"></div>
           <div class="form-row"><label>超店附加(元/店)</label><input type="number" id="pf-shopfee" value="${p.extraShopFee}"></div>
           <div class="form-row"><label>工作内容</label><textarea id="pf-desc" rows="2">${p.description || ''}</textarea></div>
@@ -488,7 +489,7 @@ const App = {
       holidayRule: document.getElementById('pf-holiday').value,
       holidayPayMethod: document.getElementById('pf-holiday').value,
       overtimeRate: parseInt(document.getElementById('pf-overtime').value) || 20,
-      invoiceRate: parseFloat(document.getElementById('pf-invoice').value) / 100 || 0.01,
+      invoiceRate: parseFloat(document.getElementById('pf-invoice').value) / 100,
       baseShopLimit: parseInt(document.getElementById('pf-shoplimit').value) || 5,
       extraShopFee: parseInt(document.getElementById('pf-shopfee').value) || 100,
       description: document.getElementById('pf-desc').value,
