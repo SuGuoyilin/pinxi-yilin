@@ -87,7 +87,6 @@ const INITIAL_PROJECTS = [
       { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 }
     ],
     overtimeRate: 20,
-    taxInclusive: false,
     invoiceRate: 0.01,
     description: '售前售后接待'
   },
@@ -305,7 +304,7 @@ async function initData() {
           updates.contractStartDate = match.contractStartDate;
         }
         // 同步其他关键字段
-        for (const field of ['calculationType', 'extraShopFee', 'baseShopLimit', 'onlineRate', 'offlineRate', 'taxInclusive']) {
+        for (const field of ['calculationType', 'extraShopFee', 'baseShopLimit', 'onlineRate', 'offlineRate']) {
           if (match[field] !== undefined && existing[field] !== match[field]) {
             updates[field] = match[field];
           }

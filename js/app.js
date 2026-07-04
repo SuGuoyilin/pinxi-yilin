@@ -241,10 +241,13 @@ const App = {
       <div style="margin-top:8px;padding:10px 12px;background:#f5f7ff;border-radius:6px;font-size:12px;color:#555;line-height:1.8;border:1px solid #e0e4f0;">
         <div style="font-weight:bold;color:#1a1a2e;margin-bottom:4px;">计算公式与字段说明</div>
         <div style="margin-bottom:6px;">
-          <strong>结算金额</strong> = 基础服务费 + 节假日额外费用 + 超店铺附加费
+          <strong>结算金额</strong> = 基础服务费 + 节假日额外费用 + 超店铺附加费 + 税费（税点 > 0 时加收）
         </div>
         <div style="margin-bottom:6px;">
           <strong>节假日额外费用</strong> = (基础服务费 / 当月实际出勤天数) × 计薪天数 × (倍数 - 1)
+        </div>
+        <div style="margin-bottom:6px;font-size:11px;color:#1976d2;">
+          <strong>税费</strong> = (基础服务费 + 节假日额外费用 + 超店铺附加费) × 发票税点%（税点填0=含税不加税，填1=加收1%）
         </div>
         <div style="margin-bottom:4px;color:#888;">字段含义：</div>
         <div style="padding-left:8px;">
@@ -385,7 +388,7 @@ const App = {
           <div class="form-row"><label>月休天数</label><span>${p.restDays}天</span></div>
           <div class="form-row"><label>节假日规则</label><span>${ruleLabels[p.holidayRule] || p.holidayRule} ${holidayDetailHtml}</span></div>
           <div class="form-row"><label>加班计薪</label><span>&yen;${p.overtimeRate}/小时</span></div>
-          <div class="form-row"><label>税务说明</label><span>${p.taxInclusive === false ? '不含税，结算金额另加' + (p.invoiceRate * 100).toFixed(0) + '%税费' : '含税（' + (p.invoiceRate * 100).toFixed(0) + '%），无需另加税费'}</span></div>
+          <div class="form-row"><label>税务说明</label><span>${p.invoiceRate > 0 ? '不含税，结算金额另加' + (p.invoiceRate * 100).toFixed(0) + '%税费' : '含税，无需另加税费'}</span></div>
           <div class="form-row"><label>超店附加费</label><span>&yen;${p.extraShopFee}/店/月</span></div>
           <div class="form-row"><label>工作内容</label><span>${p.description || '-'}</span></div>
           <h4 style="margin:16px 0 8px;">结算档位</h4>
@@ -443,8 +446,7 @@ const App = {
             </select>
           </div>
           <div class="form-row"><label>加班计薪(元/h)</label><input type="number" id="pf-overtime" value="${p.overtimeRate}"></div>
-          <div class="form-row"><label>是否含税</label><select id="pf-tax-inclusive"><option value="true" ${p.taxInclusive !== false ? 'selected' : ''}>含税（不额外加税）</option><option value="false" ${p.taxInclusive === false ? 'selected' : ''}>不含税（需加收税点）</option></select></div>
-          <div class="form-row"><label>发票税点(%)</label><input type="number" step="0.1" id="pf-invoice" value="${p.invoiceRate * 100}"><span style="font-size:12px;color:#999;margin-left:8px;">不含税时生效，按此比例加收税费</span></div>
+          <div class="form-row"><label>发票税点(%)</label><input type="number" step="0.1" id="pf-invoice" value="${p.invoiceRate * 100}"><span style="font-size:12px;color:#999;margin-left:8px;">填0=含税不加税；填1=不含税加收1%税费</span></div>
           <div class="form-row"><label>基础店铺数</label><input type="number" id="pf-shoplimit" value="${p.baseShopLimit || 5}"></div>
           <div class="form-row"><label>超店附加(元/店)</label><input type="number" id="pf-shopfee" value="${p.extraShopFee}"></div>
           <div class="form-row"><label>工作内容</label><textarea id="pf-desc" rows="2">${p.description || ''}</textarea></div>
@@ -486,7 +488,6 @@ const App = {
       holidayRule: document.getElementById('pf-holiday').value,
       holidayPayMethod: document.getElementById('pf-holiday').value,
       overtimeRate: parseInt(document.getElementById('pf-overtime').value) || 20,
-      taxInclusive: document.getElementById('pf-tax-inclusive').value !== 'false',
       invoiceRate: (parseFloat(document.getElementById('pf-invoice').value) || 1) / 100,
       baseShopLimit: parseInt(document.getElementById('pf-shoplimit').value) || 5,
       extraShopFee: parseInt(document.getElementById('pf-shopfee').value) || 100,
