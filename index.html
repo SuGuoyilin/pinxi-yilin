@@ -19,7 +19,13 @@
       <li data-view="input">月度录入</li>
       <li data-view="statement">结算单</li>
       <li data-view="history">历史查询</li>
-      <li data-view="invoices">发票管理</li>
+      <li class="has-submenu" data-submenu="invoice">
+        <span>发票管理</span>
+        <ul class="submenu">
+          <li data-view="invoices-co">拼席发票</li>
+          <li data-view="invoices-ex">专席发票</li>
+        </ul>
+      </li>
     </ul>
     <div class="sidebar-footer">
       <button class="btn btn-secondary" onclick="App.exportAllData()">导出全部数据</button>
@@ -34,6 +40,8 @@
     <div id="view-statement" class="view hidden"></div>
     <div id="view-history" class="view hidden"></div>
     <div id="view-invoices" class="view hidden"></div>
+    <div id="view-invoices-co" class="view hidden"></div>
+    <div id="view-invoices-ex" class="view hidden"></div>
   </main>
   <script src="js/db.js"></script>
   <script src="js/data.js"></script>

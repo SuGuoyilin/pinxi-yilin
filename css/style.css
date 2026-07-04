@@ -34,6 +34,45 @@ body {
   background: #16213e;
   border-left-color: #e94560;
 }
+
+/* 二级菜单 */
+.nav-menu li.has-submenu {
+  padding: 0;
+  border-left: none;
+}
+.nav-menu li.has-submenu > span {
+  display: block;
+  padding: 14px 24px;
+  border-left: 3px solid transparent;
+  transition: all 0.2s;
+}
+.nav-menu li.has-submenu:hover > span,
+.nav-menu li.has-submenu.active > span {
+  background: #16213e;
+  border-left-color: #e94560;
+}
+.nav-menu li.has-submenu.open > span {
+  background: #16213e;
+}
+.nav-menu .submenu {
+  list-style: none;
+  padding: 0;
+  display: none;
+  background: #0f0f1a;
+}
+.nav-menu li.has-submenu.open .submenu {
+  display: block;
+}
+.nav-menu .submenu li {
+  padding: 10px 24px 10px 40px;
+  font-size: 13px;
+  border-left: 3px solid transparent;
+}
+.nav-menu .submenu li:hover,
+.nav-menu .submenu li.active {
+  background: #16213e;
+  border-left-color: #e94560;
+}
 .sidebar-footer {
   padding: 16px;
   border-top: 1px solid #333;
@@ -241,6 +280,38 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ========== 发票管理样式 ========== */
+
+/* -- 板块切换标签 -- */
+.inv-category-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 16px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  width: fit-content;
+}
+.inv-category-tab {
+  padding: 8px 20px;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  transition: all 0.15s;
+  border-right: 1px solid #ddd;
+}
+.inv-category-tab:last-child {
+  border-right: none;
+}
+.inv-category-tab:hover {
+  background: #f0f0f5;
+}
+.inv-category-tab.active {
+  background: #1a1a2e;
+  color: #fff;
+  font-weight: 600;
+}
 
 /* -- 发票头部 -- */
 .inv-header {

@@ -9,15 +9,44 @@ const App = {
   },
 
   bindNav() {
-    document.querySelectorAll('.nav-menu li').forEach(li => {
+    document.querySelectorAll('.nav-menu > li[data-view]').forEach(li => {
       li.addEventListener('click', () => this.switchView(li.dataset.view));
+    });
+    // 子菜单点击
+    document.querySelectorAll('.submenu li[data-view]').forEach(li => {
+      li.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.switchView(li.dataset.view);
+      });
+    });
+    // 有子菜单的主项点击展开/收起
+    document.querySelectorAll('.nav-menu li.has-submenu').forEach(li => {
+      li.addEventListener('click', () => {
+        li.classList.toggle('open');
+      });
     });
   },
 
   switchView(viewName) {
+    // 如果切换发票相关视图，重置项目筛选器
+    if (viewName.startsWith('invoices') && !this.currentView.startsWith('invoices')) {
+      this._invoiceProjectFilter = 'all';
+      this._invoiceFilter = 'all';
+    }
+    // 如果切换拼席/专席视图，重置项目筛选器
+    if ((viewName === 'invoices-co' || viewName === 'invoices-ex') && this.currentView !== viewName) {
+      this._invoiceProjectFilter = 'all';
+      this._invoiceFilter = 'all';
+    }
     this.currentView = viewName;
     document.querySelectorAll('.nav-menu li').forEach(li => {
-      li.classList.toggle('active', li.dataset.view === viewName);
+      const isMatch = li.dataset.view === viewName;
+      li.classList.toggle('active', isMatch);
+    });
+    // 子菜单项被选中时，父菜单也高亮；否则移除父菜单高亮
+    document.querySelectorAll('.nav-menu li.has-submenu').forEach(li => {
+      const hasActiveChild = li.querySelector('.submenu li.active') !== null;
+      li.classList.toggle('active', hasActiveChild);
     });
     document.querySelectorAll('.view').forEach(v => {
       v.classList.toggle('hidden', v.id !== `view-${viewName}`);
@@ -27,6 +56,7 @@ const App = {
 
   async renderView(viewName) {
     const container = document.getElementById(`view-${viewName}`);
+    if (!container) return;
     switch (viewName) {
       case 'dashboard': await this.renderDashboard(container); break;
       case 'projects': await this.renderProjects(container); break;
@@ -34,7 +64,9 @@ const App = {
       case 'input': await this.renderInput(container); break;
       case 'statement': await this.renderStatement(container); break;
       case 'history': await this.renderHistory(container); break;
-      case 'invoices': await this.renderInvoices(container); break;
+      case 'invoices': await this.renderInvoices(container, null); break;
+      case 'invoices-co': await this.renderInvoices(container, '拼席'); break;
+      case 'invoices-ex': await this.renderInvoices(container, '专席'); break;
     }
   },
 
@@ -1492,19 +1524,31 @@ const App = {
   _invoiceMonth: null,
   _invoiceFilter: 'all', // all | unfiled | filed
   _invoiceProjectFilter: 'all', // all | projectName
+  _invoiceCategoryFilter: null, // null | '拼席' | '专席'
 
-  async renderInvoices(el) {
+  async renderInvoices(el, categoryFilter = null) {
     const now = new Date();
     const year = this._invoiceYear || now.getFullYear();
     const month = this._invoiceMonth || (now.getMonth() + 1);
     const filter = this._invoiceFilter || 'all';
     const projectFilter = this._invoiceProjectFilter || 'all';
 
+    // 如果传入了 categoryFilter，则更新并记住它
+    if (categoryFilter !== undefined) {
+      this._invoiceCategoryFilter = categoryFilter;
+    }
+    const activeCategory = this._invoiceCategoryFilter;
+
     const allInvoices = await DB.getAllInvoices();
     const invoiceRecords = await DB.getInvoiceRecordsByMonth(year, month);
 
     // 只显示未停用的项目
-    const invoices = allInvoices.filter(inv => !inv._deprecated);
+    let invoices = allInvoices.filter(inv => !inv._deprecated);
+
+    // 按拼席/专席类别筛选
+    if (activeCategory) {
+      invoices = invoices.filter(inv => inv._category === activeCategory);
+    }
 
     // 构建当月开票记录映射
     const recordMap = {};
@@ -1527,12 +1571,13 @@ const App = {
 
     // 分组颜色
     const groupColors = {
-      '玉书系': { bg: '#e8f5e9', text: '#2e7d32', border: '#c8e6c9' },
+      '专席': { bg: '#e3f2fd', text: '#1565c0', border: '#bbdefb' },
+      '拼席': { bg: '#f3e5f5', text: '#7b1fa2', border: '#e1bee7' },
       '其他': { bg: '#fff8e1', text: '#f57f17', border: '#ffe082' },
       '已停用': { bg: '#f5f5f5', text: '#999', border: '#e0e0e0' }
     };
 
-    // 获取所有未停用项目名称（用于筛选下拉）
+    // 获取当前类别下的项目名称（用于筛选下拉）
     const projectNames = invoices.map(inv => inv.projectName);
 
     // 生成表格行
@@ -1552,7 +1597,7 @@ const App = {
       } else if (inv.taxTreatment === '不含税') {
         taxTag = '<span class="inv-tag inv-tag-tax-no">不含税</span>';
       } else {
-        taxTag = '<span class="inv-tag inv-tag-tax-na">暂不开票</span>';
+        taxTag = '<span class="inv-tag inv-tag-tax-na">暂不需要开票</span>';
       }
 
       // 类型标签
@@ -1681,10 +1726,21 @@ const App = {
       return `<option value="${y}" ${y === year ? 'selected' : ''}>${y}年</option>`;
     }).join('');
 
+    // 板块切换标签
+    const categoryTabs = activeCategory ? `
+      <div class="inv-category-tabs">
+        <button class="inv-category-tab ${activeCategory === '拼席' ? 'active' : ''}" onclick="App.switchView('invoices-co')">拼席发票</button>
+        <button class="inv-category-tab ${activeCategory === '专席' ? 'active' : ''}" onclick="App.switchView('invoices-ex')">专席发票</button>
+      </div>
+    ` : '';
+
+    const titleText = activeCategory ? `${activeCategory}发票管理` : '发票管理';
+    const viewId = `view-${this.currentView}`;
+
     el.innerHTML = `
       <div class="inv-header">
         <div class="inv-header-left">
-          <h2 class="inv-title">发票管理</h2>
+          <h2 class="inv-title">${titleText}</h2>
           <button class="btn btn-success" onclick="App.showAddInvoiceModal()">+ 新增开票项目</button>
         </div>
         <div class="inv-header-right">
@@ -1699,33 +1755,35 @@ const App = {
         </div>
       </div>
 
+      ${categoryTabs}
+
       <!-- 筛选器 -->
       <div class="inv-filter-bar">
         <div class="inv-filter-row">
           <div class="inv-filter-item">
             <label class="inv-filter-label">项目筛选</label>
-            <select class="inv-filter-select" onchange="App._invoiceProjectFilter=this.value; App.renderInvoices(document.getElementById('view-invoices'))">
+            <select class="inv-filter-select" onchange="App._invoiceProjectFilter=this.value; App.renderInvoices(document.getElementById('${viewId}'))">
               <option value="all" ${projectFilter === 'all' ? 'selected' : ''}>全部项目</option>
               ${projectNames.map(name => `<option value="${name}" ${projectFilter === name ? 'selected' : ''}>${name}</option>`).join('')}
             </select>
           </div>
           <div class="inv-filter-item">
             <label class="inv-filter-label">年份</label>
-            <select id="inv-year" class="inv-filter-select" onchange="App._invoiceYear=parseInt(this.value); App.renderInvoices(document.getElementById('view-invoices'))">
+            <select id="inv-year" class="inv-filter-select" onchange="App._invoiceYear=parseInt(this.value); App.renderInvoices(document.getElementById('${viewId}'))">
               ${yearOptions}
             </select>
           </div>
           <div class="inv-filter-item">
             <label class="inv-filter-label">月份</label>
-            <select id="inv-month" class="inv-filter-select" onchange="App._invoiceMonth=parseInt(this.value); App.renderInvoices(document.getElementById('view-invoices'))">
+            <select id="inv-month" class="inv-filter-select" onchange="App._invoiceMonth=parseInt(this.value); App.renderInvoices(document.getElementById('${viewId}'))">
               ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${i+1===month?'selected':''}>${i+1}月</option>`).join('')}
             </select>
           </div>
           <div class="inv-filter-item inv-filter-status">
             <div class="inv-btn-group">
-              <button class="inv-filter-btn ${filter === 'all' ? 'active' : ''}" onclick="App._invoiceFilter='all'; App.renderInvoices(document.getElementById('view-invoices'))">全部 (${totalCount})</button>
-              <button class="inv-filter-btn ${filter === 'unfiled' ? 'active' : ''}" onclick="App._invoiceFilter='unfiled'; App.renderInvoices(document.getElementById('view-invoices'))">未开票 (${totalCount - filedCount})</button>
-              <button class="inv-filter-btn ${filter === 'filed' ? 'active' : ''}" onclick="App._invoiceFilter='filed'; App.renderInvoices(document.getElementById('view-invoices'))">已开票 (${filedCount})</button>
+              <button class="inv-filter-btn ${filter === 'all' ? 'active' : ''}" onclick="App._invoiceFilter='all'; App.renderInvoices(document.getElementById('${viewId}'))">全部 (${totalCount})</button>
+              <button class="inv-filter-btn ${filter === 'unfiled' ? 'active' : ''}" onclick="App._invoiceFilter='unfiled'; App.renderInvoices(document.getElementById('${viewId}'))">未开票 (${totalCount - filedCount})</button>
+              <button class="inv-filter-btn ${filter === 'filed' ? 'active' : ''}" onclick="App._invoiceFilter='filed'; App.renderInvoices(document.getElementById('${viewId}'))">已开票 (${filedCount})</button>
             </div>
           </div>
         </div>
@@ -1831,7 +1889,7 @@ const App = {
         filedAt: new Date().toISOString()
       });
 
-      this.renderInvoices(document.getElementById('view-invoices'));
+      this.renderInvoices(document.getElementById('view-' + this.currentView));
     };
     reader.readAsDataURL(file);
   },
@@ -1866,7 +1924,7 @@ const App = {
             filedAt: new Date().toISOString()
           });
 
-          this.renderInvoices(document.getElementById('view-invoices'));
+          this.renderInvoices(document.getElementById('view-' + this.currentView));
         };
         reader.readAsDataURL(blob);
         break;
@@ -1958,14 +2016,14 @@ const App = {
     const rec = await DB.getInvoiceRecord(invoiceId, year, month);
     if (rec) {
       await DB.saveInvoiceRecord({ ...rec, image: '' });
-      this.renderInvoices(document.getElementById('view-invoices'));
+      this.renderInvoices(document.getElementById('view-' + this.currentView));
     }
   },
 
   async deleteInvoiceRecord(recordId, year, month) {
     if (!confirm('确定删除该条开票记录？')) return;
     await DB.deleteInvoiceRecord(recordId);
-    this.renderInvoices(document.getElementById('view-invoices'));
+    this.renderInvoices(document.getElementById('view-' + this.currentView));
   },
 
   showAddInvoiceModal() {
@@ -1992,7 +2050,8 @@ const App = {
       taxTreatment: '不含税',
       paymentDay: 15,
       specialNote: '',
-      _group: '其他'
+      _group: this.currentView === 'invoices-co' ? '拼席' : this.currentView === 'invoices-ex' ? '专席' : '其他',
+      _category: this.currentView === 'invoices-co' ? '拼席' : this.currentView === 'invoices-ex' ? '专席' : ''
     };
 
     const html = `
@@ -2054,14 +2113,15 @@ const App = {
       taxTreatment: document.getElementById('invf-tax').value,
       paymentDay: parseInt(document.getElementById('invf-paymentday').value) || 15,
       specialNote: document.getElementById('invf-note').value.trim(),
-      // 保留原有分组和停用状态
-      _group: existingInv ? existingInv._group : '其他',
+      // 保留原有分组、类别和停用状态
+      _group: existingInv ? existingInv._group : (this.currentView === 'invoices-co' ? '拼席' : this.currentView === 'invoices-ex' ? '专席' : '其他'),
+      _category: existingInv ? existingInv._category : (this.currentView === 'invoices-co' ? '拼席' : this.currentView === 'invoices-ex' ? '专席' : ''),
       _deprecated: existingInv ? existingInv._deprecated : false
     };
 
     await DB.saveInvoice(data);
     document.querySelector('.modal-overlay').remove();
-    this.renderInvoices(document.getElementById('view-invoices'));
+    this.renderInvoices(document.getElementById('view-' + this.currentView));
     alert('保存成功');
   },
 
@@ -2069,7 +2129,7 @@ const App = {
     if (!confirm('确定删除该开票项目？相关开票记录也将一并删除。')) return;
     await DB.deleteInvoice(invoiceId);
     document.querySelector('.modal-overlay').remove();
-    this.renderInvoices(document.getElementById('view-invoices'));
+    this.renderInvoices(document.getElementById('view-' + this.currentView));
   }
 };
 
