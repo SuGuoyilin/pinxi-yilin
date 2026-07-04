@@ -239,3 +239,190 @@ input:focus, select:focus, textarea:focus {
   .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
   .form-row { flex-direction: column; align-items: flex-start; }
 }
+
+/* ========== 发票管理样式 ========== */
+.invoice-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.invoice-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: box-shadow 0.2s;
+}
+.invoice-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+
+.invoice-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.invoice-project-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.invoice-status-unfiled {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #ffe0b2;
+}
+
+.invoice-status-filed {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.invoice-card-body {
+  margin-bottom: 12px;
+}
+
+.invoice-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+
+.invoice-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.invoice-info-label {
+  font-size: 11px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.invoice-info-value {
+  font-size: 13px;
+  color: #333;
+}
+
+.invoice-special-note {
+  color: #e94560;
+  font-weight: 500;
+}
+
+.invoice-amount-section {
+  padding-top: 8px;
+  border-top: 1px dashed #e8e8e8;
+}
+
+.invoice-thumbnail {
+  display: flex;
+  align-items: center;
+}
+
+.invoice-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.btn-copy {
+  background: #1976d2;
+  color: #fff;
+}
+.btn-copy:hover {
+  opacity: 0.85;
+  background: #1565c0;
+}
+
+.btn-paste-invoice {
+  background: #43e97b;
+  color: #fff;
+  cursor: pointer;
+}
+.btn-paste-invoice:hover {
+  opacity: 0.85;
+  background: #38d96e;
+}
+
+.invoice-paste-zone {
+  border: 1px dashed #ddd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  margin-top: 8px;
+  cursor: pointer;
+  background: #fafafa;
+  transition: border-color 0.2s, background 0.2s;
+}
+.invoice-paste-zone:focus {
+  outline: none;
+  border-color: #43e97b;
+  background: #f0fff4;
+}
+
+/* 发票详情弹窗 */
+.invoice-detail-section {
+  padding: 8px 0;
+}
+
+.invoice-detail-row {
+  display: flex;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.invoice-detail-label {
+  min-width: 120px;
+  color: #999;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* 发票汇总表格 */
+.invoice-card table tfoot td {
+  padding: 12px;
+  font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+  .invoice-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .invoice-info-grid {
+    grid-template-columns: 1fr;
+  }
+  .invoice-card-actions {
+    flex-direction: column;
+  }
+  .invoice-card-actions .btn {
+    text-align: center;
+  }
+}

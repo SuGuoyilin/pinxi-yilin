@@ -34,6 +34,7 @@ const App = {
       case 'input': await this.renderInput(container); break;
       case 'statement': await this.renderStatement(container); break;
       case 'history': await this.renderHistory(container); break;
+      case 'invoices': await this.renderInvoices(container); break;
     }
   },
 
@@ -1484,6 +1485,454 @@ const App = {
       }
     };
     input.click();
+  },
+
+  // ========== 发票管理 ==========
+  _invoiceYear: null,
+  _invoiceMonth: null,
+  _invoiceFilter: 'all', // all | unfiled | filed
+
+  async renderInvoices(el) {
+    const now = new Date();
+    const year = this._invoiceYear || now.getFullYear();
+    const month = this._invoiceMonth || (now.getMonth() + 1);
+    const filter = this._invoiceFilter || 'all';
+
+    const invoices = await DB.getAllInvoices();
+    const invoiceRecords = await DB.getInvoiceRecordsByMonth(year, month);
+
+    // 构建当月开票记录映射
+    const recordMap = {};
+    for (const rec of invoiceRecords) {
+      recordMap[rec.invoiceId] = rec;
+    }
+
+    // 过滤
+    let filteredInvoices = invoices;
+    if (filter === 'unfiled') {
+      filteredInvoices = invoices.filter(inv => !recordMap[inv.id]);
+    } else if (filter === 'filed') {
+      filteredInvoices = invoices.filter(inv => recordMap[inv.id]);
+    }
+
+    // 颜色映射
+    const colorPalette = [
+      '#e94560', '#667eea', '#f093fb', '#43e97b', '#4facfe',
+      '#fa709a', '#fee140', '#a18cd1', '#fbc2eb', '#84fab0',
+      '#f5576c', '#00f2fe', '#764ba2', '#ff9a9e'
+    ];
+    const getColor = (idx) => colorPalette[idx % colorPalette.length];
+
+    // 生成卡片
+    let cardsHtml = '';
+    filteredInvoices.forEach((inv, idx) => {
+      const rec = recordMap[inv.id];
+      const isFiled = !!rec;
+      const color = getColor(idx);
+      const statusClass = isFiled ? 'invoice-status-filed' : 'invoice-status-unfiled';
+      const statusText = isFiled ? '已开票' : '未开票';
+      const invoiceAmount = rec ? rec.amount : '';
+      const invoiceImg = rec ? rec.image : '';
+
+      cardsHtml += `
+        <div class="invoice-card" style="border-left: 4px solid ${color};" data-invoice-id="${inv.id}">
+          <div class="invoice-card-header">
+            <span class="invoice-project-tag" style="background: ${color}15; color: ${color}; border: 1px solid ${color}30;">${inv.projectName}</span>
+            <span class="${statusClass}">${statusText}</span>
+          </div>
+          <div class="invoice-card-body">
+            <div class="invoice-info-grid">
+              <div class="invoice-info-item">
+                <span class="invoice-info-label">公司名称</span>
+                <span class="invoice-info-value">${inv.companyName}</span>
+              </div>
+              <div class="invoice-info-item">
+                <span class="invoice-info-label">开票内容</span>
+                <span class="invoice-info-value">${inv.invoiceContent}</span>
+              </div>
+              <div class="invoice-info-item">
+                <span class="invoice-info-label">开票类型</span>
+                <span class="invoice-info-value"><span class="tag ${inv.invoiceType === '专票' ? '' : 'tag-success'}">${inv.invoiceType}</span></span>
+              </div>
+              <div class="invoice-info-item">
+                <span class="invoice-info-label">含税/不含税</span>
+                <span class="invoice-info-value">${inv.taxTreatment === '含税' ? '<span class="tag tag-success">含税</span>' : inv.taxTreatment === '不含税' ? '<span class="tag tag-danger">不含税</span>' : '<span class="tag" style="background:#f5f5f5;color:#999;">暂不需要开票</span>'}</span>
+              </div>
+              <div class="invoice-info-item">
+                <span class="invoice-info-label">打款日</span>
+                <span class="invoice-info-value">每月${inv.paymentDay}号</span>
+              </div>
+              ${inv.specialNote ? `<div class="invoice-info-item"><span class="invoice-info-label">备注</span><span class="invoice-info-value invoice-special-note">${inv.specialNote}</span></div>` : ''}
+            </div>
+            <div class="invoice-amount-section">
+              <div class="form-row" style="margin-bottom:8px;">
+                <label style="min-width:90px;font-size:13px;color:#555;">当月开票金额</label>
+                <input type="number" class="invoice-amount-input" data-invoice-id="${inv.id}" value="${invoiceAmount}" placeholder="输入开票金额" style="width:150px;" step="0.01">
+                <span style="font-size:13px;color:#999;">元</span>
+              </div>
+              ${invoiceImg ? `<div class="invoice-thumbnail"><img src="${invoiceImg}" style="height:60px;border-radius:4px;border:1px solid #ddd;cursor:pointer;" onclick="App.viewInvoiceImage('${inv.id}')"><button class="btn btn-danger" style="font-size:10px;padding:2px 6px;margin-left:6px;" onclick="App.removeInvoiceImage(${inv.id}, ${year}, ${month})">删除</button></div>` : ''}
+            </div>
+          </div>
+          <div class="invoice-card-actions">
+            <button class="btn btn-copy" onclick="App.copyInvoiceInfo(${inv.id}, ${year}, ${month})">一键复制</button>
+            <label class="btn btn-paste-invoice">
+              ${invoiceImg ? '更换发票' : '粘贴发票'}
+              <input type="file" accept="image/*" style="display:none;" onchange="App.handleInvoiceUpload(this, ${inv.id}, ${year}, ${month})">
+            </label>
+            <button class="btn btn-secondary" onclick="App.viewInvoiceDetail(${inv.id})">查看详情</button>
+            <button class="btn btn-primary" onclick="App.showEditInvoiceModal(${inv.id})">编辑</button>
+          </div>
+          <div class="invoice-paste-zone" data-invoice-id="${inv.id}" tabindex="0"
+               onclick="this.focus()"
+               onfocus="this.style.borderColor='#43e97b'; this.style.background='#f0fff4';"
+               onblur="this.style.borderColor='#ddd'; this.style.background='#fafafa';"
+               onpaste="App.handleInvoicePaste(event, ${inv.id}, ${year}, ${month})">
+            Ctrl+V 粘贴发票截图
+          </div>
+        </div>
+      `;
+    });
+
+    if (filteredInvoices.length === 0) {
+      cardsHtml = '<div class="card" style="text-align:center;color:#999;padding:40px;">暂无开票项目</div>';
+    }
+
+    // 当月已开票记录汇总
+    const filedRecords = invoices.map(inv => recordMap[inv.id]).filter(Boolean);
+    let summaryTotal = 0;
+    let summaryHtml = '';
+    if (filedRecords.length > 0) {
+      summaryHtml = `
+        <div class="card">
+          <div class="card-title">${year}年${month}月 开票记录汇总</div>
+          <table>
+            <thead>
+              <tr>
+                <th>项目</th>
+                <th>开票金额</th>
+                <th>状态</th>
+                <th>发票截图</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+      for (const rec of filedRecords) {
+        const inv = invoices.find(i => i.id === rec.invoiceId);
+        const pName = inv ? inv.projectName : '未知';
+        summaryTotal += parseFloat(rec.amount) || 0;
+        summaryHtml += `
+          <tr>
+            <td>${pName}</td>
+            <td style="font-weight:600;">&yen;${(parseFloat(rec.amount) || 0).toLocaleString()}</td>
+            <td><span class="invoice-status-filed">已开票</span></td>
+            <td>${rec.image ? '<img src="' + rec.image + '" style="height:32px;border-radius:3px;border:1px solid #ddd;cursor:pointer;" onclick="App.viewInvoiceImage(\'' + rec.invoiceId + '\')">' : '<span style="color:#ccc;font-size:12px;">无</span>'}</td>
+            <td>
+              <div class="btn-group">
+                <button class="btn btn-danger" style="font-size:12px;padding:4px 8px;" onclick="App.deleteInvoiceRecord(${rec.id}, ${year}, ${month})">删除记录</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }
+      summaryHtml += `
+            </tbody>
+            <tfoot>
+              <tr style="background:#f5f7fa;font-weight:bold;">
+                <td>合计</td>
+                <td style="color:#e94560;">&yen;${summaryTotal.toLocaleString()}</td>
+                <td colspan="3"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      `;
+    }
+
+    el.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+        <h2 style="margin:0;">发票管理</h2>
+        <div class="form-row" style="margin-bottom:0;gap:8px;">
+          <label>年份</label>
+          <input type="number" id="inv-year" value="${year}" style="width:90px;" onchange="App._invoiceYear=parseInt(this.value); App.renderInvoices(document.getElementById('view-invoices'))">
+          <label>月份</label>
+          <select id="inv-month" onchange="App._invoiceMonth=parseInt(this.value); App.renderInvoices(document.getElementById('view-invoices'))">
+            ${Array.from({length:12},(_,i)=>`<option value="${i+1}" ${i+1===month?'selected':''}>${i+1}月</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="form-row" style="margin-bottom:0;gap:8px;">
+          <label style="min-width:auto;">筛选：</label>
+          <div class="btn-group">
+            <button class="btn ${filter === 'all' ? 'btn-primary' : 'btn-secondary'}" onclick="App._invoiceFilter='all'; App.renderInvoices(document.getElementById('view-invoices'))">全部 (${invoices.length})</button>
+            <button class="btn ${filter === 'unfiled' ? 'btn-primary' : 'btn-secondary'}" onclick="App._invoiceFilter='unfiled'; App.renderInvoices(document.getElementById('view-invoices'))">未开票 (${invoices.length - filedRecords.length})</button>
+            <button class="btn ${filter === 'filed' ? 'btn-primary' : 'btn-secondary'}" onclick="App._invoiceFilter='filed'; App.renderInvoices(document.getElementById('view-invoices'))">已开票 (${filedRecords.length})</button>
+          </div>
+          <div style="flex:1;"></div>
+          <button class="btn btn-success" onclick="App.showAddInvoiceModal()">+ 新增开票项目</button>
+        </div>
+      </div>
+      <div class="invoice-cards-grid">
+        ${cardsHtml}
+      </div>
+      ${summaryHtml}
+    `;
+  },
+
+  async copyInvoiceInfo(invoiceId, year, month) {
+    const inv = await db.invoices.get(invoiceId);
+    if (!inv) return;
+    const amountInput = document.querySelector(`.invoice-amount-input[data-invoice-id="${invoiceId}"]`);
+    const amount = amountInput ? amountInput.value : '';
+    const text = [
+      `项目名称：${inv.projectName}`,
+      `公司名称：${inv.companyName}`,
+      `纳税人识别号：${inv.taxId}`,
+      `地址、电话：${inv.address} ${inv.phone}`,
+      `开户行及账号：${inv.bankName} ${inv.bankAccount}`,
+      `开票内容：${inv.invoiceContent}`,
+      `开票类型：${inv.invoiceType}`,
+      `开票金额：${amount ? '¥' + parseFloat(amount).toLocaleString() : ''}`,
+      `备注：${inv.specialNote || '无'}`
+    ].join('\n');
+
+    try {
+      await navigator.clipboard.writeText(text);
+      const btn = event.target;
+      const origText = btn.textContent;
+      btn.textContent = '已复制';
+      btn.style.background = '#0f9b6e';
+      setTimeout(() => { btn.textContent = origText; btn.style.background = ''; }, 1500);
+    } catch (err) {
+      // 降级：使用textarea复制
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      alert('已复制到剪贴板');
+    }
+  },
+
+  async handleInvoiceUpload(input, invoiceId, year, month) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const imageData = e.target.result;
+      const amountInput = document.querySelector(`.invoice-amount-input[data-invoice-id="${invoiceId}"]`);
+      const amount = amountInput ? parseFloat(amountInput.value) || 0 : 0;
+      const inv = await db.invoices.get(invoiceId);
+
+      await DB.saveInvoiceRecord({
+        invoiceId,
+        year,
+        month,
+        projectName: inv ? inv.projectName : '',
+        amount,
+        image: imageData,
+        filedAt: new Date().toISOString()
+      });
+
+      this.renderInvoices(document.getElementById('view-invoices'));
+    };
+    reader.readAsDataURL(file);
+  },
+
+  async handleInvoicePaste(event, invoiceId, year, month) {
+    event.preventDefault();
+    event.stopPropagation();
+    const items = event.clipboardData && event.clipboardData.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type.indexOf('image') !== -1) {
+        const blob = item.getAsFile();
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          const imageData = e.target.result;
+          const amountInput = document.querySelector(`.invoice-amount-input[data-invoice-id="${invoiceId}"]`);
+          const amount = amountInput ? parseFloat(amountInput.value) || 0 : 0;
+          const inv = await db.invoices.get(invoiceId);
+
+          await DB.saveInvoiceRecord({
+            invoiceId,
+            year,
+            month,
+            projectName: inv ? inv.projectName : '',
+            amount,
+            image: imageData,
+            filedAt: new Date().toISOString()
+          });
+
+          this.renderInvoices(document.getElementById('view-invoices'));
+        };
+        reader.readAsDataURL(blob);
+        break;
+      }
+    }
+  },
+
+  async viewInvoiceDetail(invoiceId) {
+    const inv = await db.invoices.get(invoiceId);
+    if (!inv) return;
+
+    const html = `
+      <div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+        <div class="modal" style="max-width:600px;">
+          <div class="modal-header">
+            <h3>${inv.projectName} - 开票信息详情</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+          </div>
+          <div class="invoice-detail-section">
+            <div class="invoice-detail-row"><span class="invoice-detail-label">项目名称</span><span>${inv.projectName}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">公司名称</span><span>${inv.companyName}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">纳税人识别号</span><span>${inv.taxId}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">地址</span><span>${inv.address}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">电话</span><span>${inv.phone}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">开户银行</span><span>${inv.bankName}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">银行账号</span><span>${inv.bankAccount}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">开票内容</span><span>${inv.invoiceContent}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">开票类型</span><span>${inv.invoiceType}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">含税/不含税</span><span>${inv.taxTreatment}</span></div>
+            <div class="invoice-detail-row"><span class="invoice-detail-label">打款日</span><span>每月${inv.paymentDay}号</span></div>
+            ${inv.specialNote ? `<div class="invoice-detail-row"><span class="invoice-detail-label">备注</span><span style="color:#e94560;">${inv.specialNote}</span></div>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+  },
+
+  async viewInvoiceImage(invoiceId) {
+    const year = parseInt(document.getElementById('inv-year')?.value) || new Date().getFullYear();
+    const month = parseInt(document.getElementById('inv-month')?.value) || (new Date().getMonth() + 1);
+    const rec = await DB.getInvoiceRecord(invoiceId, year, month);
+    if (!rec || !rec.image) { alert('暂无发票截图'); return; }
+
+    const html = `
+      <div class="modal-overlay" onclick="if(event.target===this)this.remove()" style="z-index:1001;">
+        <div style="position:relative;max-width:90vw;max-height:90vh;">
+          <img src="${rec.image}" style="max-width:90vw;max-height:90vh;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()" style="position:absolute;top:-10px;right:-10px;background:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.2);">&times;</button>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+  },
+
+  async removeInvoiceImage(invoiceId, year, month) {
+    if (!confirm('确定删除该发票截图？开票记录将保留，仅删除图片。')) return;
+    const rec = await DB.getInvoiceRecord(invoiceId, year, month);
+    if (rec) {
+      await DB.saveInvoiceRecord({ ...rec, image: '' });
+      this.renderInvoices(document.getElementById('view-invoices'));
+    }
+  },
+
+  async deleteInvoiceRecord(recordId, year, month) {
+    if (!confirm('确定删除该条开票记录？')) return;
+    await DB.deleteInvoiceRecord(recordId);
+    this.renderInvoices(document.getElementById('view-invoices'));
+  },
+
+  showAddInvoiceModal() {
+    this._showInvoiceForm(null);
+  },
+
+  async showEditInvoiceModal(invoiceId) {
+    const inv = await db.invoices.get(invoiceId);
+    this._showInvoiceForm(inv);
+  },
+
+  _showInvoiceForm(invoice) {
+    const isEdit = !!invoice;
+    const inv = invoice || {
+      projectName: '',
+      companyName: '',
+      taxId: '',
+      address: '',
+      phone: '',
+      bankName: '',
+      bankAccount: '',
+      invoiceContent: '服务费',
+      invoiceType: '专票',
+      taxTreatment: '不含税',
+      paymentDay: 15,
+      specialNote: ''
+    };
+
+    const html = `
+      <div class="modal-overlay" onclick="if(event.target===this)this.remove()">
+        <div class="modal" style="max-width:600px;">
+          <div class="modal-header">
+            <h3>${isEdit ? '编辑' : '新增'}开票项目</h3>
+            <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+          </div>
+          <div class="form-row"><label>项目名称</label><input id="invf-name" value="${inv.projectName}" placeholder="输入项目名称"></div>
+          <div class="form-row"><label>公司名称</label><input id="invf-company" value="${inv.companyName}" placeholder="输入开票公司全称"></div>
+          <div class="form-row"><label>纳税人识别号</label><input id="invf-taxid" value="${inv.taxId}" placeholder="统一社会信用代码"></div>
+          <div class="form-row"><label>地址</label><input id="invf-address" value="${inv.address}" placeholder="注册地址"></div>
+          <div class="form-row"><label>电话</label><input id="invf-phone" value="${inv.phone}" placeholder="公司电话"></div>
+          <div class="form-row"><label>开户银行</label><input id="invf-bankname" value="${inv.bankName}" placeholder="开户行全称"></div>
+          <div class="form-row"><label>银行账号</label><input id="invf-bankaccount" value="${inv.bankAccount}" placeholder="银行账号"></div>
+          <div class="form-row"><label>开票内容</label><input id="invf-content" value="${inv.invoiceContent}" placeholder="如：服务费"></div>
+          <div class="form-row"><label>开票类型</label>
+            <select id="invf-type">
+              <option value="专票" ${inv.invoiceType === '专票' ? 'selected' : ''}>增值税专用发票</option>
+              <option value="普票" ${inv.invoiceType === '普票' ? 'selected' : ''}>增值税普通发票</option>
+            </select>
+          </div>
+          <div class="form-row"><label>含税/不含税</label>
+            <select id="invf-tax">
+              <option value="含税" ${inv.taxTreatment === '含税' ? 'selected' : ''}>含税</option>
+              <option value="不含税" ${inv.taxTreatment === '不含税' ? 'selected' : ''}>不含税</option>
+              <option value="暂不需要开票" ${inv.taxTreatment === '暂不需要开票' ? 'selected' : ''}>暂不需要开票</option>
+            </select>
+          </div>
+          <div class="form-row"><label>打款日</label><input type="number" id="invf-paymentday" value="${inv.paymentDay}" min="1" max="31" placeholder="每月几号打款" style="width:80px;"><span style="font-size:12px;color:#999;">号</span></div>
+          <div class="form-row"><label>备注</label><input id="invf-note" value="${inv.specialNote}" placeholder="如：不含税+打款金额1%"></div>
+          <div style="margin-top:16px;text-align:right;display:flex;gap:8px;justify-content:flex-end;">
+            ${isEdit ? `<button class="btn btn-danger" onclick="App.confirmDeleteInvoice(${inv.id})">删除项目</button>` : ''}
+            <button class="btn btn-success" onclick="App.saveInvoice(${isEdit ? inv.id : 'null'})">保存</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+  },
+
+  async saveInvoice(editId) {
+    const projectName = document.getElementById('invf-name').value.trim();
+    if (!projectName) { alert('请输入项目名称'); return; }
+
+    const data = {
+      projectName,
+      companyName: document.getElementById('invf-company').value.trim(),
+      taxId: document.getElementById('invf-taxid').value.trim(),
+      address: document.getElementById('invf-address').value.trim(),
+      phone: document.getElementById('invf-phone').value.trim(),
+      bankName: document.getElementById('invf-bankname').value.trim(),
+      bankAccount: document.getElementById('invf-bankaccount').value.trim(),
+      invoiceContent: document.getElementById('invf-content').value.trim(),
+      invoiceType: document.getElementById('invf-type').value,
+      taxTreatment: document.getElementById('invf-tax').value,
+      paymentDay: parseInt(document.getElementById('invf-paymentday').value) || 15,
+      specialNote: document.getElementById('invf-note').value.trim()
+    };
+
+    await DB.saveInvoice(data);
+    document.querySelector('.modal-overlay').remove();
+    this.renderInvoices(document.getElementById('view-invoices'));
+    alert('保存成功');
+  },
+
+  async confirmDeleteInvoice(invoiceId) {
+    if (!confirm('确定删除该开票项目？相关开票记录也将一并删除。')) return;
+    await DB.deleteInvoice(invoiceId);
+    document.querySelector('.modal-overlay').remove();
+    this.renderInvoices(document.getElementById('view-invoices'));
   }
 };
 

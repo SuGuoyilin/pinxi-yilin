@@ -261,6 +261,219 @@ const INITIAL_HOLIDAYS = [
   { year: 2028, name: '国庆节', dates: ['2028-10-01','2028-10-02','2028-10-03','2028-10-04','2028-10-05','2028-10-06','2028-10-07','2028-10-08'], daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 3, coopPayMultiplier: 3 }
 ];
 
+const INITIAL_INVOICES = [
+  {
+    projectName: '宠物用品项目',
+    companyName: '暂定',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '不含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '拼拼项目（玉书）',
+    companyName: '杭州拾谷玉书互联网服务有限公司',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '不含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '益生菌项目（玉书）',
+    companyName: '杭州拾谷玉书互联网服务有限公司',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '不含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '贝因美项目（玉书）',
+    companyName: '杭州拾谷玉书互联网服务有限公司',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '不含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '晨光项目-信息科技',
+    companyName: '上海万物有样供应链管理有限公司',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '晨光项目-在线甄选',
+    companyName: '上海万物有样供应链管理有限公司',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '厨房秤项目',
+    companyName: '上海万物有样供应链管理有限公司',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: 'FFA世界杯项目',
+    companyName: '上海万物有样供应链管理有限公司',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '租房项目',
+    companyName: '暂定',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '普票',
+    taxTreatment: '暂不需要开票',
+    paymentDay: 1,
+    specialNote: ''
+  },
+  {
+    projectName: '博恩项目',
+    companyName: '暂定',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '不含税',
+    paymentDay: 15,
+    specialNote: '不含税+打款金额1%'
+  },
+  {
+    projectName: '喜宝项目',
+    companyName: '暂定',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '不含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '讨呗项目',
+    companyName: '暂定',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '不含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '悦泰项目（兼职）',
+    companyName: '暂定',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '不含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '雪中飞-主体1',
+    companyName: '暂定',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: ''
+  },
+  {
+    projectName: '雪中飞-主体2',
+    companyName: '暂定',
+    taxId: '暂定',
+    address: '暂定',
+    phone: '暂定',
+    bankName: '暂定',
+    bankAccount: '暂定',
+    invoiceContent: '服务费',
+    invoiceType: '专票',
+    taxTreatment: '含税',
+    paymentDay: 15,
+    specialNote: ''
+  }
+];
+
 async function initData() {
   const projects = await DB.getAllProjects();
   if (projects.length === 0) {
@@ -356,5 +569,13 @@ async function initData() {
   const holidayCount = await db.holidays.count();
   if (holidayCount === 0) {
     await DB.saveHolidaysBatch(INITIAL_HOLIDAYS);
+  }
+
+  // 初始化发票数据
+  const invoiceCount = await db.invoices.count();
+  if (invoiceCount === 0 && INITIAL_INVOICES.length > 0) {
+    for (const inv of INITIAL_INVOICES) {
+      await DB.saveInvoice(inv);
+    }
   }
 }

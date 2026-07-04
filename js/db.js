@@ -1,11 +1,13 @@
 const db = new Dexie('SettlementDB');
 
-db.version(3).stores({
+db.version(4).stores({
   projects: '++id, name',
   shops: '++id, projectId, name, platform',
   monthlyRecords: '[projectId+year+month], projectId, year, month',
   holidays: '++id, year, name',
-  accounts: '++id, projectName, platform, shopName, account, status'
+  accounts: '++id, projectName, platform, shopName, account, status',
+  invoices: '++id, projectName, year, month',
+  invoiceRecords: '++id, invoiceId, year, month, projectName'
 });
 
 const DB = {
@@ -66,10 +68,52 @@ const DB = {
   async updateAccount(id, changes) { return await db.accounts.update(id, changes); },
   async deleteAccount(id) { return await db.accounts.delete(id); },
 
+  // ========== 发票管理 ==========
+  async saveInvoice(record) {
+    const existing = await db.invoices.where({ projectName: record.projectName }).first();
+    if (existing) {
+      return await db.invoices.update(existing.id, record);
+    }
+    return await db.invoices.add(record);
+  },
+  async getInvoiceByProject(projectName) {
+    return await db.invoices.where({ projectName }).first();
+  },
+  async getAllInvoices() {
+    return await db.invoices.toArray();
+  },
+  async deleteInvoice(id) {
+    await db.invoiceRecords.where({ invoiceId: id }).delete();
+    return await db.invoices.delete(id);
+  },
+
+  // 发票开票记录（每月的开票状态）
+  async saveInvoiceRecord(record) {
+    const existing = await db.invoiceRecords
+      .where({ invoiceId: record.invoiceId, year: record.year, month: record.month })
+      .first();
+    if (existing) {
+      return await db.invoiceRecords.update(existing.id, record);
+    }
+    return await db.invoiceRecords.add(record);
+  },
+  async getInvoiceRecordsByMonth(year, month) {
+    return await db.invoiceRecords.where({ year, month }).toArray();
+  },
+  async getInvoiceRecord(invoiceId, year, month) {
+    return await db.invoiceRecords
+      .where({ invoiceId, year, month })
+      .first();
+  },
+  async deleteInvoiceRecord(id) {
+    return await db.invoiceRecords.delete(id);
+  },
+
   async clearAll() {
     await db.projects.clear(); await db.shops.clear();
     await db.monthlyRecords.clear(); await db.holidays.clear();
-    await db.accounts.clear();
+    await db.accounts.clear(); await db.invoices.clear();
+    await db.invoiceRecords.clear();
   },
   async exportAll() {
     return {
@@ -77,19 +121,24 @@ const DB = {
       shops: await db.shops.toArray(),
       monthlyRecords: await db.monthlyRecords.toArray(),
       holidays: await db.holidays.toArray(),
-      accounts: await db.accounts.toArray()
+      accounts: await db.accounts.toArray(),
+      invoices: await db.invoices.toArray(),
+      invoiceRecords: await db.invoiceRecords.toArray()
     };
   },
   async importAll(data) {
-    await db.transaction('rw', db.projects, db.shops, db.monthlyRecords, db.holidays, db.accounts, async () => {
+    await db.transaction('rw', db.projects, db.shops, db.monthlyRecords, db.holidays, db.accounts, db.invoices, db.invoiceRecords, async () => {
       await db.projects.clear(); await db.shops.clear();
       await db.monthlyRecords.clear(); await db.holidays.clear();
-      await db.accounts.clear();
+      await db.accounts.clear(); await db.invoices.clear();
+      await db.invoiceRecords.clear();
       if (data.projects?.length) await db.projects.bulkAdd(data.projects);
       if (data.shops?.length) await db.shops.bulkAdd(data.shops);
       if (data.monthlyRecords?.length) await db.monthlyRecords.bulkAdd(data.monthlyRecords);
       if (data.holidays?.length) await db.holidays.bulkAdd(data.holidays);
       if (data.accounts?.length) await db.accounts.bulkAdd(data.accounts);
+      if (data.invoices?.length) await db.invoices.bulkAdd(data.invoices);
+      if (data.invoiceRecords?.length) await db.invoiceRecords.bulkAdd(data.invoiceRecords);
     });
   }
 };
