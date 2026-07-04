@@ -488,7 +488,7 @@ const App = {
       holidayRule: document.getElementById('pf-holiday').value,
       holidayPayMethod: document.getElementById('pf-holiday').value,
       overtimeRate: parseInt(document.getElementById('pf-overtime').value) || 20,
-      invoiceRate: (parseFloat(document.getElementById('pf-invoice').value) || 1) / 100,
+      invoiceRate: parseFloat(document.getElementById('pf-invoice').value) / 100 || 0.01,
       baseShopLimit: parseInt(document.getElementById('pf-shoplimit').value) || 5,
       extraShopFee: parseInt(document.getElementById('pf-shopfee').value) || 100,
       description: document.getElementById('pf-desc').value,
