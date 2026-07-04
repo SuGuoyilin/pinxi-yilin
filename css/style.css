@@ -241,161 +241,406 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ========== 发票管理样式 ========== */
-.invoice-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
 
-.invoice-card {
-  background: #fff;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  transition: box-shadow 0.2s;
-}
-.invoice-card:hover {
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-}
-
-.invoice-card-header {
+/* -- 发票头部 -- */
+.inv-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.inv-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.inv-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+.inv-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.invoice-project-tag {
-  display: inline-block;
-  padding: 4px 12px;
+/* -- 筛选器区域 -- */
+.inv-filter-bar {
+  background: #f8f9fb;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  border: 1px solid #e8ecf0;
+}
+.inv-filter-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.inv-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.inv-filter-label {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+}
+.inv-filter-select {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  background: #fff;
+  min-width: 120px;
+}
+.inv-filter-select:focus {
+  outline: none;
+  border-color: #e94560;
+}
+.inv-filter-status {
+  margin-left: auto;
+}
+.inv-btn-group {
+  display: flex;
+  gap: 0;
+  border: 1px solid #ddd;
   border-radius: 6px;
-  font-size: 14px;
+  overflow: hidden;
+}
+.inv-filter-btn {
+  padding: 6px 14px;
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  color: #555;
+  transition: all 0.15s;
+  border-right: 1px solid #ddd;
+}
+.inv-filter-btn:last-child {
+  border-right: none;
+}
+.inv-filter-btn:hover {
+  background: #f0f0f5;
+}
+.inv-filter-btn.active {
+  background: #1a1a2e;
+  color: #fff;
   font-weight: 600;
 }
 
-.invoice-status-unfiled {
+/* -- 汇总栏 -- */
+.inv-summary-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border-radius: 8px;
+  padding: 16px 20px;
+  color: #fff;
+}
+.inv-summary-item {
+  flex: 0 0 auto;
+  min-width: 140px;
+}
+.inv-summary-value {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.inv-summary-label {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.inv-summary-divider {
+  width: 1px;
+  background: rgba(255,255,255,0.2);
+  margin: 4px 20px;
+}
+.inv-summary-unfiled-names {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: #ffd54f;
+}
+
+/* -- 表格容器 -- */
+.inv-table-wrap {
+  margin-bottom: 16px;
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid #e0e4e8;
+}
+
+/* -- 发票表格 -- */
+.inv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.inv-table thead tr {
+  background: #1a1a2e;
+  color: #fff;
+}
+.inv-table thead th {
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  border: none;
+}
+.inv-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eef0f2;
+  border-left: 1px solid #eef0f2;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+.inv-table tbody td:first-child {
+  border-left: none;
+}
+
+/* 行交替色 */
+.inv-row-even {
+  background: #fff;
+}
+.inv-row-odd {
+  background: #f8f9fb;
+}
+.inv-row:hover {
+  background: #edf4ff !important;
+}
+
+/* 单元格对齐 */
+.inv-cell-center {
+  text-align: center;
+}
+.inv-cell-company {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: #555;
+}
+.inv-cell-actions {
+  white-space: nowrap;
+}
+
+/* 项目名称标签 */
+.inv-project-name {
   display: inline-block;
   padding: 3px 10px;
-  border-radius: 12px;
+  border-radius: 4px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* -- 状态/类型标签 -- */
+.inv-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* 状态标签 */
+.inv-tag-status-filed {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+.inv-tag-status-unfiled {
   background: #fff3e0;
   color: #e65100;
   border: 1px solid #ffe0b2;
 }
 
-.invoice-status-filed {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 12px;
+/* 税务标签 */
+.inv-tag-tax-yes {
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #bbdefb;
+}
+.inv-tag-tax-no {
+  background: #fce4ec;
+  color: #c62828;
+  border: 1px solid #f8bbd0;
+}
+.inv-tag-tax-na {
+  background: #f5f5f5;
+  color: #999;
+  border: 1px solid #e0e0e0;
+}
+
+/* 类型标签 */
+.inv-tag-type-special {
+  background: #e8eaf6;
+  color: #283593;
+  border: 1px solid #c5cae9;
+}
+.inv-tag-type-normal {
+  background: #f3e5f5;
+  color: #7b1fa2;
+  border: 1px solid #e1bee7;
+}
+.inv-tag-type-special-1 {
+  background: #fff8e1;
+  color: #f57f17;
+  border: 1px solid #ffe082;
+}
+
+/* -- 金额输入框 -- */
+.inv-amount-input {
+  width: 100px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: right;
+  transition: border-color 0.2s;
+}
+.inv-amount-input:focus {
+  outline: none;
+  border-color: #e94560;
+  box-shadow: 0 0 0 2px rgba(233,69,96,0.1);
+}
+
+/* -- 操作按钮 -- */
+.inv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
   font-size: 12px;
   font-weight: 500;
-  background: #e8f5e9;
-  color: #2e7d32;
-  border: 1px solid #c8e6c9;
+  transition: all 0.15s;
+  white-space: nowrap;
+  margin: 0 2px;
+  vertical-align: middle;
+}
+.inv-btn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
-.invoice-card-body {
-  margin-bottom: 12px;
-}
-
-.invoice-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px 16px;
-  margin-bottom: 12px;
-}
-
-.invoice-info-item {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.invoice-info-label {
-  font-size: 11px;
-  color: #999;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.invoice-info-value {
-  font-size: 13px;
-  color: #333;
-}
-
-.invoice-special-note {
-  color: #e94560;
-  font-weight: 500;
-}
-
-.invoice-amount-section {
-  padding-top: 8px;
-  border-top: 1px dashed #e8e8e8;
-}
-
-.invoice-thumbnail {
-  display: flex;
-  align-items: center;
-}
-
-.invoice-card-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.btn-copy {
+.inv-btn-copy {
   background: #1976d2;
   color: #fff;
 }
-.btn-copy:hover {
-  opacity: 0.85;
-  background: #1565c0;
+.inv-btn-copy.inv-btn-copied {
+  background: #0f9b6e;
 }
 
-.btn-paste-invoice {
+.inv-btn-paste {
   background: #43e97b;
   color: #fff;
   cursor: pointer;
 }
-.btn-paste-invoice:hover {
-  opacity: 0.85;
+.inv-btn-paste:hover {
   background: #38d96e;
 }
 
-.invoice-paste-zone {
-  border: 1px dashed #ddd;
+.inv-btn-view-img {
+  background: #7c4dff;
+  color: #fff;
+}
+
+.inv-btn-edit {
+  background: #78909c;
+  color: #fff;
+}
+
+.inv-btn-detail {
+  background: #546e7a;
+  color: #fff;
+}
+
+.inv-btn-delete {
+  background: #dc3545;
+  color: #fff;
+}
+
+.inv-icon-upload {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z'/%3E%3C/svg%3E") no-repeat center/contain;
+}
+
+/* -- 截图缩略图 -- */
+.inv-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  vertical-align: middle;
+  margin-left: 4px;
+  object-fit: cover;
+}
+.inv-thumb:hover {
+  transform: scale(2.5);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  z-index: 10;
+  position: relative;
+}
+
+/* -- 粘贴区域 -- */
+.inv-paste-zone {
+  border: 1px dashed #ccc;
   border-radius: 6px;
-  padding: 8px 12px;
+  padding: 6px 14px;
   font-size: 12px;
   color: #999;
   text-align: center;
-  margin-top: 8px;
   cursor: pointer;
   background: #fafafa;
   transition: border-color 0.2s, background 0.2s;
-}
-.invoice-paste-zone:focus {
-  outline: none;
-  border-color: #43e97b;
-  background: #f0fff4;
+  white-space: nowrap;
 }
 
-/* 发票详情弹窗 */
+/* -- 已开票记录区域 -- */
+.inv-history-section {
+  margin-top: 20px;
+}
+.inv-section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  border-left: 3px solid #e94560;
+}
+
+/* -- 发票详情弹窗 -- */
 .invoice-detail-section {
   padding: 8px 0;
 }
-
 .invoice-detail-row {
   display: flex;
   padding: 10px 0;
   border-bottom: 1px solid #f0f0f0;
   font-size: 14px;
 }
-
 .invoice-detail-label {
   min-width: 120px;
   color: #999;
@@ -403,26 +648,42 @@ input:focus, select:focus, textarea:focus {
   flex-shrink: 0;
 }
 
-/* 发票汇总表格 */
-.invoice-card table tfoot td {
-  padding: 12px;
-  font-size: 14px;
-}
-
+/* -- 响应式 -- */
 @media (max-width: 1024px) {
-  .invoice-cards-grid {
-    grid-template-columns: 1fr;
+  .inv-table-main {
+    font-size: 12px;
+  }
+  .inv-table-main thead th,
+  .inv-table-main tbody td {
+    padding: 6px 8px;
   }
 }
 
 @media (max-width: 768px) {
-  .invoice-info-grid {
-    grid-template-columns: 1fr;
-  }
-  .invoice-card-actions {
+  .inv-header {
     flex-direction: column;
+    align-items: flex-start;
   }
-  .invoice-card-actions .btn {
-    text-align: center;
+  .inv-filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .inv-filter-status {
+    margin-left: 0;
+  }
+  .inv-summary-bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .inv-summary-divider {
+    width: 100%;
+    height: 1px;
+    margin: 0;
+  }
+  .inv-cell-actions {
+    white-space: normal;
+  }
+  .inv-btn {
+    margin: 2px;
   }
 }
