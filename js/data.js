@@ -264,22 +264,6 @@ const INITIAL_HOLIDAYS = [
 const INITIAL_INVOICES = [
   // ===== 专席项目 =====
   {
-    projectName: '深圳和而泰项目',
-    companyName: '上海亿和网络科技有限公司',
-    taxId: '91310000MA1FL5C91K',
-    address: '待补充',
-    phone: '待补充',
-    bankName: '工商银行',
-    bankAccount: '待补充',
-    invoiceContent: '现代服务*服务费',
-    invoiceType: '1%专票',
-    taxTreatment: '含税',
-    paymentDay: 15,
-    specialNote: '',
-    _group: '专席',
-    _category: '专席'
-  },
-  {
     projectName: '杭州云栖小镇项目',
     companyName: '杭州云栖小镇开发建设管理有限公司',
     taxId: '91330106MA27W6H29K',
