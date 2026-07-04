@@ -120,8 +120,9 @@ const Calculator = {
     }
 
     const subtotal = baseFee + holidayExtra + shopExtra;
+    const taxInclusive = project.taxInclusive !== false; // 默认含税
     const invoiceRate = project.invoiceRate || 0;
-    const tax = invoiceRate > 0 ? Math.round(subtotal * invoiceRate) : 0;
+    const tax = (!taxInclusive && invoiceRate > 0) ? Math.round(subtotal * invoiceRate) : 0;
     const total = subtotal + tax;
 
     return {
