@@ -501,12 +501,12 @@ const App = {
       data.onlineRate = parseFloat(document.getElementById('pf-online').value) || 30.30;
       data.offlineRate = parseFloat(document.getElementById('pf-offline').value) || 20.20;
       data.tiers = [];
-    } else {
-      data.tiers = [];
     }
+    // 非hourly项目的tiers已在上面由readTiersFromForm()读取，不再清空
 
     if (editId) {
-      await DB.updateProject(editId, data);
+      const result = await DB.updateProject(editId, data);
+      console.log('[saveProject] invoiceRate saved:', data.invoiceRate, 'result:', result);
     } else {
       await DB.addProject(data);
     }
