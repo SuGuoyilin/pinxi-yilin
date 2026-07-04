@@ -90,9 +90,10 @@ const Export = {
       ['节假日额外费用', c.holidayExtra],
       ['超店铺附加费', c.shopExtra],
       ['小计', c.subtotal],
-      ['合计（含税）', c.total],
+      ...(c.tax > 0 ? [['税费（' + Math.round(project.invoiceRate * 100) + '%）', c.tax]] : []),
+      ['合计' + (c.tax > 0 ? '（含税）' : ''), c.total],
       [],
-      ['所有金额已含税']
+      [c.tax > 0 ? '本项目不含税，已加收' + Math.round(project.invoiceRate * 100) + '%税费' : '本项目含税，无需另加税费']
     );
 
     const ws = XLSX.utils.aoa_to_sheet(rows);
@@ -178,8 +179,9 @@ img{max-width:100%;}
   <tr><td>节假日额外费用</td><td style="text-align:right;">&yen;${c.holidayExtra.toLocaleString()}</td></tr>
   <tr><td>超店铺附加费</td><td style="text-align:right;">&yen;${c.shopExtra.toLocaleString()}</td></tr>
   <tr><td>小计</td><td style="text-align:right;">&yen;${c.subtotal.toLocaleString()}</td></tr>
-  <tr class="total-row"><td>合计（含税）</td><td style="text-align:right;">&yen;${c.total.toLocaleString()}</td></tr>
-  <tr><td colspan="2" style="font-size:12px;color:#999;">所有金额已含税，不再额外累加税点</td></tr>
+  ${c.tax > 0 ? `<tr><td>税费（${Math.round(project.invoiceRate * 100)}%）</td><td style="text-align:right;">&yen;${c.tax.toLocaleString()}</td></tr>` : ''}
+  <tr class="total-row"><td>合计${c.tax > 0 ? '（含税）' : ''}</td><td style="text-align:right;">&yen;${c.total.toLocaleString()}</td></tr>
+  <tr><td colspan="2" style="font-size:12px;color:#999;">${c.tax > 0 ? '本项目不含税，已加收' + Math.round(project.invoiceRate * 100) + '%税费' : '本项目含税，无需另加税费'}</td></tr>
 </table>
 ${c.holidayCalcDetail ? `<p style="color:#e94560;font-size:13px;margin-top:8px;">节假日计算：${c.holidayCalcDetail}</p>` : ''}
 <div class="footer">拼席月度结算管理系统 | 生成时间：${new Date().toLocaleString('zh-CN')}</div>
@@ -268,10 +270,11 @@ img { max-width: 100%; }
   <tr class="fee-row"><td>节假日额外费用</td><td style="text-align:right;">&yen;${c.holidayExtra.toLocaleString()}</td></tr>
   <tr class="fee-row"><td>超店铺附加费</td><td style="text-align:right;">&yen;${c.shopExtra.toLocaleString()}</td></tr>
   <tr class="fee-row"><td>小计</td><td style="text-align:right;">&yen;${c.subtotal.toLocaleString()}</td></tr>
-  <tr class="fee-row total-row"><td>合计（含税）</td><td style="text-align:right;">&yen;${c.total.toLocaleString()}</td></tr>
+  ${c.tax > 0 ? `<tr class="fee-row"><td>税费（${Math.round(project.invoiceRate * 100)}%）</td><td style="text-align:right;">&yen;${c.tax.toLocaleString()}</td></tr>` : ''}
+  <tr class="fee-row total-row"><td>合计${c.tax > 0 ? '（含税）' : ''}</td><td style="text-align:right;">&yen;${c.total.toLocaleString()}</td></tr>
 </table>
 ${c.holidayCalcDetail ? `<div class="note">节假日计算：${c.holidayCalcDetail}</div>` : ''}
-<div class="note">所有金额已含税，不再额外累加税点</div>
+<div class="note">${c.tax > 0 ? '本项目不含税，已加收' + Math.round(project.invoiceRate * 100) + '%税费' : '本项目含税，无需另加税费'}</div>
 <div class="footer">拼席月度结算管理系统 | 生成时间：${new Date().toLocaleString('zh-CN')}</div>
 <p style="text-align:center;margin-top:16px;font-size:14px;color:#666;">按 <strong>Ctrl+P</strong>（或 Cmd+P）可打印/保存为 PDF</p>
 </body></html>`;
@@ -306,7 +309,8 @@ ${c.holidayCalcDetail ? `<div class="note">节假日计算：${c.holidayCalcDeta
         ['节假日额外费用', c.holidayExtra],
         ['超店铺附加费', c.shopExtra],
         ['小计', c.subtotal],
-        ['合计（含税）', c.total]
+        ...(c.tax > 0 ? [['税费', c.tax]] : []),
+        ['合计' + (c.tax > 0 ? '（含税）' : ''), c.total]
       ];
       const ws = XLSX.utils.aoa_to_sheet(rows);
       const sheetName = p.name.substring(0, 31);

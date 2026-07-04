@@ -120,9 +120,9 @@ const Calculator = {
     }
 
     const subtotal = baseFee + holidayExtra + shopExtra;
-    // 注：项目金额已含税，不再额外累加税点
-    const tax = 0;
-    const total = subtotal;
+    const invoiceRate = project.invoiceRate || 0;
+    const tax = invoiceRate > 0 ? Math.round(subtotal * invoiceRate) : 0;
+    const total = subtotal + tax;
 
     return {
       totalVolume,

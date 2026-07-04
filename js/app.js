@@ -385,7 +385,7 @@ const App = {
           <div class="form-row"><label>月休天数</label><span>${p.restDays}天</span></div>
           <div class="form-row"><label>节假日规则</label><span>${ruleLabels[p.holidayRule] || p.holidayRule} ${holidayDetailHtml}</span></div>
           <div class="form-row"><label>加班计薪</label><span>&yen;${p.overtimeRate}/小时</span></div>
-          <div class="form-row"><label>税务说明</label><span>所有金额已含税（${(p.invoiceRate * 100).toFixed(0)}%）</span></div>
+          <div class="form-row"><label>税务说明</label><span>${p.invoiceRate > 0 ? '不含税，结算金额需另加' + (p.invoiceRate * 100).toFixed(0) + '%税费' : '含税，无需另加税费'}</span></div>
           <div class="form-row"><label>超店附加费</label><span>&yen;${p.extraShopFee}/店/月</span></div>
           <div class="form-row"><label>工作内容</label><span>${p.description || '-'}</span></div>
           <h4 style="margin:16px 0 8px;">结算档位</h4>
@@ -443,7 +443,7 @@ const App = {
             </select>
           </div>
           <div class="form-row"><label>加班计薪(元/h)</label><input type="number" id="pf-overtime" value="${p.overtimeRate}"></div>
-          <div class="form-row"><label>发票税点(%)</label><input type="number" step="0.1" id="pf-invoice" value="${p.invoiceRate * 100}"><span style="font-size:12px;color:#999;margin-left:8px;">仅作记录，金额已含税不再累加</span></div>
+          <div class="form-row"><label>发票税点(%)</label><input type="number" step="0.1" id="pf-invoice" value="${p.invoiceRate * 100}"><span style="font-size:12px;color:#999;margin-left:8px;">填0=含税无需加税；填1=不含税加收1%税费</span></div>
           <div class="form-row"><label>基础店铺数</label><input type="number" id="pf-shoplimit" value="${p.baseShopLimit || 5}"></div>
           <div class="form-row"><label>超店附加(元/店)</label><input type="number" id="pf-shopfee" value="${p.extraShopFee}"></div>
           <div class="form-row"><label>工作内容</label><textarea id="pf-desc" rows="2">${p.description || ''}</textarea></div>
@@ -1230,8 +1230,9 @@ const App = {
           <tr><td>节假日额外费用</td><td>&yen;${calculated.holidayExtra.toLocaleString()}</td></tr>
           <tr><td>超店铺附加费</td><td>&yen;${calculated.shopExtra.toLocaleString()}</td></tr>
           <tr><td>小计</td><td>&yen;${calculated.subtotal.toLocaleString()}</td></tr>
-          <tr style="color:#e94560;font-size:16px;"><td><strong>合计（含税）</strong></td><td><strong>&yen;${calculated.total.toLocaleString()}</strong></td></tr>
-          <tr><td colspan="2" style="font-size:12px;color:#999;">所有金额已含税，不再额外累加税点</td></tr>
+          ${calculated.tax > 0 ? `<tr><td>税费（${(project.invoiceRate * 100).toFixed(0)}%）</td><td>&yen;${calculated.tax.toLocaleString()}</td></tr>` : ''}
+          <tr style="color:#e94560;font-size:16px;"><td><strong>合计${calculated.tax > 0 ? '（含税）' : ''}</strong></td><td><strong>&yen;${calculated.total.toLocaleString()}</strong></td></tr>
+          <tr><td colspan="2" style="font-size:12px;color:#999;">${calculated.tax > 0 ? '本项目不含税，已加收' + (project.invoiceRate * 100).toFixed(0) + '%税费' : '本项目含税，无需另加税费'}</td></tr>
         </table>
         ${holidayHtml}
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
@@ -1326,8 +1327,9 @@ const App = {
             <tr><td>节假日额外费用</td><td>&yen;${c.holidayExtra.toLocaleString()}</td></tr>
             <tr><td>超店铺附加费</td><td>&yen;${c.shopExtra.toLocaleString()}</td></tr>
             <tr><td>小计</td><td>&yen;${c.subtotal.toLocaleString()}</td></tr>
-            <tr style="color:#e94560;font-size:16px;border-top:2px solid #e94560;"><td><strong>合计（含税）</strong></td><td><strong>&yen;${c.total.toLocaleString()}</strong></td></tr>
-            <tr><td colspan="2" style="font-size:12px;color:#999;">所有金额已含税（${(p.invoiceRate * 100).toFixed(0)}%），不再额外累加税点</td></tr>
+            ${c.tax > 0 ? `<tr><td>税费（${(p.invoiceRate * 100).toFixed(0)}%）</td><td>&yen;${c.tax.toLocaleString()}</td></tr>` : ''}
+            <tr style="color:#e94560;font-size:16px;border-top:2px solid #e94560;"><td><strong>合计${c.tax > 0 ? '（含税）' : ''}</strong></td><td><strong>&yen;${c.total.toLocaleString()}</strong></td></tr>
+            <tr><td colspan="2" style="font-size:12px;color:#999;">${c.tax > 0 ? '本项目不含税，已加收' + (p.invoiceRate * 100).toFixed(0) + '%税费' : '本项目含税，无需另加税费'}</td></tr>
             ${holidaySection}
           </table>
         </div>
