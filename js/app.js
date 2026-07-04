@@ -1608,6 +1608,8 @@ const App = {
         typeTag = '<span class="inv-tag inv-tag-type-normal">普票</span>';
       } else if (inv.invoiceType === '1%专票') {
         typeTag = '<span class="inv-tag inv-tag-type-special-1">1%专票</span>';
+      } else if (inv.invoiceType === '1%代专票') {
+        typeTag = '<span class="inv-tag inv-tag-type-special-1">1%代专票</span>';
       }
 
       // 状态标签
@@ -2074,6 +2076,7 @@ const App = {
               <option value="专票" ${inv.invoiceType === '专票' ? 'selected' : ''}>增值税专用发票</option>
               <option value="普票" ${inv.invoiceType === '普票' ? 'selected' : ''}>增值税普通发票</option>
               <option value="1%专票" ${inv.invoiceType === '1%专票' ? 'selected' : ''}>1%专票</option>
+              <option value="1%代专票" ${inv.invoiceType === '1%代专票' ? 'selected' : ''}>1%代专票</option>
             </select>
           </div>
           <div class="form-row"><label>含税/不含税</label>
