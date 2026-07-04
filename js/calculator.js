@@ -54,7 +54,7 @@ const Calculator = {
       if (holiday) {
         holidayVolume += volume;
         holidayDays++;
-        holidayDetails.push({ date: dateStr, name: holiday.name, volume });
+        holidayDetails.push({ date: dateStr, name: holiday.name, volume, standardPayDays: holiday.standardPayDays, coopPayDays: holiday.coopPayDays, standardPayMultiplier: holiday.standardPayMultiplier, coopPayMultiplier: holiday.coopPayMultiplier });
       } else {
         workDays++;
       }
@@ -90,8 +90,14 @@ const Calculator = {
       let totalExtra = 0;
       const detailParts = [];
 
+      // 按假期名称分组，避免放假3天但计薪1天时重复计算
+      const grouped = {};
       for (const d of holidayDetails) {
-        const config = holidayTable.find(ht => ht.name === d.name);
+        if (!grouped[d.name]) grouped[d.name] = d;
+      }
+
+      for (const [name, d] of Object.entries(grouped)) {
+        const config = holidayTable.find(ht => ht.name === name);
         const payDays = isStandard
           ? (config?.standardPayDays ?? d.standardPayDays ?? 0)
           : (config?.coopPayDays ?? d.coopPayDays ?? 0);
@@ -103,7 +109,7 @@ const Calculator = {
           totalPayDays += payDays;
           const extra = dailyBase * payDays * (multiplier - 1);
           totalExtra += extra;
-          detailParts.push(`${d.name}${payDays}天×${multiplier}倍(额外${multiplier-1}倍)`);
+          detailParts.push(`${name}计薪${payDays}天×${multiplier}倍(额外${multiplier-1}倍)`);
         }
       }
 
