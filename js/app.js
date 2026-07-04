@@ -447,7 +447,7 @@ const App = {
             </select>
           </div>
           <div class="form-row"><label>加班计薪(元/h)</label><input type="number" id="pf-overtime" value="${p.overtimeRate}"></div>
-          <div class="form-row"><label>发票税点(%)</label><input type="number" step="0.1" id="pf-invoice" value="${(p.invoiceRate || 0.01) * 100}"><span style="font-size:12px;color:#999;margin-left:8px;">填0=含税不加税；填1=不含税加收1%税费</span></div>
+          <div class="form-row"><label>发票税点(%)</label><input type="number" step="0.1" id="pf-invoice" value="${typeof p.invoiceRate === 'number' ? (p.invoiceRate * 100) : 1}"><span style="font-size:12px;color:#999;margin-left:8px;">填0=含税不加税；填1=不含税加收1%税费</span></div>
           <div class="form-row"><label>基础店铺数</label><input type="number" id="pf-shoplimit" value="${p.baseShopLimit || 5}"></div>
           <div class="form-row"><label>超店附加(元/店)</label><input type="number" id="pf-shopfee" value="${p.extraShopFee}"></div>
           <div class="form-row"><label>工作内容</label><textarea id="pf-desc" rows="2">${p.description || ''}</textarea></div>
