@@ -1839,17 +1839,18 @@ const App = {
     if (!inv) return;
     const amountInput = document.querySelector(`.inv-amount-input[data-invoice-id="${invoiceId}"]`);
     const amount = amountInput ? amountInput.value : '';
-    const text = [
-      `项目名称：${inv.projectName}`,
-      `公司名称：${inv.companyName}`,
-      `纳税人识别号：${inv.taxId}`,
-      `地址、电话：${inv.address} ${inv.phone}`,
-      `开户行及账号：${inv.bankName} ${inv.bankAccount}`,
-      `开票内容：${inv.invoiceContent}`,
-      `开票类型：${inv.invoiceType}`,
-      `开票金额：${amount ? '¥' + parseFloat(amount).toLocaleString() : ''}`,
-      `备注：${inv.specialNote || '无'}`
-    ].join('\n');
+
+    const lines = [];
+    if (inv.companyName && inv.companyName !== '待补充' && inv.companyName !== '暂定') lines.push(`公司名称：${inv.companyName}`);
+    if (inv.taxId && inv.taxId !== '待补充' && inv.taxId !== '暂定') lines.push(`纳税人识别号：${inv.taxId}`);
+    const addrPhone = [inv.address, inv.phone].filter(v => v && v !== '待补充' && v !== '暂定').join(' ');
+    if (addrPhone) lines.push(`地址、电话：${addrPhone}`);
+    const bankInfo = [inv.bankName, inv.bankAccount].filter(v => v && v !== '待补充' && v !== '暂定').join(' ');
+    if (bankInfo) lines.push(`开户行及账号：${bankInfo}`);
+    if (inv.invoiceContent && inv.invoiceContent !== '待补充' && inv.invoiceContent !== '暂定') lines.push(`开票内容：${inv.invoiceContent}`);
+    if (inv.invoiceType && inv.invoiceType !== '待补充' && inv.invoiceType !== '暂定') lines.push(`开票类型：${inv.invoiceType}`);
+    if (amount && parseFloat(amount) > 0) lines.push(`开票金额：¥${parseFloat(amount).toLocaleString()}`);
+    const text = lines.join('\n');
 
     try {
       await navigator.clipboard.writeText(text);
