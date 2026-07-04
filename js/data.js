@@ -319,17 +319,37 @@ async function initData() {
         await DB.addProject(ip);
       }
     }
-    // 刷新店铺数据：删除旧店铺，重新按最新清单导入
-    await db.shops.clear();
+    // 同步店铺数据：按名称匹配，仅新增/删除差异店铺，保留已有店铺ID
     const refreshedProjects = await DB.getAllProjects();
     const projectMap = {};
     for (const p of refreshedProjects) projectMap[p.name] = p.id;
-    // 按名称映射到实际项目ID
     const nameToInitial = { '妲润项目': 1, '博思项目': 2, '讨师项目': 3, '森昊项目': 4, '悦泰项目（兼职）': 5, '益生菌项目': 6 };
+    const existingShops = await DB.getAllShops();
+    const existingKey = (s) => `${s.projectId}_${s.name}_${s.platform}`;
+
+    // 找出需要删除的（存在于数据库但不在初始清单中）
+    const initialKeys = new Set();
     for (const shop of INITIAL_SHOPS) {
       const targetName = Object.keys(nameToInitial).find(n => nameToInitial[n] === shop.projectId);
       if (targetName && projectMap[targetName]) {
-        await DB.addShop({ ...shop, projectId: projectMap[targetName] });
+        initialKeys.add(`${projectMap[targetName]}_${shop.name}_${shop.platform}`);
+      }
+    }
+    for (const es of existingShops) {
+      if (!initialKeys.has(existingKey(es))) {
+        await DB.deleteShop(es.id);
+      }
+    }
+
+    // 找出需要新增的（存在于初始清单但不在数据库中）
+    const existingKeys = new Set(existingShops.map(existingKey));
+    for (const shop of INITIAL_SHOPS) {
+      const targetName = Object.keys(nameToInitial).find(n => nameToInitial[n] === shop.projectId);
+      if (targetName && projectMap[targetName]) {
+        const key = `${projectMap[targetName]}_${shop.name}_${shop.platform}`;
+        if (!existingKeys.has(key)) {
+          await DB.addShop({ ...shop, projectId: projectMap[targetName] });
+        }
       }
     }
   }
