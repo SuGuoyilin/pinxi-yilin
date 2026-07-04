@@ -367,6 +367,7 @@ const App = {
       const start = new Date(p.contractStartDate);
       const end = new Date(start);
       end.setFullYear(end.getFullYear() + 1);
+      end.setDate(end.getDate() - 1);
       const endStr = `${end.getFullYear()}-${String(end.getMonth() + 1).padStart(2, '0')}-${String(end.getDate()).padStart(2, '0')}`;
       contractHtml = `<div class="form-row"><label>合作期限</label><span>${p.contractStartDate} 至 ${endStr}（合同期1年）</span></div>`;
     }
@@ -792,14 +793,30 @@ const App = {
           const startYear = start.getFullYear();
           const startMonth = start.getMonth() + 1;
           const startDay = start.getDate();
+          // 计算合同结束日期（开始日期+1年）
+          const endDate = new Date(start);
+          endDate.setFullYear(endDate.getFullYear() + 1);
+          endDate.setDate(endDate.getDate() - 1);
+          const endYear = endDate.getFullYear();
+          const endMonth = endDate.getMonth() + 1;
+          const endDay = endDate.getDate();
+
           if (year === startYear && month === startMonth) {
+            // 合作开始月份：当月总天数 - 开始日 + 1
             autoWorkDays = daysInMonth - startDay + 1;
-            workDaysHint = `项目${startYear}-${String(startMonth).padStart(2,'0')}-${String(startDay).padStart(2,'0')}开始，自动计算<b>${autoWorkDays}</b>天`;
+            workDaysHint = `合作首月（${project.contractStartDate}起），自动计算<b>${autoWorkDays}</b>天`;
+          } else if (year === endYear && month === endMonth) {
+            // 合作结束月份：等于合同结束日
+            autoWorkDays = endDay;
+            workDaysHint = `合作末月（${endYear}-${String(endMonth).padStart(2,'0')}-${endDay}止），自动计算<b>${autoWorkDays}</b>天`;
           } else if (year < startYear || (year === startYear && month < startMonth)) {
             autoWorkDays = 0;
             workDaysHint = `<b style="color:#e94560;">项目尚未开始（${project.contractStartDate}起合作）</b>`;
+          } else if (year > endYear || (year === endYear && month > endMonth)) {
+            autoWorkDays = 0;
+            workDaysHint = `<b style="color:#e94560;">合同已到期（${endYear}-${String(endMonth).padStart(2,'0')}-${endDay}止）</b>`;
           } else {
-            workDaysHint = `默认<b>${daysInMonth}</b>天（项目已正常合作）`;
+            workDaysHint = `默认<b>${daysInMonth}</b>天（正常合作月）`;
           }
         }
         const savedDays = record && record.actualWorkDays != null ? record.actualWorkDays : autoWorkDays;
