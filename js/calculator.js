@@ -108,15 +108,23 @@ const Calculator = {
 
         if (payDays > 0 && multiplier > 1) {
           totalPayDays += payDays;
-          const extra = dailyBase * payDays * (multiplier - 1);
+          // 计薪模式：倍数是总计倍数，额外 = 倍数 - 1
+          // 合作天数模式：写的多少就是多少，直接乘
+          const extraMultiplier = isStandard ? (multiplier - 1) : multiplier;
+          const extra = dailyBase * payDays * extraMultiplier;
           totalExtra += extra;
-          detailParts.push(`${name}计薪${payDays}天×${multiplier}倍(额外${multiplier-1}倍)`);
+          if (isStandard) {
+            detailParts.push(`${name}计薪${payDays}天×${multiplier}倍(额外${multiplier-1}倍)`);
+          } else {
+            detailParts.push(`${name}合作${payDays}天×${multiplier}倍`);
+          }
         }
       }
 
       holidayExtra = Math.round(totalExtra);
       if (detailParts.length > 0) {
-        holidayCalcDetail = `${methodLabel}：日薪¥${dailyBase.toFixed(2)}(基础费¥${baseFee}/${effectiveWorkDays}天) × 计薪${totalPayDays}天 × 额外${totalPayDays > 0 ? (totalExtra / (dailyBase * totalPayDays)).toFixed(1) : 0}倍 = 额外¥${holidayExtra.toLocaleString()}（${detailParts.join('、')}）`;
+        const avgExtraMultiplier = totalPayDays > 0 ? (totalExtra / (dailyBase * totalPayDays)).toFixed(1) : 0;
+        holidayCalcDetail = `${methodLabel}：日薪¥${dailyBase.toFixed(2)}(基础费¥${baseFee}/${effectiveWorkDays}天) × ${isStandard ? '计薪' : '合作'}${totalPayDays}天 × ${avgExtraMultiplier}倍 = 额外¥${holidayExtra.toLocaleString()}（${detailParts.join('、')}）`;
       }
     }
 
