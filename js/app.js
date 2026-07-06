@@ -252,11 +252,11 @@ const App = {
     let rows = ht.map((h, i) => {
       return `<tr>
         <td>${h.name}</td>
-        <td><input type="number" class="ht-daysOff" data-idx="${i}" value="${h.daysOff}" style="width:50px;text-align:center;" min="0"></td>
-        <td><input type="number" class="ht-standardPayDays" data-idx="${i}" value="${h.standardPayDays}" style="width:50px;text-align:center;" min="0"></td>
-        <td><input type="number" class="ht-standardPayMultiplier" data-idx="${i}" value="${h.standardPayMultiplier}" style="width:50px;text-align:center;" min="0" step="0.1"></td>
-        <td><input type="number" class="ht-coopPayDays" data-idx="${i}" value="${h.coopPayDays}" style="width:50px;text-align:center;" min="0"></td>
-        <td><input type="number" class="ht-coopPayMultiplier" data-idx="${i}" value="${h.coopPayMultiplier}" style="width:50px;text-align:center;" min="0" step="0.1"></td>
+        <td><input type="number" class="ht-daysOff" data-idx="${i}" value="${h.daysOff}" style="width:50px;text-align:center;" min="0" step="1"></td>
+        <td><input type="number" class="ht-standardPayDays" data-idx="${i}" value="${h.standardPayDays}" style="width:50px;text-align:center;" min="0" step="1"></td>
+        <td><input type="number" class="ht-standardPayMultiplier" data-idx="${i}" value="${h.standardPayMultiplier}" style="width:50px;text-align:center;" min="0" step="1"></td>
+        <td><input type="number" class="ht-coopPayDays" data-idx="${i}" value="${h.coopPayDays}" style="width:50px;text-align:center;" min="0" step="1"></td>
+        <td><input type="number" class="ht-coopPayMultiplier" data-idx="${i}" value="${h.coopPayMultiplier}" style="width:50px;text-align:center;" min="0" step="1"></td>
       </tr>`;
     }).join('');
     return `
@@ -529,6 +529,7 @@ const App = {
       tiers: this.readTiersFromForm(),
       holidayTable: this.readHolidayTableFromForm()
     };
+    console.log('[saveProject] holidayTable:', JSON.stringify(data.holidayTable));
 
     if (data.calculationType === 'hourly') {
       data.onlineRate = parseFloat(document.getElementById('pf-online').value) || 30.30;
