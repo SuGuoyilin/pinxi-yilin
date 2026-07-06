@@ -85,6 +85,7 @@ const Calculator = {
       const holidayTable = project.holidayTable || [];
       const isStandard = project.holidayPayMethod === 'standard';
       const methodLabel = isStandard ? '标准计薪' : '合作计薪';
+      console.log('[Calculator] project:', project.name, 'holidayPayMethod:', project.holidayPayMethod, 'holidayTable:', JSON.stringify(holidayTable));
 
       let totalPayDays = 0;
       let totalExtra = 0;
