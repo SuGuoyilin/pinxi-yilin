@@ -48,13 +48,13 @@ const INITIAL_PROJECTS = [
     holidayRule: 'cooperative',
     holidayPayMethod: 'cooperative',
     holidayTable: [
-      { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
-      { name: '春节', daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 7, coopPayMultiplier: 3 },
-      { name: '清明节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
-      { name: '劳动节', daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
-      { name: '端午节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
-      { name: '中秋节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 },
-      { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 3 }
+      { name: '元旦', daysOff: 1, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '春节', daysOff: 8, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 7, coopPayMultiplier: 2 },
+      { name: '清明节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '劳动节', daysOff: 5, standardPayDays: 2, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '端午节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '中秋节', daysOff: 3, standardPayDays: 1, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 2 },
+      { name: '国庆节', daysOff: 7, standardPayDays: 3, standardPayMultiplier: 3, coopPayDays: 1, coopPayMultiplier: 2 }
     ],
     overtimeRate: 20,
     invoiceRate: 0.01,
@@ -511,33 +511,22 @@ async function initData() {
       if (match) {
         const updates = {};
         if (existing.name === '母婴项目') updates.name = '博思项目';
+        // 同步假日规则：仅做迁移转换（旧值→新值），不覆盖用户自定义
         if (existing.holidayRule === 'double_pay_or_rest') updates.holidayRule = 'cooperative';
         if (existing.holidayRule === 'double_pay') updates.holidayRule = 'standard';
         if (existing.holidayRule === 'collab_days') updates.holidayRule = 'cooperative';
-        // 同步节假日计薪方式和规则：确保与最新配置一致
-        if (match.holidayRule && existing.holidayRule !== match.holidayRule) {
-          updates.holidayRule = match.holidayRule;
-        }
-        if (match.holidayPayMethod && existing.holidayPayMethod !== match.holidayPayMethod) {
-          updates.holidayPayMethod = match.holidayPayMethod;
-        }
-        if (match.holidayTable && JSON.stringify(existing.holidayTable) !== JSON.stringify(match.holidayTable)) {
-          updates.holidayTable = match.holidayTable;
-        }
+        // 注意：holidayRule、holidayPayMethod、holidayTable不在同步列表中，用户编辑后不会被覆盖
         // 同步结算档位：确保与最新配置一致
         if (match.tiers && (!existing.tiers || existing.tiers.length === 0 || JSON.stringify(existing.tiers) !== JSON.stringify(match.tiers))) {
           updates.tiers = match.tiers;
         }
-        // 同步合作开始日期
-        if (match.contractStartDate && existing.contractStartDate !== match.contractStartDate) {
-          updates.contractStartDate = match.contractStartDate;
-        }
-        // 同步其他关键字段
-        for (const field of ['calculationType', 'extraShopFee', 'baseShopLimit', 'onlineRate', 'offlineRate']) {
+        // 同步核心结构字段（仅calculationType不可由用户随意修改）
+        for (const field of ['calculationType']) {
           if (match[field] !== undefined && existing[field] !== match[field]) {
             updates[field] = match[field];
           }
         }
+        // 注意：contractStartDate、extraShopFee、baseShopLimit、onlineRate、offlineRate不在同步列表中
         if (Object.keys(updates).length > 0) await DB.updateProject(existing.id, updates);
       }
     }
