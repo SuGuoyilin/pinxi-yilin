@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人力管理 - SG</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ========== CSS 变量 ========== */
+    :root {
+      --cream: #f6f1e8;
+      --paper: #fffdf8;
+      --ink: #182235;
+      --navy: #13233a;
+      --accent: #2f6f73;
+      --gold: #c79a42;
+      --bg: #f5efe0;
+      --line: #e5dac9;
+      --text: #182235;
+      --muted: #7a6f62;
+      --green: #16825f;
+      --red: #b94e5d;
+      --amber: #c79a42;
+    }
+
+    /* ========== 全局重置 ========== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ========== 顶部导航栏 topbar ========== */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--navy);
+      color: #fff;
+      padding: 0 20px;
+      height: 52px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .topbar .logo {
+      font-size: 16px;
+      font-weight: 700;
+      margin-right: 24px;
+      white-space: nowrap;
+      color: var(--gold);
+    }
+    .topbar .module-tabs {
+      display: flex;
+      gap: 0;
+      flex: 1;
+    }
+    .topbar .module-tabs .tab {
+      padding: 14px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      color: rgba(255,255,255,0.7);
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .topbar .module-tabs .tab:hover {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+    }
+    .topbar .module-tabs .tab.active {
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+      font-weight: 600;
+    }
+    .topbar .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    /* ========== 按钮样式 btn ========== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { background: #256a6e; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    .btn-secondary:hover { background: var(--accent); color: #fff; }
+    .btn-danger {
+      background: transparent;
+      color: var(--red);
+      border-color: var(--red);
+    }
+    .btn-danger:hover { background: var(--red); color: #fff; }
+    .btn-gold {
+      background: var(--gold);
+      color: #fff;
+      border-color: var(--gold);
+    }
+    .btn-gold:hover { background: #b5883a; }
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border-color: var(--line);
+    }
+    .btn-ghost:hover { background: var(--cream); color: var(--text); }
+
+    /* ========== 卡片 card ========== */
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    /* ========== 子标签 subtabs ========== */
+    .subtabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--line);
+      margin-bottom: 16px;
+    }
+    .subtabs .stab {
+      padding: 10px 20px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .subtabs .stab:hover { color: var(--text); }
+    .subtabs .stab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ========== 药丸标签 pillTabs ========== */
+    .pillTabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .pillTabs .pill {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--muted);
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .pillTabs .pill:hover { border-color: var(--accent); color: var(--accent); }
+    .pillTabs .pill.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ========== 提示 hint ========== */
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hint i { color: var(--amber); }
+
+    /* ========== 工具行 toolRow ========== */
+    .toolRow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .toolRow .spacer { flex: 1; }
+    .toolRow select, .toolRow input[type="month"], .toolRow input[type="text"] {
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--paper);
+      color: var(--text);
+    }
+    .toolRow select:focus, .toolRow input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(47,111,115,0.15);
+    }
+
+    /* ========== 同步状态 ========== */
+    .sync-status {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .sync-status .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .sync-status .dot.ok { background: var(--green); }
+    .sync-status .dot.err { background: var(--red); }
+    .sync-status .dot.saving { background: var(--amber); animation: pulse 1s infinite; }
+
+    /* ========== 主内容区域 ========== */
+    .main-wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .module-section { display: none; }
+    .module-section.active { display: block; }
+
+    /* ========== 表格包裹 tableWrap ========== */
+    .tableWrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .tableWrap table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      min-width: 800px;
+    }
+    .tableWrap table th {
+      background: var(--cream);
+      color: var(--navy);
+      font-weight: 600;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--line);
+      position: sticky;
+      top: 0;
+      white-space: nowrap;
+      z-index: 2;
+    }
+    .tableWrap table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: middle;
+    }
+    .tableWrap table tr:hover td {
+      background: rgba(246,241,232,0.5);
+    }
+    .tableWrap table td.empty-cell {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* ========== 可编辑单元格 cellEdit ========== */
+    td.cellEdit {
+      background: #fff;
+      cursor: text;
+      position: relative;
+    }
+    td.cellEdit:hover {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+    td.cellEdit input,
+    td.cellEdit select {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: inherit;
+      font-family: inherit;
+      color: inherit;
+      padding: 2px 0;
+      outline: none;
+    }
+    td.cellEdit select { cursor: pointer; }
+
+    /* ========== 迷你按钮 miniBtn ========== */
+    .miniBtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.15s;
+    }
+    .miniBtn:hover { border-color: var(--accent); color: var(--accent); }
+    .miniBtn.danger:hover { border-color: var(--red); color: var(--red); background: #fff5f5; }
+
+    /* ========== 徽章 badge ========== */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-green { background: #e6f4ee; color: var(--green); }
+    .badge-red { background: #fce8eb; color: var(--red); }
+    .badge-amber { background: #fdf3e0; color: var(--amber); }
+    .badge-gray { background: #eee; color: var(--muted); }
+    .badge-accent { background: #e0f0f1; color: var(--accent); }
+
+    /* ========== 颜色类 ========== */
+    .pos { color: var(--green); font-weight: 600; }
+    .neg { color: var(--red); font-weight: 600; }
+
+    /* ========== 薪资输入 ========== */
+    .salaryInput {
+      width: 70px;
+      text-align: right;
+      padding: 3px 6px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: inherit;
+      background: var(--paper);
+    }
+    .salaryInput:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* ========== 排班颜色 ========== */
+    .s-早 { background: #e8f5e9; color: #2e7d32; }
+    .s-中 { background: #fff3e0; color: #e65100; }
+    .s-晚 { background: #e8eaf6; color: #283593; }
+    .s-通班 { background: #fce4ec; color: #c62828; }
+    .s-休 { background: #f5f5f5; color: #9e9e9e; }
+    .s-请假 { background: #fff8e1; color: #f57f17; }
+    .s-旷工 { background: #ffebee; color: #c62828; }
+    .s-培训 { background: #e0f2f1; color: #00695c; }
+    .s-empty { background: var(--paper); }
+
+    /* ========== 排班冻结列 scheduleFreezeWrap ========== */
+    .scheduleFreezeWrap {
+      position: relative;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .scheduleFreezeWrap table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .scheduleFreezeWrap table th,
+    .scheduleFreezeWrap table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      text-align: center;
+      white-space: nowrap;
+    }
+    .scheduleFreezeWrap table th {
+      background: var(--cream);
+      color: var(--navy);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+    }
+    .scheduleFreezeWrap .freeze-col {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      background: var(--paper);
+    }
+    .scheduleFreezeWrap .freeze-col.th-freeze {
+      z-index: 4;
+      background: var(--cream);
+    }
+    .scheduleFreezeWrap td.sched-cell {
+      cursor: pointer;
+      min-width: 36px;
+      user-select: none;
+      transition: all 0.1s;
+    }
+    .scheduleFreezeWrap td.sched-cell:hover {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+    }
+    .scheduleFreezeWrap tr:hover td.freeze-col {
+      background: rgba(246,241,232,0.7);
+    }
+
+    /* ========== 选项滚动器 optionScroller ========== */
+    .optionScroller {
+      display: flex;
+      overflow-x: auto;
+      gap: 6px;
+      padding-bottom: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line) transparent;
+    }
+    .optionScroller::-webkit-scrollbar { height: 4px; }
+    .optionScroller::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+    .optionScroller .os-item {
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--muted);
+      transition: all 0.15s;
+      user-select: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .optionScroller .os-item:hover { border-color: var(--accent); color: var(--accent); }
+    .optionScroller .os-item.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    /* ========== KPI 表格包裹 ========== */
+    .kpi-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+    }
+    .kpi-table-wrap table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .kpi-table-wrap th {
+      background: var(--cream);
+      color: var(--navy);
+      font-weight: 600;
+      padding: 10px 12px;
+      border-bottom: 2px solid var(--line);
+      text-align: left;
+    }
+    .kpi-table-wrap td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    .kpi-table-wrap tr:hover td { background: rgba(246,241,232,0.5); }
+
+    /* ========== 加载动画 loading ========== */
+    .loading-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(19,35,58,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .loading-overlay .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid rgba(255,255,255,0.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ========== 通知 notice ========== */
+    .notice {
+      position: fixed;
+      top: 64px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 999;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      transform: translateX(120%);
+      transition: transform 0.3s ease;
+      max-width: 360px;
+    }
+    .notice.show { transform: translateX(0); }
+    .notice.success { background: var(--green); color: #fff; }
+    .notice.error { background: var(--red); color: #fff; }
+    .notice.warn { background: var(--amber); color: #fff; }
+
+    /* ========== 确认弹窗 confirmOverlay ========== */
+    .confirmOverlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(19,35,58,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+    }
+    .confirmBox {
+      background: var(--paper);
+      border-radius: 12px;
+      padding: 28px 32px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    .confirmBox h3 {
+      margin-bottom: 12px;
+      font-size: 16px;
+      color: var(--navy);
+    }
+    .confirmBox p {
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+    .confirmBox .confirm-btns {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    /* ========== 文件上传区域 ========== */
+    .file-upload-area {
+      border: 2px dashed var(--line);
+      border-radius: 8px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--paper);
+    }
+    .file-upload-area:hover {
+      border-color: var(--accent);
+      background: rgba(47,111,115,0.03);
+    }
+    .file-upload-area i {
+      font-size: 24px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .file-upload-area p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ========== 响应式 ========== */
+    @media (max-width: 768px) {
+      .topbar { padding: 0 10px; }
+      .topbar .module-tabs .tab { padding: 12px 12px; font-size: 12px; }
+      .main-wrap { padding: 12px; }
+      .card { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部导航栏 -->
+  <div class="topbar">
+    <div class="logo"><i class="fas fa-users-gear"></i> SG 人力管理</div>
+    <div class="module-tabs" id="moduleTabs">
+      <div class="tab active" data-mod="staff" onclick="switchModule('staff')">
+        <i class="fas fa-id-card"></i> 员工管理
+      </div>
+      <div class="tab" data-mod="schedule" onclick="switchModule('schedule')">
+        <i class="fas fa-calendar-days"></i> 排班明细
+      </div>
+      <div class="tab" data-mod="kpi" onclick="switchModule('kpi')">
+        <i class="fas fa-chart-line"></i> 绩效管理
+      </div>
+      <div class="tab" data-mod="performance" onclick="switchModule('performance')">
+        <i class="fas fa-file-invoice-dollar"></i> 绩效制作
+      </div>
+    </div>
+    <div class="actions">
+      <div class="sync-status" id="syncStatus">
+        <span class="dot ok"></span>
+        <span>本地存储</span>
+      </div>
+      <button class="btn btn-gold btn-sm" onclick="saveToServer()">
+        <i class="fas fa-cloud-arrow-up"></i> 同步保存
+      </button>
+      <a href="index.html" class="btn btn-secondary btn-sm">
+        <i class="fas fa-arrow-left"></i> 返回结算系统
+      </a>
+    </div>
+  </div>
+
+  <!-- 主内容区域 -->
+  <div class="main-wrap">
+
+    <!-- ==================== 模块1：员工管理 ==================== -->
+    <div class="module-section active" id="mod-staff">
+      <!-- 子标签 -->
+      <div class="subtabs" id="staffSubtabs">
+        <div class="stab active" onclick="setStaffMode('info')">员工基本信息</div>
+        <div class="stab" onclick="setStaffMode('salary')">员工薪资管理</div>
+        <div class="stab" onclick="setStaffMode('managers')">管理架构</div>
+      </div>
+
+      <!-- 项目筛选 -->
+      <div class="pillTabs" id="staffPillTabs"></div>
+
+      <!-- 员工基本信息 -->
+      <div id="staff-info-panel">
+        <div class="toolRow">
+          <button class="btn btn-primary btn-sm" onclick="addStaffRow()"><i class="fas fa-plus"></i> 新增员工</button>
+          <button class="btn btn-secondary btn-sm" onclick="saveStaffChanges()"><i class="fas fa-floppy-disk"></i> 保存修改</button>
+          <div class="spacer"></div>
+          <div class="hint"><i class="fas fa-circle-info"></i> 点击单元格可直接编辑，修改后请点击"保存修改"</div>
+        </div>
+        <div class="tableWrap" id="staffInfoTableWrap"></div>
+      </div>
+
+      <!-- 员工薪资管理 -->
+      <div id="staff-salary-panel" style="display:none;">
+        <div class="toolRow">
+          <button class="btn btn-primary btn-sm" onclick="saveStaffChanges()"><i class="fas fa-floppy-disk"></i> 保存修改</button>
+          <div class="spacer"></div>
+          <div class="hint"><i class="fas fa-circle-info"></i> 试用期/转正底薪及考勤数据在此编辑，薪资将自动计算</div>
+        </div>
+        <div class="tableWrap" id="staffSalaryTableWrap"></div>
+      </div>
+
+      <!-- 管理架构 -->
+      <div id="staff-managers-panel" style="display:none;">
+        <div class="toolRow">
+          <button class="btn btn-primary btn-sm" onclick="saveStaffChanges()"><i class="fas fa-floppy-disk"></i> 保存修改</button>
+          <div class="spacer"></div>
+          <div class="hint"><i class="fas fa-circle-info"></i> 管理人员成本按比例分摊到各项目</div>
+        </div>
+        <div class="tableWrap" id="staffManagersTableWrap"></div>
+      </div>
+    </div>
+
+    <!-- ==================== 模块2：排班明细 ==================== -->
+    <div class="module-section" id="mod-schedule">
+      <div class="subtabs" id="scheduleSubtabs">
+        <div class="stab active" onclick="setScheduleSubpage('main')">排班明细</div>
+        <div class="stab" onclick="setScheduleSubpage('remarks')">排班备注</div>
+        <div class="stab" onclick="setScheduleSubpage('summary')">综合汇总</div>
+      </div>
+
+      <!-- 排班明细 -->
+      <div id="sched-main-panel">
+        <div class="pillTabs" id="schedPillTabs"></div>
+        <div class="toolRow">
+          <label style="font-size:13px;color:var(--muted);">月份：</label>
+          <select id="schedPeriodSelect" onchange="setSchedulePeriod(this.value)"></select>
+          <button class="btn btn-primary btn-sm" onclick="addScheduleMonth()"><i class="fas fa-plus"></i> 新增月份</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteScheduleMonth()"><i class="fas fa-trash"></i> 删除月份</button>
+          <div class="spacer"></div>
+          <button class="btn btn-primary btn-sm" onclick="addScheduleRow()"><i class="fas fa-plus"></i> 新增行</button>
+          <button class="btn btn-danger btn-sm" onclick="batchDeleteScheduleRows()"><i class="fas fa-trash-can"></i> 批量删除</button>
+        </div>
+        <div class="hint"><i class="fas fa-circle-info"></i> 点击单元格切换班次，右键或长按可快速选择</div>
+        <div class="scheduleFreezeWrap" id="scheduleFreezeWrap" style="max-height:600px;overflow:auto;"></div>
+      </div>
+
+      <!-- 排班备注 -->
+      <div id="sched-remarks-panel" style="display:none;">
+        <div class="pillTabs" id="schedRemarksPillTabs"></div>
+        <div class="toolRow">
+          <label style="font-size:13px;color:var(--muted);">月份：</label>
+          <select id="schedRemarksPeriodSelect" onchange="setScheduleRemarksPeriod(this.value)"></select>
+          <button class="btn btn-primary btn-sm" onclick="addScheduleRemark()"><i class="fas fa-plus"></i> 新增备注</button>
+          <div class="spacer"></div>
+        </div>
+        <div class="tableWrap" id="scheduleRemarksTableWrap"></div>
+      </div>
+
+      <!-- 综合汇总 -->
+      <div id="sched-summary-panel" style="display:none;">
+        <div class="pillTabs" id="schedSummaryPillTabs"></div>
+        <div class="toolRow">
+          <label style="font-size:13px;color:var(--muted);">月份：</label>
+          <select id="schedSummaryPeriodSelect" onchange="setScheduleSummaryPeriod(this.value)"></select>
+          <div class="spacer"></div>
+        </div>
+        <div class="tableWrap" id="scheduleSummaryTableWrap"></div>
+      </div>
+    </div>
+
+    <!-- ==================== 模块3：绩效管理 ==================== -->
+    <div class="module-section" id="mod-kpi">
+      <div class="subtabs" id="kpiSubtabs">
+        <div class="stab active" onclick="setKpiMode('view')">查看指标</div>
+        <div class="stab" onclick="setKpiMode('config')">配置指标</div>
+      </div>
+
+      <!-- 查看指标 -->
+      <div id="kpi-view-panel">
+        <div id="kpiOptionScroller" class="optionScroller" style="margin-bottom:14px;"></div>
+        <div class="toolRow">
+          <label style="font-size:13px;color:var(--muted);">月份：</label>
+          <select id="kpiPeriodSelect" onchange="renderKpiManager()"></select>
+          <div class="spacer"></div>
+        </div>
+        <div id="kpiViewArea"></div>
+      </div>
+
+      <!-- 配置指标 -->
+      <div id="kpi-config-panel" style="display:none;">
+        <div id="kpiConfigOptionScroller" class="optionScroller" style="margin-bottom:14px;"></div>
+        <div class="toolRow">
+          <button class="btn btn-primary btn-sm" onclick="addKpiConfigRow()"><i class="fas fa-plus"></i> 新增指标</button>
+          <div class="spacer"></div>
+        </div>
+        <div class="card" style="margin-bottom:16px;">
+          <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--navy);">
+            <i class="fas fa-file-arrow-up"></i> 上传 Excel 配置
+          </div>
+          <div class="file-upload-area" onclick="document.getElementById('kpiFileInput').click()">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <p>点击选择 Excel (.xlsx) 文件</p>
+          </div>
+          <input type="file" id="kpiFileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleKpiFileUpload(this)">
+        </div>
+        <div class="kpi-table-wrap" id="kpiConfigTableWrap"></div>
+      </div>
+    </div>
+
+    <!-- ==================== 模块4：绩效制作 ==================== -->
+    <div class="module-section" id="mod-performance">
+      <div class="subtabs" id="perfSubtabs">
+        <div class="stab active" onclick="setPerfMode('exclusive')">专席绩效</div>
+        <div class="stab" onclick="setPerfMode('pinxi')">拼席结算</div>
+        <div class="stab" onclick="setPerfMode('temp')">临时客服费用</div>
+      </div>
+
+      <!-- 专席绩效 -->
+      <div id="perf-exclusive-panel">
+        <div class="pillTabs" id="perfExPillTabs"></div>
+        <div class="toolRow">
+          <label style="font-size:13px;color:var(--muted);">月份：</label>
+          <input type="month" id="perfExPeriod" onchange="renderPerformance()">
+          <div class="spacer"></div>
+          <button class="btn btn-secondary btn-sm" onclick="exportPerformanceCsv('exclusive')"><i class="fas fa-download"></i> 导出CSV</button>
+        </div>
+        <div class="tableWrap" id="perfExclusiveTableWrap"></div>
+      </div>
+
+      <!-- 拼席结算 -->
+      <div id="perf-pinxi-panel" style="display:none;">
+        <div class="pillTabs" id="perfPxPillTabs"></div>
+        <div class="toolRow">
+          <label style="font-size:13px;color:var(--muted);">月份：</label>
+          <input type="month" id="perfPxPeriod" onchange="renderPerformance()">
+          <div class="spacer"></div>
+          <button class="btn btn-secondary btn-sm" onclick="exportPerformanceCsv('pinxi')"><i class="fas fa-download"></i> 导出CSV</button>
+        </div>
+        <div class="tableWrap" id="perfPinxiTableWrap"></div>
+      </div>
+
+      <!-- 临时客服费用 -->
+      <div id="perf-temp-panel" style="display:none;">
+        <div class="pillTabs" id="perfTmpPillTabs"></div>
+        <div class="toolRow">
+          <label style="font-size:13px;color:var(--muted);">月份：</label>
+          <input type="month" id="perfTmpPeriod" onchange="renderPerformance()">
+          <div class="spacer"></div>
+          <button class="btn btn-secondary btn-sm" onclick="exportPerformanceCsv('temp')"><i class="fas fa-download"></i> 导出CSV</button>
+        </div>
+        <div class="tableWrap" id="perfTempTableWrap"></div>
+      </div>
+    </div>
+
+  </div><!-- /main-wrap -->
+
+  <!-- 通知 -->
+  <div class="notice" id="noticeEl"></div>
+
+  <!-- JS引用 -->
+  <script src="js/xlsx.full.min.js"></script>
+  <script src="js/hr-app.js"></script>
+</body>
+</html>
