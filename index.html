@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>拼席月度结算管理系统</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/hr.css">
   <script src="js/dexie.min.js"></script>
   <script src="js/chart.umd.min.js"></script>
   <script src="js/xlsx.full.min.js"></script>
@@ -27,7 +29,15 @@
         </ul>
       </li>
       <li class="nav-separator"></li>
-      <li><a href="hr.html" target="_blank" style="color:inherit;text-decoration:none;display:block;">HR人力管理</a></li>
+      <li class="has-submenu" data-submenu="hr">
+        <span>HR人力管理</span>
+        <ul class="submenu">
+          <li data-view="hr-staff">员工管理</li>
+          <li data-view="hr-schedule">排班明细</li>
+          <li data-view="hr-kpi">绩效管理</li>
+          <li data-view="hr-performance">绩效制作</li>
+        </ul>
+      </li>
     </ul>
     <div class="sidebar-footer">
       <button class="btn btn-secondary" onclick="App.exportAllData()">导出全部数据</button>
@@ -44,6 +54,165 @@
     <div id="view-invoices" class="view hidden"></div>
     <div id="view-invoices-co" class="view hidden"></div>
     <div id="view-invoices-ex" class="view hidden"></div>
+
+    <!-- HR 人力管理 - 员工管理 -->
+    <div id="view-hr-staff" class="view hidden">
+      <div class="hr-wrap">
+        <div class="hr-subtabs" id="staffSubtabs">
+          <div class="hr-stab active" onclick="setStaffMode('info')">员工基本信息</div>
+          <div class="hr-stab" onclick="setStaffMode('salary')">员工薪资管理</div>
+          <div class="hr-stab" onclick="setStaffMode('managers')">管理架构</div>
+        </div>
+        <div class="hr-pillTabs" id="staffPillTabs"></div>
+        <div id="staff-info-panel">
+          <div class="hr-toolRow">
+            <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addStaffRow()"><i class="fas fa-plus"></i> 新增员工</button>
+            <button class="hr-btn hr-btn-secondary hr-btn-sm" onclick="saveStaffChanges()"><i class="fas fa-floppy-disk"></i> 保存修改</button>
+            <div class="hr-spacer"></div>
+            <div class="hr-hint"><i class="fas fa-circle-info"></i> 点击单元格可直接编辑，修改后请点击"保存修改"</div>
+          </div>
+          <div class="hr-tableWrap" id="staffInfoTableWrap"></div>
+        </div>
+        <div id="staff-salary-panel" style="display:none;">
+          <div class="hr-toolRow">
+            <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="saveStaffChanges()"><i class="fas fa-floppy-disk"></i> 保存修改</button>
+            <div class="hr-spacer"></div>
+            <div class="hr-hint"><i class="fas fa-circle-info"></i> 试用期/转正底薪及考勤数据在此编辑</div>
+          </div>
+          <div class="hr-tableWrap" id="staffSalaryTableWrap"></div>
+        </div>
+        <div id="staff-managers-panel" style="display:none;">
+          <div class="hr-toolRow">
+            <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="saveStaffChanges()"><i class="fas fa-floppy-disk"></i> 保存修改</button>
+            <div class="hr-spacer"></div>
+            <div class="hr-hint"><i class="fas fa-circle-info"></i> 管理人员成本按比例分摊到各项目</div>
+          </div>
+          <div class="hr-tableWrap" id="staffManagersTableWrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HR 人力管理 - 排班明细 -->
+    <div id="view-hr-schedule" class="view hidden">
+      <div class="hr-wrap">
+        <div class="hr-subtabs" id="scheduleSubtabs">
+          <div class="hr-stab active" onclick="setScheduleSubpage('main')">排班明细</div>
+          <div class="hr-stab" onclick="setScheduleSubpage('remarks')">排班备注</div>
+          <div class="hr-stab" onclick="setScheduleSubpage('summary')">综合汇总</div>
+        </div>
+        <div id="sched-main-panel">
+          <div class="hr-pillTabs" id="schedPillTabs"></div>
+          <div class="hr-toolRow">
+            <label class="hr-label">月份：</label>
+            <select id="schedPeriodSelect" class="hr-select" onchange="setSchedulePeriod(this.value)"></select>
+            <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleMonth()"><i class="fas fa-plus"></i> 新增月份</button>
+            <button class="hr-btn hr-btn-danger hr-btn-sm" onclick="deleteScheduleMonth()"><i class="fas fa-trash"></i> 删除月份</button>
+            <div class="hr-spacer"></div>
+            <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleRow()"><i class="fas fa-plus"></i> 新增行</button>
+            <button class="hr-btn hr-btn-danger hr-btn-sm" onclick="batchDeleteScheduleRows()"><i class="fas fa-trash-can"></i> 批量删除</button>
+          </div>
+          <div class="hr-hint"><i class="fas fa-circle-info"></i> 点击单元格切换班次，右键或长按可快速选择</div>
+          <div class="hr-scheduleFreezeWrap" id="scheduleFreezeWrap" style="max-height:600px;overflow:auto;"></div>
+        </div>
+        <div id="sched-remarks-panel" style="display:none;">
+          <div class="hr-pillTabs" id="schedRemarksPillTabs"></div>
+          <div class="hr-toolRow">
+            <label class="hr-label">月份：</label>
+            <select id="schedRemarksPeriodSelect" class="hr-select" onchange="setScheduleRemarksPeriod(this.value)"></select>
+            <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleRemark()"><i class="fas fa-plus"></i> 新增备注</button>
+            <div class="hr-spacer"></div>
+          </div>
+          <div class="hr-tableWrap" id="scheduleRemarksTableWrap"></div>
+        </div>
+        <div id="sched-summary-panel" style="display:none;">
+          <div class="hr-pillTabs" id="schedSummaryPillTabs"></div>
+          <div class="hr-toolRow">
+            <label class="hr-label">月份：</label>
+            <select id="schedSummaryPeriodSelect" class="hr-select" onchange="setScheduleSummaryPeriod(this.value)"></select>
+            <div class="hr-spacer"></div>
+          </div>
+          <div class="hr-tableWrap" id="scheduleSummaryTableWrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HR 人力管理 - 绩效管理 -->
+    <div id="view-hr-kpi" class="view hidden">
+      <div class="hr-wrap">
+        <div class="hr-subtabs" id="kpiSubtabs">
+          <div class="hr-stab active" onclick="setKpiMode('view')">查看指标</div>
+          <div class="hr-stab" onclick="setKpiMode('config')">配置指标</div>
+        </div>
+        <div id="kpi-view-panel">
+          <div id="kpiOptionScroller" class="hr-optionScroller" style="margin-bottom:14px;"></div>
+          <div class="hr-toolRow">
+            <label class="hr-label">月份：</label>
+            <select id="kpiPeriodSelect" class="hr-select" onchange="renderKpiManager()"></select>
+            <div class="hr-spacer"></div>
+          </div>
+          <div id="kpiViewArea"></div>
+        </div>
+        <div id="kpi-config-panel" style="display:none;">
+          <div id="kpiConfigOptionScroller" class="hr-optionScroller" style="margin-bottom:14px;"></div>
+          <div class="hr-toolRow">
+            <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addKpiConfigRow()"><i class="fas fa-plus"></i> 新增指标</button>
+            <div class="hr-spacer"></div>
+          </div>
+          <div class="hr-card" style="margin-bottom:16px;">
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px;color:var(--hr-navy);">
+              <i class="fas fa-file-arrow-up"></i> 上传 Excel 配置
+            </div>
+            <div class="hr-file-upload-area" onclick="document.getElementById('kpiFileInput').click()">
+              <i class="fas fa-cloud-arrow-up"></i>
+              <p>点击选择 Excel (.xlsx) 文件</p>
+            </div>
+            <input type="file" id="kpiFileInput" accept=".xlsx,.xls,.csv" style="display:none;" onchange="handleKpiFileUpload(this)">
+          </div>
+          <div class="hr-kpi-table-wrap" id="kpiConfigTableWrap"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HR 人力管理 - 绩效制作 -->
+    <div id="view-hr-performance" class="view hidden">
+      <div class="hr-wrap">
+        <div class="hr-subtabs" id="perfSubtabs">
+          <div class="hr-stab active" onclick="setPerfMode('exclusive')">专席绩效</div>
+          <div class="hr-stab" onclick="setPerfMode('pinxi')">拼席结算</div>
+          <div class="hr-stab" onclick="setPerfMode('temp')">临时客服费用</div>
+        </div>
+        <div id="perf-exclusive-panel">
+          <div class="hr-pillTabs" id="perfExPillTabs"></div>
+          <div class="hr-toolRow">
+            <label class="hr-label">月份：</label>
+            <input type="month" id="perfExPeriod" class="hr-input-month" onchange="renderPerformance()">
+            <div class="hr-spacer"></div>
+            <button class="hr-btn hr-btn-secondary hr-btn-sm" onclick="exportPerformanceCsv('exclusive')"><i class="fas fa-download"></i> 导出CSV</button>
+          </div>
+          <div class="hr-tableWrap" id="perfExclusiveTableWrap"></div>
+        </div>
+        <div id="perf-pinxi-panel" style="display:none;">
+          <div class="hr-pillTabs" id="perfPxPillTabs"></div>
+          <div class="hr-toolRow">
+            <label class="hr-label">月份：</label>
+            <input type="month" id="perfPxPeriod" class="hr-input-month" onchange="renderPerformance()">
+            <div class="hr-spacer"></div>
+            <button class="hr-btn hr-btn-secondary hr-btn-sm" onclick="exportPerformanceCsv('pinxi')"><i class="fas fa-download"></i> 导出CSV</button>
+          </div>
+          <div class="hr-tableWrap" id="perfPinxiTableWrap"></div>
+        </div>
+        <div id="perf-temp-panel" style="display:none;">
+          <div class="hr-pillTabs" id="perfTmpPillTabs"></div>
+          <div class="hr-toolRow">
+            <label class="hr-label">月份：</label>
+            <input type="month" id="perfTmpPeriod" class="hr-input-month" onchange="renderPerformance()">
+            <div class="hr-spacer"></div>
+            <button class="hr-btn hr-btn-secondary hr-btn-sm" onclick="exportPerformanceCsv('temp')"><i class="fas fa-download"></i> 导出CSV</button>
+          </div>
+          <div class="hr-tableWrap" id="perfTempTableWrap"></div>
+        </div>
+      </div>
+    </div>
   </main>
   <script src="js/db.js"></script>
   <script src="js/data.js"></script>
@@ -51,5 +220,6 @@
   <script src="js/export.js"></script>
   <script src="js/charts.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/hr-app.js"></script>
 </body>
 </html>

@@ -1,0 +1,495 @@
+/* ========== HR 模块 CSS 变量 ========== */
+:root {
+  --hr-cream: #f6f1e8;
+  --hr-paper: #fffdf8;
+  --hr-ink: #182235;
+  --hr-navy: #13233a;
+  --hr-accent: #2f6f73;
+  --hr-gold: #c79a42;
+  --hr-bg: #f5efe0;
+  --hr-line: #e5dac9;
+  --hr-text: #182235;
+  --hr-muted: #7a6f62;
+  --hr-green: #16825f;
+  --hr-red: #b94e5d;
+  --hr-amber: #c79a42;
+}
+
+/* ========== HR 容器 ========== */
+.hr-wrap {
+  padding: 16px;
+}
+
+/* ========== HR 子标签 ========== */
+.hr-subtabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--hr-line);
+  margin-bottom: 16px;
+}
+.hr-stab {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--hr-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  user-select: none;
+}
+.hr-stab:hover { color: var(--hr-text); }
+.hr-stab.active {
+  color: var(--hr-accent);
+  border-bottom-color: var(--hr-accent);
+  font-weight: 600;
+}
+
+/* ========== HR 药丸标签 ========== */
+.hr-pillTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.hr-pill {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid var(--hr-line);
+  background: var(--hr-paper);
+  color: var(--hr-muted);
+  transition: all 0.15s;
+  user-select: none;
+}
+.hr-pill:hover { border-color: var(--hr-accent); color: var(--hr-accent); }
+.hr-pill.active {
+  background: var(--hr-accent);
+  color: #fff;
+  border-color: var(--hr-accent);
+}
+
+/* ========== HR 提示 ========== */
+.hr-hint {
+  font-size: 12px;
+  color: var(--hr-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hr-hint i { color: var(--hr-amber); }
+
+/* ========== HR 工具行 ========== */
+.hr-toolRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.hr-spacer { flex: 1; }
+.hr-label {
+  font-size: 13px;
+  color: var(--hr-muted);
+}
+.hr-select, .hr-input-month {
+  padding: 6px 12px;
+  border: 1px solid var(--hr-line);
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--hr-paper);
+  color: var(--hr-text);
+}
+.hr-select:focus, .hr-input-month:focus {
+  outline: none;
+  border-color: var(--hr-accent);
+  box-shadow: 0 0 0 2px rgba(47,111,115,0.15);
+}
+
+/* ========== HR 按钮 ========== */
+.hr-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.hr-btn-primary {
+  background: var(--hr-accent);
+  color: #fff;
+  border-color: var(--hr-accent);
+}
+.hr-btn-primary:hover { background: #256a6e; }
+.hr-btn-secondary {
+  background: transparent;
+  color: var(--hr-accent);
+  border-color: var(--hr-accent);
+}
+.hr-btn-secondary:hover { background: var(--hr-accent); color: #fff; }
+.hr-btn-danger {
+  background: transparent;
+  color: var(--hr-red);
+  border-color: var(--hr-red);
+}
+.hr-btn-danger:hover { background: var(--hr-red); color: #fff; }
+.hr-btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+/* ========== HR 卡片 ========== */
+.hr-card {
+  background: var(--hr-paper);
+  border: 1px solid var(--hr-line);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+/* ========== HR 表格包裹 ========== */
+.hr-tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--hr-line);
+  border-radius: 8px;
+  background: var(--hr-paper);
+}
+.hr-tableWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  min-width: 800px;
+}
+.hr-tableWrap table th {
+  background: var(--hr-cream);
+  color: var(--hr-navy);
+  font-weight: 600;
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--hr-line);
+  position: sticky;
+  top: 0;
+  white-space: nowrap;
+  z-index: 2;
+}
+.hr-tableWrap table td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--hr-line);
+  vertical-align: middle;
+}
+.hr-tableWrap table tr:hover td {
+  background: rgba(246,241,232,0.5);
+}
+.hr-tableWrap table td.empty-cell {
+  color: var(--hr-muted);
+  font-style: italic;
+}
+
+/* ========== HR 可编辑单元格 ========== */
+td.hr-cellEdit {
+  background: #fff;
+  cursor: text;
+  position: relative;
+}
+td.hr-cellEdit:hover {
+  outline: 2px solid var(--hr-accent);
+  outline-offset: -2px;
+}
+td.hr-cellEdit input,
+td.hr-cellEdit select {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  padding: 2px 0;
+  outline: none;
+}
+td.hr-cellEdit select { cursor: pointer; }
+
+/* ========== HR 迷你按钮 ========== */
+.hr-miniBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--hr-line);
+  background: var(--hr-paper);
+  color: var(--hr-muted);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.15s;
+}
+.hr-miniBtn:hover { border-color: var(--hr-accent); color: var(--hr-accent); }
+.hr-miniBtn.danger:hover { border-color: var(--hr-red); color: var(--hr-red); background: #fff5f5; }
+
+/* ========== HR 徽章 ========== */
+.hr-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.hr-badge-green { background: #e6f4ee; color: var(--hr-green); }
+.hr-badge-red { background: #fce8eb; color: var(--hr-red); }
+.hr-badge-amber { background: #fdf3e0; color: var(--hr-amber); }
+.hr-badge-gray { background: #eee; color: var(--hr-muted); }
+
+/* ========== HR 颜色 ========== */
+.hr-pos { color: var(--hr-green); font-weight: 600; }
+.hr-neg { color: var(--hr-red); font-weight: 600; }
+
+/* ========== HR 薪资输入 ========== */
+.hr-salaryInput {
+  width: 70px;
+  text-align: right;
+  padding: 3px 6px;
+  border: 1px solid var(--hr-line);
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+  background: var(--hr-paper);
+}
+.hr-salaryInput:focus {
+  outline: none;
+  border-color: var(--hr-accent);
+}
+
+/* ========== HR 排班颜色 ========== */
+.s-早 { background: #e8f5e9; color: #2e7d32; }
+.s-中 { background: #fff3e0; color: #e65100; }
+.s-晚 { background: #e8eaf6; color: #283593; }
+.s-通班 { background: #fce4ec; color: #c62828; }
+.s-休 { background: #f5f5f5; color: #9e9e9e; }
+.s-请假 { background: #fff8e1; color: #f57f17; }
+.s-旷工 { background: #ffebee; color: #c62828; }
+.s-培训 { background: #e0f2f1; color: #00695c; }
+.s-empty { background: var(--hr-paper); }
+
+/* ========== HR 排班冻结列 ========== */
+.hr-scheduleFreezeWrap {
+  position: relative;
+  overflow-x: auto;
+  border: 1px solid var(--hr-line);
+  border-radius: 8px;
+  background: var(--hr-paper);
+}
+.hr-scheduleFreezeWrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.hr-scheduleFreezeWrap table th,
+.hr-scheduleFreezeWrap table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--hr-line);
+  border-right: 1px solid var(--hr-line);
+  text-align: center;
+  white-space: nowrap;
+}
+.hr-scheduleFreezeWrap table th {
+  background: var(--hr-cream);
+  color: var(--hr-navy);
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+.hr-scheduleFreezeWrap .freeze-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--hr-paper);
+}
+.hr-scheduleFreezeWrap .freeze-col.th-freeze {
+  z-index: 4;
+  background: var(--hr-cream);
+}
+.hr-scheduleFreezeWrap td.sched-cell {
+  cursor: pointer;
+  min-width: 36px;
+  user-select: none;
+  transition: all 0.1s;
+}
+.hr-scheduleFreezeWrap td.sched-cell:hover {
+  outline: 2px solid var(--hr-accent);
+  outline-offset: -1px;
+}
+.hr-scheduleFreezeWrap tr:hover td.freeze-col {
+  background: rgba(246,241,232,0.7);
+}
+
+/* ========== HR 选项滚动器 ========== */
+.hr-optionScroller {
+  display: flex;
+  overflow-x: auto;
+  gap: 6px;
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--hr-line) transparent;
+}
+.hr-optionScroller::-webkit-scrollbar { height: 4px; }
+.hr-optionScroller::-webkit-scrollbar-thumb { background: var(--hr-line); border-radius: 2px; }
+.hr-os-item {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  border: 1px solid var(--hr-line);
+  background: var(--hr-paper);
+  color: var(--hr-muted);
+  transition: all 0.15s;
+  user-select: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.hr-os-item:hover { border-color: var(--hr-accent); color: var(--hr-accent); }
+.hr-os-item.active {
+  background: var(--hr-accent);
+  color: #fff;
+  border-color: var(--hr-accent);
+}
+
+/* ========== HR KPI 表格 ========== */
+.hr-kpi-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--hr-line);
+  border-radius: 8px;
+  background: var(--hr-paper);
+}
+.hr-kpi-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.hr-kpi-table-wrap th {
+  background: var(--hr-cream);
+  color: var(--hr-navy);
+  font-weight: 600;
+  padding: 10px 12px;
+  border-bottom: 2px solid var(--hr-line);
+  text-align: left;
+}
+.hr-kpi-table-wrap td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--hr-line);
+}
+.hr-kpi-table-wrap tr:hover td { background: rgba(246,241,232,0.5); }
+
+/* ========== HR 文件上传 ========== */
+.hr-file-upload-area {
+  border: 2px dashed var(--hr-line);
+  border-radius: 8px;
+  padding: 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--hr-paper);
+}
+.hr-file-upload-area:hover {
+  border-color: var(--hr-accent);
+  background: rgba(47,111,115,0.03);
+}
+.hr-file-upload-area i {
+  font-size: 24px;
+  color: var(--hr-accent);
+  margin-bottom: 8px;
+  display: block;
+}
+.hr-file-upload-area p {
+  font-size: 13px;
+  color: var(--hr-muted);
+}
+
+/* ========== HR 通知 ========== */
+.hr-notice {
+  position: fixed;
+  top: 64px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 999;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  transform: translateX(120%);
+  transition: transform 0.3s ease;
+  max-width: 360px;
+}
+.hr-notice.show { transform: translateX(0); }
+.hr-notice.success { background: var(--hr-green); color: #fff; }
+.hr-notice.error { background: var(--hr-red); color: #fff; }
+.hr-notice.warn { background: var(--hr-amber); color: #fff; }
+
+/* ========== HR 确认弹窗 ========== */
+.hr-confirmOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(19,35,58,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+}
+.hr-confirmBox {
+  background: var(--hr-paper);
+  border-radius: 12px;
+  padding: 28px 32px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  text-align: center;
+}
+.hr-confirmBox h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: var(--hr-navy);
+}
+.hr-confirmBox p {
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--hr-muted);
+}
+.hr-confirmBox .confirm-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ========== HR 加载 ========== */
+.hr-loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(19,35,58,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.hr-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top-color: var(--hr-gold);
+  border-radius: 50%;
+  animation: hr-spin 0.8s linear infinite;
+}
+@keyframes hr-spin { to { transform: rotate(360deg); } }
+
+/* ========== 响应式 ========== */
+@media (max-width: 768px) {
+  .hr-wrap { padding: 12px; }
+  .hr-card { padding: 14px; }
+}

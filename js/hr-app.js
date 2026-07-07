@@ -176,22 +176,22 @@ function toast(msg, type) {
   var el = $('#noticeEl');
   if (!el) return;
   el.textContent = msg;
-  el.className = 'notice show ' + (type || 'success');
+  el.className = 'hr-notice show ' + (type || 'success');
   clearTimeout(_noticeTimer);
-  _noticeTimer = setTimeout(function() { el.className = 'notice'; }, 2500);
+  _noticeTimer = setTimeout(function() { el.className = 'hr-notice'; }, 2500);
 }
 
 // 确认弹窗
 function showConfirm(title, message, onOk) {
   var overlay = document.createElement('div');
-  overlay.className = 'confirmOverlay';
+  overlay.className = 'hr-confirmOverlay';
   overlay.innerHTML =
-    '<div class="confirmBox">' +
+    '<div class="hr-confirmBox">' +
     '<h3>' + esc(title) + '</h3>' +
     '<p>' + esc(message) + '</p>' +
     '<div class="confirm-btns">' +
-    '<button class="btn btn-secondary" id="cfCancel">取消</button>' +
-    '<button class="btn btn-primary" id="cfOk">确认</button>' +
+    '<button class="hr-btn hr-btn-secondary" id="cfCancel">取消</button>' +
+    '<button class="hr-btn hr-btn-primary" id="cfOk">确认</button>' +
     '</div></div>';
   document.body.appendChild(overlay);
   overlay.querySelector('#cfCancel').onclick = function() { document.body.removeChild(overlay); };
@@ -452,12 +452,12 @@ function renderOptionScroller(containerId, items, activeItem, onClickFn) {
   if (!container) return;
   var html = '';
   for (var i = 0; i < items.length; i++) {
-    var cls = items[i] === activeItem ? 'os-item active' : 'os-item';
+    var cls = items[i] === activeItem ? 'hr-os-item active' : 'hr-os-item';
     html += '<div class="' + cls + '" data-value="' + esc(items[i]) + '">' + esc(items[i]) + '</div>';
   }
   container.innerHTML = html;
   // 绑定事件
-  var els = container.querySelectorAll('.os-item');
+  var els = container.querySelectorAll('.hr-os-item');
   els.forEach(function(el) {
     el.addEventListener('click', function() {
       if (onClickFn) onClickFn(el.getAttribute('data-value'));
@@ -469,7 +469,7 @@ function renderOptionScroller(containerId, items, activeItem, onClickFn) {
 function scrollOptionBar(containerId) {
   var container = document.getElementById(containerId);
   if (!container) return;
-  var activeEl = container.querySelector('.os-item.active');
+  var activeEl = container.querySelector('.hr-os-item.active');
   if (activeEl) {
     activeEl.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
@@ -478,18 +478,7 @@ function scrollOptionBar(containerId) {
 // ==================== 模块切换 ====================
 function switchModule(mod) {
   state.currentModule = mod;
-  // 更新 tab 样式
-  var tabs = document.querySelectorAll('#moduleTabs .tab');
-  tabs.forEach(function(t) {
-    t.classList.toggle('active', t.getAttribute('data-mod') === mod);
-  });
-  // 显示/隐藏模块
-  var sections = document.querySelectorAll('.module-section');
-  sections.forEach(function(s) {
-    s.classList.remove('active');
-  });
-  var target = document.getElementById('mod-' + mod);
-  if (target) target.classList.add('active');
+  // 不再调用 App.switchView，因为 App.renderView 已经在调用 switchModule
   // 根据模块渲染
   if (mod === 'staff') {
     renderStaffPillTabs();
@@ -513,7 +502,7 @@ function setStaffProject(proj) {
 
 function setStaffMode(mode) {
   state.staffMode = mode;
-  var stabs = document.querySelectorAll('#staffSubtabs .stab');
+  var stabs = document.querySelectorAll('#staffSubtabs .hr-stab');
   stabs.forEach(function(t, i) {
     var modes = ['info', 'salary', 'managers'];
     t.classList.toggle('active', modes[i] === mode);
@@ -543,7 +532,7 @@ function renderStaffPillTabs() {
 
   var html = '';
   for (var i = 0; i < projects.length; i++) {
-    var cls = projects[i] === state.staffProject ? 'pill active' : 'pill';
+    var cls = projects[i] === state.staffProject ? 'hr-pill active' : 'hr-pill';
     html += '<div class="' + cls + '" onclick="setStaffProject(\'' + esc(projects[i]) + '\')">' + esc(projects[i]) + '</div>';
   }
   $('#staffPillTabs').innerHTML = html;
@@ -569,16 +558,16 @@ function renderStaffInfo() {
     '</tr></thead><tbody>';
   for (var i = 0; i < list.length; i++) {
     var s = list[i];
-    var statusBadge = s.status === '在职' ? 'badge badge-green' : (s.status === '离职' ? 'badge badge-red' : 'badge badge-amber');
+    var statusBadge = s.status === '在职' ? 'hr-badge hr-badge-green' : (s.status === '离职' ? 'hr-badge hr-badge-red' : 'hr-badge hr-badge-amber');
     html += '<tr data-id="' + esc(s.id) + '">' +
-      '<td class="cellEdit"><input value="' + esc(s.name) + '" onchange="updateStaffField(this)" data-field="name"></td>' +
-      '<td class="cellEdit"><input value="' + esc(s.project) + '" onchange="updateStaffField(this)" data-field="project"></td>' +
-      '<td class="cellEdit"><input value="' + esc(s.role) + '" onchange="updateStaffField(this)" data-field="role"></td>' +
+      '<td class="hr-cellEdit"><input value="' + esc(s.name) + '" onchange="updateStaffField(this)" data-field="name"></td>' +
+      '<td class="hr-cellEdit"><input value="' + esc(s.project) + '" onchange="updateStaffField(this)" data-field="project"></td>' +
+      '<td class="hr-cellEdit"><input value="' + esc(s.role) + '" onchange="updateStaffField(this)" data-field="role"></td>' +
       '<td><span class="' + statusBadge + '">' + esc(s.status) + '</span></td>' +
       '<td>' + workModeSelect(s.workMode) + '</td>' +
-      '<td class="cellEdit"><input type="date" value="' + esc(s.entryDate) + '" onchange="updateStaffField(this)" data-field="entryDate"></td>' +
-      '<td class="cellEdit"><input type="date" value="' + esc(s.regularDate) + '" onchange="updateStaffField(this)" data-field="regularDate"></td>' +
-      '<td><button class="miniBtn danger" onclick="deleteStaffRow(\'' + esc(s.id) + '\')" title="删除"><i class="fas fa-trash-can"></i></button></td>' +
+      '<td class="hr-cellEdit"><input type="date" value="' + esc(s.entryDate) + '" onchange="updateStaffField(this)" data-field="entryDate"></td>' +
+      '<td class="hr-cellEdit"><input type="date" value="' + esc(s.regularDate) + '" onchange="updateStaffField(this)" data-field="regularDate"></td>' +
+      '<td><button class="hr-miniBtn danger" onclick="deleteStaffRow(\'' + esc(s.id) + '\')" title="删除"><i class="fas fa-trash-can"></i></button></td>' +
       '</tr>';
   }
   if (list.length === 0) {
@@ -612,24 +601,24 @@ function renderStaffSalary() {
     var advance = adjustmentFor(s.id, period, 'advance');
     var calcSalary = base + perf;
     var finalSalary = Math.max(0, calcSalary + subsidy - penalty - advance);
-    var statusBadge = s.status === '在职' ? 'badge badge-green' : (s.status === '离职' ? 'badge badge-red' : 'badge badge-amber');
+    var statusBadge = s.status === '在职' ? 'hr-badge hr-badge-green' : (s.status === '离职' ? 'hr-badge hr-badge-red' : 'hr-badge hr-badge-amber');
 
     html += '<tr data-id="' + esc(s.id) + '">' +
       '<td>' + esc(s.name) + '</td>' +
       '<td>' + esc(s.project) + '</td>' +
       '<td><span class="' + statusBadge + '">' + esc(s.status) + '</span></td>' +
-      '<td><input class="salaryInput" value="' + s.trialBase + '" onchange="updateStaffField(this)" data-field="trialBase"></td>' +
-      '<td><input class="salaryInput" value="' + s.trialPerformance + '" onchange="updateStaffField(this)" data-field="trialPerformance"></td>' +
-      '<td><input class="salaryInput" value="' + s.regularBase + '" onchange="updateStaffField(this)" data-field="regularBase"></td>' +
-      '<td><input class="salaryInput" value="' + s.regularPerformance + '" onchange="updateStaffField(this)" data-field="regularPerformance"></td>' +
+      '<td><input class="hr-salaryInput" value="' + s.trialBase + '" onchange="updateStaffField(this)" data-field="trialBase"></td>' +
+      '<td><input class="hr-salaryInput" value="' + s.trialPerformance + '" onchange="updateStaffField(this)" data-field="trialPerformance"></td>' +
+      '<td><input class="hr-salaryInput" value="' + s.regularBase + '" onchange="updateStaffField(this)" data-field="regularBase"></td>' +
+      '<td><input class="hr-salaryInput" value="' + s.regularPerformance + '" onchange="updateStaffField(this)" data-field="regularPerformance"></td>' +
       '<td>' + expected + '</td>' +
-      '<td><input class="salaryInput" value="0" onchange="updateStaffField(this)" data-field="actualAttendance"></td>' +
-      '<td><input class="salaryInput" value="0" onchange="updateStaffField(this)" data-field="performanceScore"></td>' +
-      '<td><input class="salaryInput" value="' + subsidy + '" onchange="updateStaffField(this)" data-field="subsidy"></td>' +
-      '<td><input class="salaryInput" value="' + penalty + '" onchange="updateStaffField(this)" data-field="penalty"></td>' +
-      '<td><input class="salaryInput" value="' + advance + '" onchange="updateStaffField(this)" data-field="advance"></td>' +
-      '<td class="pos">' + fmtMoney(calcSalary) + '</td>' +
-      '<td class="pos">' + fmtMoney(finalSalary) + '</td>' +
+      '<td><input class="hr-salaryInput" value="0" onchange="updateStaffField(this)" data-field="actualAttendance"></td>' +
+      '<td><input class="hr-salaryInput" value="0" onchange="updateStaffField(this)" data-field="performanceScore"></td>' +
+      '<td><input class="hr-salaryInput" value="' + subsidy + '" onchange="updateStaffField(this)" data-field="subsidy"></td>' +
+      '<td><input class="hr-salaryInput" value="' + penalty + '" onchange="updateStaffField(this)" data-field="penalty"></td>' +
+      '<td><input class="hr-salaryInput" value="' + advance + '" onchange="updateStaffField(this)" data-field="advance"></td>' +
+      '<td class="hr-pos">' + fmtMoney(calcSalary) + '</td>' +
+      '<td class="hr-pos">' + fmtMoney(finalSalary) + '</td>' +
       '</tr>';
   }
   if (list.length === 0) {
@@ -654,10 +643,10 @@ function renderStaffManagers() {
     html += '<tr data-id="' + esc(m.id) + '">' +
       '<td>' + esc(m.name) + '</td>' +
       '<td>' + esc(m.project) + '</td>' +
-      '<td><span class="badge badge-accent">' + esc(m.role) + '</span></td>' +
-      '<td><input class="salaryInput" value="' + alloc + '" onchange="updateStaffField(this)" data-field="managementAllocation" style="width:50px;">%</td>' +
-      '<td class="cellEdit"><input value="' + esc(allocProj) + '" onchange="updateStaffField(this)" data-field="managementProject"></td>' +
-      '<td><button class="miniBtn danger" onclick="deleteStaffRow(\'' + esc(m.id) + '\')" title="删除"><i class="fas fa-trash-can"></i></button></td>' +
+      '<td><span class="hr-badge hr-badge-accent">' + esc(m.role) + '</span></td>' +
+      '<td><input class="hr-salaryInput" value="' + alloc + '" onchange="updateStaffField(this)" data-field="managementAllocation" style="width:50px;">%</td>' +
+      '<td class="hr-cellEdit"><input value="' + esc(allocProj) + '" onchange="updateStaffField(this)" data-field="managementProject"></td>' +
+      '<td><button class="hr-miniBtn danger" onclick="deleteStaffRow(\'' + esc(m.id) + '\')" title="删除"><i class="fas fa-trash-can"></i></button></td>' +
       '</tr>';
   }
   if (managers.length === 0) {
@@ -713,7 +702,7 @@ function updateStaffField(inputEl) {
 // 保存员工修改
 function saveStaffChanges() {
   // 读取所有输入框的最新值
-  document.querySelectorAll('.cellEdit input, .cellEdit select, .salaryInput').forEach(function(el) {
+  document.querySelectorAll('.hr-cellEdit input, .hr-cellEdit select, .hr-salaryInput').forEach(function(el) {
     var field = el.getAttribute('data-field');
     var row = el.closest('tr');
     if (!row || !field) return;
@@ -748,7 +737,7 @@ function setSchedulePeriod(period) {
 
 function setScheduleSubpage(sub) {
   state.scheduleSubpage = sub;
-  var stabs = document.querySelectorAll('#scheduleSubtabs .stab');
+  var stabs = document.querySelectorAll('#scheduleSubtabs .hr-stab');
   stabs.forEach(function(t, i) {
     var subs = ['main', 'remarks', 'summary'];
     t.classList.toggle('active', subs[i] === sub);
@@ -776,7 +765,7 @@ function renderSchedulePillTabs() {
   }
   var html = '';
   for (var i = 0; i < projects.length; i++) {
-    var cls = projects[i] === state.scheduleProject ? 'pill active' : 'pill';
+    var cls = projects[i] === state.scheduleProject ? 'hr-pill active' : 'hr-pill';
     html += '<div class="' + cls + '" onclick="setScheduleProject(\'' + esc(projects[i]) + '\')">' + esc(projects[i]) + '</div>';
   }
   var containers = ['schedPillTabs', 'schedRemarksPillTabs', 'schedSummaryPillTabs'];
@@ -1063,16 +1052,16 @@ function renderScheduleRemarks() {
   for (var i = 0; i < remarks.length; i++) {
     var r = remarks[i];
     html += '<tr>' +
-      '<td class="cellEdit"><input value="' + esc(r.date) + '" onchange="updateRemarkField(this,' + i + ',\'date\')"></td>' +
-      '<td class="cellEdit"><input value="' + esc(r.name) + '" onchange="updateRemarkField(this,' + i + ',\'name\')"></td>' +
-      '<td class="cellEdit"><input value="' + esc(r.content) + '" onchange="updateRemarkField(this,' + i + ',\'content\')"></td>' +
-      '<td class="cellEdit"><select onchange="updateRemarkField(this,' + i + ',\'type\')">' +
+      '<td class="hr-cellEdit"><input value="' + esc(r.date) + '" onchange="updateRemarkField(this,' + i + ',\'date\')"></td>' +
+      '<td class="hr-cellEdit"><input value="' + esc(r.name) + '" onchange="updateRemarkField(this,' + i + ',\'name\')"></td>' +
+      '<td class="hr-cellEdit"><input value="' + esc(r.content) + '" onchange="updateRemarkField(this,' + i + ',\'content\')"></td>' +
+      '<td class="hr-cellEdit"><select onchange="updateRemarkField(this,' + i + ',\'type\')">' +
       '<option' + (r.type === '请假' ? ' selected' : '') + '>请假</option>' +
       '<option' + (r.type === '调休' ? ' selected' : '') + '>调休</option>' +
       '<option' + (r.type === '加班' ? ' selected' : '') + '>加班</option>' +
       '<option' + (r.type === '其他' ? ' selected' : '') + '>其他</option>' +
       '</select></td>' +
-      '<td><button class="miniBtn danger" onclick="deleteRemark(' + i + ')"><i class="fas fa-trash-can"></i></button></td>' +
+      '<td><button class="hr-miniBtn danger" onclick="deleteRemark(' + i + ')"><i class="fas fa-trash-can"></i></button></td>' +
       '</tr>';
   }
   if (remarks.length === 0) {
@@ -1168,12 +1157,12 @@ function renderScheduleSummary() {
       '<td>' + expected + '</td>' +
       '<td>' + credit.rest + '</td>' +
       '<td>' + credit.leave + '</td>' +
-      '<td class="neg">' + credit.absent + '</td>' +
+      '<td class="hr-neg">' + credit.absent + '</td>' +
       '<td>0</td>' +
       '<td>' + credit.work + '</td>' +
       '<td>0</td>' +
       '<td>0</td>' +
-      '<td class="pos">' + actual + '</td>' +
+      '<td class="hr-pos">' + actual + '</td>' +
       '</tr>';
   }
 
@@ -1188,7 +1177,7 @@ function renderScheduleSummary() {
 // ==================== 绩效管理 ====================
 function setKpiMode(mode) {
   state.kpiMode = mode;
-  var stabs = document.querySelectorAll('#kpiSubtabs .stab');
+  var stabs = document.querySelectorAll('#kpiSubtabs .hr-stab');
   stabs.forEach(function(t, i) {
     var modes = ['view', 'config'];
     t.classList.toggle('active', modes[i] === mode);
@@ -1240,11 +1229,11 @@ function renderKpiManager() {
   if (!area) return;
 
   if (kpis.length === 0) {
-    area.innerHTML = '<div class="card"><div class="hint"><i class="fas fa-circle-info"></i> 当前项目暂无绩效指标配置，请在"配置指标"中添加</div></div>';
+    area.innerHTML = '<div class="hr-card"><div class="hr-hint"><i class="fas fa-circle-info"></i> 当前项目暂无绩效指标配置，请在"配置指标"中添加</div></div>';
     return;
   }
 
-  var html = '<div class="kpi-table-wrap"><table><thead><tr>' +
+  var html = '<div class="hr-kpi-table-wrap"><table><thead><tr>' +
     '<th>指标名称</th><th>指标类型</th><th>权重</th><th>目标值</th><th>实际值</th><th>完成率</th><th>得分</th>' +
     '</tr></thead><tbody>';
   for (var i = 0; i < kpis.length; i++) {
@@ -1253,15 +1242,15 @@ function renderKpiManager() {
     var target = k.target || 0;
     var rate = target > 0 ? (actual / target * 100).toFixed(1) : '0.0';
     var score = (rate * (k.weight || 0) / 100).toFixed(1);
-    var rateClass = parseFloat(rate) >= 100 ? 'pos' : (parseFloat(rate) >= 80 ? '' : 'neg');
+    var rateClass = parseFloat(rate) >= 100 ? 'hr-pos' : (parseFloat(rate) >= 80 ? '' : 'hr-neg');
     html += '<tr>' +
       '<td>' + esc(k.name) + '</td>' +
       '<td>' + esc(k.type || '数量') + '</td>' +
       '<td>' + (k.weight || 0) + '%</td>' +
       '<td>' + fmtMoney(target) + '</td>' +
-      '<td class="cellEdit"><input value="' + actual + '" onchange="updateKpiActual(this,' + i + ')"></td>' +
+      '<td class="hr-cellEdit"><input value="' + actual + '" onchange="updateKpiActual(this,' + i + ')"></td>' +
       '<td class="' + rateClass + '">' + rate + '%</td>' +
-      '<td class="pos">' + score + '</td>' +
+      '<td class="hr-pos">' + score + '</td>' +
       '</tr>';
   }
   html += '</tbody></table></div>';
@@ -1287,20 +1276,20 @@ function renderKpiConfig() {
   for (var i = 0; i < kpis.length; i++) {
     var k = kpis[i];
     html += '<tr>' +
-      '<td class="cellEdit"><input value="' + esc(k.name) + '" onchange="updateKpiConfigField(this,' + i + ',\'name\')"></td>' +
-      '<td class="cellEdit"><select onchange="updateKpiConfigField(this,' + i + ',\'type\')">' +
+      '<td class="hr-cellEdit"><input value="' + esc(k.name) + '" onchange="updateKpiConfigField(this,' + i + ',\'name\')"></td>' +
+      '<td class="hr-cellEdit"><select onchange="updateKpiConfigField(this,' + i + ',\'type\')">' +
       '<option' + (k.type === '数量' ? ' selected' : '') + '>数量</option>' +
       '<option' + (k.type === '金额' ? ' selected' : '') + '>金额</option>' +
       '<option' + (k.type === '比率' ? ' selected' : '') + '>比率</option>' +
       '<option' + (k.type === '时长' ? ' selected' : '') + '>时长</option>' +
       '</select></td>' +
-      '<td class="cellEdit"><input value="' + (k.weight || 0) + '" onchange="updateKpiConfigField(this,' + i + ',\'weight\')" style="width:60px;"></td>' +
-      '<td class="cellEdit"><input value="' + (k.target || 0) + '" onchange="updateKpiConfigField(this,' + i + ',\'target\')"></td>' +
-      '<td class="cellEdit"><select onchange="updateKpiConfigField(this,' + i + ',\'method\')">' +
+      '<td class="hr-cellEdit"><input value="' + (k.weight || 0) + '" onchange="updateKpiConfigField(this,' + i + ',\'weight\')" style="width:60px;"></td>' +
+      '<td class="hr-cellEdit"><input value="' + (k.target || 0) + '" onchange="updateKpiConfigField(this,' + i + ',\'target\')"></td>' +
+      '<td class="hr-cellEdit"><select onchange="updateKpiConfigField(this,' + i + ',\'method\')">' +
       '<option' + (k.method === '直接' ? ' selected' : '') + '>直接</option>' +
       '<option' + (k.method === '公式' ? ' selected' : '') + '>公式</option>' +
       '</select></td>' +
-      '<td><button class="miniBtn danger" onclick="deleteKpiConfigRow(' + i + ')"><i class="fas fa-trash-can"></i></button></td>' +
+      '<td><button class="hr-miniBtn danger" onclick="deleteKpiConfigRow(' + i + ')"><i class="fas fa-trash-can"></i></button></td>' +
       '</tr>';
   }
   if (kpis.length === 0) {
@@ -1413,7 +1402,7 @@ function parseCsv(text) {
 // ==================== 绩效制作 ====================
 function setPerfMode(mode) {
   state.perfMode = mode;
-  var stabs = document.querySelectorAll('#perfSubtabs .stab');
+  var stabs = document.querySelectorAll('#perfSubtabs .hr-stab');
   stabs.forEach(function(t, i) {
     var modes = ['exclusive', 'pinxi', 'temp'];
     t.classList.toggle('active', modes[i] === mode);
@@ -1442,13 +1431,13 @@ function renderPerfPillTabs(containerId, activeProj, onClickFn) {
   }
   var html = '';
   for (var i = 0; i < projects.length; i++) {
-    var cls = projects[i] === activeProj ? 'pill active' : 'pill';
+    var cls = projects[i] === activeProj ? 'hr-pill active' : 'hr-pill';
     html += '<div class="' + cls + '" onclick="void(0)">' + esc(projects[i]) + '</div>';
   }
   var el = document.getElementById(containerId);
   if (el) {
     el.innerHTML = html;
-    var pills = el.querySelectorAll('.pill');
+    var pills = el.querySelectorAll('.hr-pill');
     pills.forEach(function(pill, i) {
       pill.addEventListener('click', function() {
         onClickFn(projects[i]);
@@ -1517,7 +1506,7 @@ function renderPerformanceTable(type) {
     if (pay < 0) pay = 0;
     totalPay += pay;
 
-    var statusBadge = s.status === '在职' ? 'badge badge-green' : (s.status === '离职' ? 'badge badge-red' : 'badge badge-amber');
+    var statusBadge = s.status === '在职' ? 'hr-badge hr-badge-green' : (s.status === '离职' ? 'hr-badge hr-badge-red' : 'hr-badge hr-badge-amber');
 
     html += '<tr>' +
       '<td>' + esc(s.name) + '</td>' +
@@ -1529,14 +1518,14 @@ function renderPerformanceTable(type) {
       '<td>0</td>' +
       '<td>' + fmtMoney(subsidy) + '</td>' +
       '<td>' + fmtMoney(penalty) + '</td>' +
-      '<td class="pos">' + fmtMoney(pay) + '</td>' +
+      '<td class="hr-pos">' + fmtMoney(pay) + '</td>' +
       '</tr>';
   }
 
   // 合计行
   html += '<tr style="font-weight:700;background:var(--cream);">' +
     '<td colspan="9">合计</td>' +
-    '<td class="pos">' + fmtMoney(totalPay) + '</td>' +
+    '<td class="hr-pos">' + fmtMoney(totalPay) + '</td>' +
     '</tr>';
 
   if (staff.length === 0) {
@@ -1621,7 +1610,6 @@ function init() {
   // 初始渲染
   renderStaffPillTabs();
   renderCurrentStaffView();
-  updateSyncStatus('ok', '本地存储');
 }
 
 function loadLocalOrDefault() {
@@ -1704,4 +1692,9 @@ function updateSyncStatus(type, text) {
 }
 
 // ==================== 页面加载 ====================
-document.addEventListener('DOMContentLoaded', init);
+// 如果主系统已加载则直接初始化，否则等 DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
