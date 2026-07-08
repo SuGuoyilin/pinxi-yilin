@@ -875,6 +875,7 @@ function renderScheduleMain() {
   var html = '<table><thead><tr>';
   html += '<th class="freeze-col th-freeze" style="min-width:36px;"><input type="checkbox" onchange="toggleAllScheduleRows(this)"></th>';
   html += '<th class="freeze-col th-freeze" style="min-width:50px;">项目</th>';
+  html += '<th class="freeze-col th-freeze" style="min-width:60px;">姓名</th>';
 
   // 日期列
   for (var d = 1; d <= days; d++) {
@@ -894,7 +895,6 @@ function renderScheduleMain() {
     if (isHoliday) html += '<br>' + holidayInfo.name;
     html += '</span></th>';
   }
-  html += '<th class="freeze-right th-freeze-right" style="min-width:60px;">姓名</th>';
   html += '<th class="freeze-right th-freeze-right" style="min-width:40px;">工时</th>';
   html += '<th class="freeze-right th-freeze-right" style="min-width:40px;">出勤</th>';
   html += '</tr></thead><tbody>';
@@ -907,6 +907,7 @@ function renderScheduleMain() {
     html += '<tr data-sid="' + esc(sp.id) + '">';
     html += '<td class="freeze-col"><input type="checkbox" data-sid="' + esc(sp.id) + '" class="sched-check"></td>';
     html += '<td class="freeze-col">' + esc(staff.project) + '</td>';
+    html += '<td class="freeze-col">' + esc(staff.name) + '</td>';
 
     var totalHours = 0;
     var attendDays = 0;
@@ -922,7 +923,6 @@ function renderScheduleMain() {
       totalHours += hours;
       if (shiftNeedsHours(shift)) attendDays++;
     }
-    html += '<td class="freeze-right">' + esc(staff.name) + '</td>';
     html += '<td class="freeze-right">' + totalHours + '</td>';
     html += '<td class="freeze-right">' + attendDays + '</td>';
     html += '</tr>';

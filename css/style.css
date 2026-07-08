@@ -7,28 +7,28 @@ body {
   min-height: 100vh;
 }
 .sidebar {
-  width: 180px;
+  width: 160px;
   background: #1a1a2e;
   color: #fff;
-  padding: 16px 0;
+  padding: 12px 0;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
 }
 .logo {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: bold;
   text-align: center;
-  padding-bottom: 12px;
+  padding-bottom: 10px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
 }
-.nav-menu { list-style: none; padding: 10px 0; flex: 1; }
+.nav-menu { list-style: none; padding: 6px 0; flex: 1; }
 .nav-menu li {
-  padding: 10px 16px;
+  padding: 8px 12px;
   cursor: pointer;
   transition: all 0.2s;
   border-left: 3px solid transparent;
-  font-size: 13px;
+  font-size: 12px;
 }
 .nav-menu li:hover, .nav-menu li.active {
   background: #16213e;
@@ -42,7 +42,7 @@ body {
 }
 .nav-menu li.has-submenu > span {
   display: block;
-  padding: 10px 16px;
+  padding: 8px 12px;
   border-left: 3px solid transparent;
   transition: all 0.2s;
 }
@@ -64,8 +64,8 @@ body {
   display: block;
 }
 .nav-menu .submenu li {
-  padding: 8px 16px 8px 32px;
-  font-size: 12px;
+  padding: 6px 12px 6px 24px;
+  font-size: 11px;
   border-left: 3px solid transparent;
 }
 .nav-menu .submenu li:hover,
