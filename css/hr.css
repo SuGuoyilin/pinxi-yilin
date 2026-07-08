@@ -327,6 +327,22 @@ td.hr-cellEdit select { cursor: pointer; }
   outline: 2px solid var(--hr-accent);
   outline-offset: -1px;
 }
+/* 右侧冻结列 */
+.hr-scheduleFreezeWrap .freeze-right {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: var(--hr-paper);
+  border-left: 2px solid var(--hr-accent);
+}
+.hr-scheduleFreezeWrap .freeze-right.th-freeze-right {
+  z-index: 4;
+  background: var(--hr-cream);
+  border-left: 2px solid var(--hr-accent);
+}
+.hr-scheduleFreezeWrap tr:hover td.freeze-right {
+  background: rgba(246,241,232,0.7);
+}
 .hr-scheduleFreezeWrap tr:hover td.freeze-col {
   background: rgba(246,241,232,0.7);
 }

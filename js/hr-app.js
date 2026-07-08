@@ -92,9 +92,9 @@ var DEFAULT_STAFF = [
   { id:"s050", name:"杨硕", project:"宠物", role:"3C专属", status:"在职", workMode:"坐班", trialBase:0, trialPerformance:0, regularBase:0, regularPerformance:0, entryDate:"", regularDate:"" },
 
   // 拼窝项目
-  { id:"s055", name:"任梦", project:"拼窝", role:"咨询", status:"在职", workMode:"居家", trialBase:0, trialPerformance:0, regularBase:0, regularPerformance:0, entryDate:"", regularDate:"" },
-  { id:"s056", name:"阳文利", project:"拼窝", role:"咨询", status:"在职", workMode:"居家", trialBase:0, trialPerformance:0, regularBase:0, regularPerformance:0, entryDate:"", regularDate:"" },
-  { id:"s057", name:"孔芹", project:"拼窝", role:"咨询", status:"在职", workMode:"居家", trialBase:0, trialPerformance:0, regularBase:0, regularPerformance:0, entryDate:"", regularDate:"" },
+  { id:"s055", name:"任梦", project:"拼席", role:"咨询", status:"在职", workMode:"居家", trialBase:0, trialPerformance:0, regularBase:0, regularPerformance:0, entryDate:"", regularDate:"" },
+  { id:"s056", name:"阳文利", project:"拼席", role:"咨询", status:"在职", workMode:"居家", trialBase:0, trialPerformance:0, regularBase:0, regularPerformance:0, entryDate:"", regularDate:"" },
+  { id:"s057", name:"孔芹", project:"拼席", role:"咨询", status:"在职", workMode:"居家", trialBase:0, trialPerformance:0, regularBase:0, regularPerformance:0, entryDate:"", regularDate:"" },
 
   // 益生菌项目
   { id:"s060", name:"张娜娜", project:"益生菌", role:"咨询", status:"在职", workMode:"坐班", trialBase:0, trialPerformance:0, regularBase:0, regularPerformance:0, entryDate:"", regularDate:"" },
@@ -529,6 +529,12 @@ function renderStaffPillTabs() {
     if (bi < 0) bi = 999;
     return ai - bi;
   });
+  // 确保"全部"始终在最前面
+  if (projects[0] !== '全部') {
+    var allIdx = projects.indexOf('全部');
+    if (allIdx >= 0) projects.splice(allIdx, 1);
+    projects.unshift('全部');
+  }
 
   var html = '';
   for (var i = 0; i < projects.length; i++) {
@@ -868,7 +874,6 @@ function renderScheduleMain() {
   // 构建表格
   var html = '<table><thead><tr>';
   html += '<th class="freeze-col th-freeze" style="min-width:36px;"><input type="checkbox" onchange="toggleAllScheduleRows(this)"></th>';
-  html += '<th class="freeze-col th-freeze" style="min-width:60px;">姓名</th>';
   html += '<th class="freeze-col th-freeze" style="min-width:50px;">项目</th>';
 
   // 日期列
@@ -889,7 +894,9 @@ function renderScheduleMain() {
     if (isHoliday) html += '<br>' + holidayInfo.name;
     html += '</span></th>';
   }
-  html += '<th>工时</th><th>出勤</th>';
+  html += '<th class="freeze-right th-freeze-right" style="min-width:60px;">姓名</th>';
+  html += '<th class="freeze-right th-freeze-right" style="min-width:40px;">工时</th>';
+  html += '<th class="freeze-right th-freeze-right" style="min-width:40px;">出勤</th>';
   html += '</tr></thead><tbody>';
 
   for (var i = 0; i < schedPeople.length; i++) {
@@ -899,7 +906,6 @@ function renderScheduleMain() {
 
     html += '<tr data-sid="' + esc(sp.id) + '">';
     html += '<td class="freeze-col"><input type="checkbox" data-sid="' + esc(sp.id) + '" class="sched-check"></td>';
-    html += '<td class="freeze-col">' + esc(staff.name) + '</td>';
     html += '<td class="freeze-col">' + esc(staff.project) + '</td>';
 
     var totalHours = 0;
@@ -916,13 +922,14 @@ function renderScheduleMain() {
       totalHours += hours;
       if (shiftNeedsHours(shift)) attendDays++;
     }
-    html += '<td>' + totalHours + '</td>';
-    html += '<td>' + attendDays + '</td>';
+    html += '<td class="freeze-right">' + esc(staff.name) + '</td>';
+    html += '<td class="freeze-right">' + totalHours + '</td>';
+    html += '<td class="freeze-right">' + attendDays + '</td>';
     html += '</tr>';
   }
 
   if (schedPeople.length === 0) {
-    html += '<tr><td colspan="' + (days + 5) + '" class="empty-cell">暂无排班数据</td></tr>';
+    html += '<tr><td colspan="' + (days + 6) + '" class="empty-cell">暂无排班数据</td></tr>';
   }
 
   html += '</tbody></table>';
