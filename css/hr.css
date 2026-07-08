@@ -289,11 +289,11 @@ td.hr-cellEdit select { cursor: pointer; }
 .hr-scheduleFreezeWrap table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 11px;
 }
 .hr-scheduleFreezeWrap table th,
 .hr-scheduleFreezeWrap table td {
-  padding: 6px 8px;
+  padding: 3px 2px;
   border-bottom: 1px solid var(--hr-line);
   border-right: 1px solid var(--hr-line);
   text-align: center;
@@ -319,7 +319,7 @@ td.hr-cellEdit select { cursor: pointer; }
 }
 .hr-scheduleFreezeWrap td.sched-cell {
   cursor: pointer;
-  min-width: 36px;
+  min-width: 24px;
   user-select: none;
   transition: all 0.1s;
 }
