@@ -312,17 +312,17 @@ function expectedAttendanceDays(year, month) {
 
 // 考勤积分
 function attendanceCredit(shifts) {
-  var work = 0, rest = 0, leave = 0, absent = 0, overtime = 0;
-  if (!shifts || !shifts.length) return { work: work, rest: rest, leave: leave, absent: absent, overtime: overtime };
+  var work = 0, rest = 0, leave = 0, absent = 0, training = 0;
+  if (!shifts || !shifts.length) return { work: work, rest: rest, leave: leave, absent: absent, training: training };
   for (var i = 0; i < shifts.length; i++) {
     var s = shifts[i];
     if (s === '早' || s === '中' || s === '晚' || s === '通班') work++;
     else if (s === '休') rest++;
     else if (s === '请假') leave++;
     else if (s === '旷工') absent++;
-    else if (s === '培训') work++;
+    else if (s === '培训') training++;
   }
-  return { work: work, rest: rest, leave: leave, absent: absent, overtime: overtime };
+  return { work: work, rest: rest, leave: leave, absent: absent, training: training };
 }
 
 // 班次工时
@@ -331,15 +331,22 @@ function shiftWorkHours(shift) {
     case '早': return 8;
     case '中': return 8;
     case '晚': return 8;
-    case '通班': return 12;
-    case '培训': return 8;
+    case '通班': return 16;
+    case '培训': return 0;
     default: return 0;
   }
 }
 
-// 班次是否需要计工时
+// 班次是否需要计工时（培训不计入）
 function shiftNeedsHours(shift) {
-  return shift === '早' || shift === '中' || shift === '晚' || shift === '通班' || shift === '培训';
+  return shift === '早' || shift === '中' || shift === '晚' || shift === '通班';
+}
+
+// 班次对应的出勤天数（通班算2天，其他正常班次算1天）
+function shiftAttendanceDays(shift) {
+  if (shift === '通班') return 2;
+  if (shift === '早' || shift === '中' || shift === '晚') return 1;
+  return 0;
 }
 
 // 实际出勤天数
@@ -921,7 +928,7 @@ function renderScheduleMain() {
       html += '<td class="sched-cell ' + cls + '" onclick="updateScheduleShift(\'' + esc(sp.id) + '\',\'' + dateKey + '\')">' + shiftDisplayText(shift) + '</td>';
 
       totalHours += hours;
-      if (shiftNeedsHours(shift)) attendDays++;
+      attendDays += shiftAttendanceDays(shift);
     }
     html += '<td class="freeze-right">' + totalHours + '</td>';
     html += '<td class="freeze-right">' + attendDays + '</td>';
@@ -943,22 +950,60 @@ function toggleAllScheduleRows(cb) {
 
 function addScheduleRow() {
   if (!state.schedulePeriod) { toast('请先选择月份', 'warn'); return; }
-  showConfirm('新增排班行', '请输入员工姓名：', function() {
-    // 弹出输入框替代
-    var name = prompt('输入员工姓名（需已存在于员工列表中）：');
-    if (!name) return;
-    var staff = state.staff.find(function(s) { return s.name === name && s.status !== '离职'; });
-    if (!staff) { toast('未找到该在职员工', 'error'); return; }
+  // 获取当前项目下的在职员工（排除已在排班中的）
+  var currentProject = state.scheduleProject || '全部';
+  var existingIds = state.schedule.people
+    .filter(function(sp) { return sp.period === state.schedulePeriod; })
+    .map(function(sp) { return sp.id; });
+  var availableStaff = state.staff.filter(function(s) {
+    if (s.status === '离职') return false;
+    if (existingIds.indexOf(s.id) >= 0) return false;
+    if (currentProject !== '全部' && s.project !== currentProject) return false;
+    return true;
+  });
+  if (availableStaff.length === 0) {
+    toast('当前项目下没有可添加的在职员工', 'warn');
+    return;
+  }
+  // 构建下拉选项
+  var optionsHtml = '<option value="">请选择员工</option>';
+  for (var i = 0; i < availableStaff.length; i++) {
+    optionsHtml += '<option value="' + esc(availableStaff[i].id) + '">' + esc(availableStaff[i].name) + '（' + esc(availableStaff[i].project) + '）</option>';
+  }
+  // 弹出选择对话框
+  var overlay = document.createElement('div');
+  overlay.className = 'hr-confirmOverlay';
+  overlay.innerHTML =
+    '<div class="hr-confirmBox" style="text-align:left;">' +
+    '<h3 style="text-align:center;">新增排班行</h3>' +
+    '<div style="margin-bottom:16px;">' +
+    '<label style="display:block;font-size:12px;color:var(--hr-muted);margin-bottom:6px;">选择员工：</label>' +
+    '<select id="addRowStaffSelect" style="width:100%;padding:8px;border:1px solid var(--hr-line);border-radius:6px;font-size:13px;">' + optionsHtml + '</select>' +
+    '</div>' +
+    '<div class="confirm-btns" style="justify-content:flex-end;">' +
+    '<button class="hr-btn hr-btn-secondary" id="cfCancel">取消</button>' +
+    '<button class="hr-btn hr-btn-primary" id="cfOk">确认添加</button>' +
+    '</div></div>';
+  document.body.appendChild(overlay);
+  overlay.querySelector('#cfCancel').onclick = function() { document.body.removeChild(overlay); };
+  overlay.querySelector('#cfOk').onclick = function() {
+    var select = overlay.querySelector('#addRowStaffSelect');
+    var staffId = select.value;
+    if (!staffId) { toast('请先选择员工', 'warn'); return; }
+    var staff = state.staff.find(function(s) { return s.id === staffId; });
+    if (!staff) { document.body.removeChild(overlay); return; }
     state.schedule.people.push({
       id: staff.id,
       period: state.schedulePeriod,
       shifts: {},
       selected: false
     });
+    document.body.removeChild(overlay);
     renderScheduleMain();
     saveToLocal();
-    toast('已添加 ' + name, 'success');
-  });
+    toast('已添加 ' + staff.name, 'success');
+  };
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) document.body.removeChild(overlay); });
 }
 
 function deleteScheduleRow(id) {
@@ -985,12 +1030,44 @@ function batchDeleteScheduleRows() {
 }
 
 function addScheduleMonth() {
-  var period = prompt('输入要新增的月份（格式：2026-07）：');
-  if (!period) return;
-  if (!/^\d{4}-\d{2}$/.test(period)) { toast('格式错误，请使用 YYYY-MM', 'error'); return; }
-  // 初始化该月份的排班数据
-  var existing = state.schedule.people.find(function(sp) { return sp.period === period; });
-  if (!existing) {
+  // 构建月份选择器弹窗
+  var now = new Date();
+  var currentYear = now.getFullYear();
+  var currentMonth = now.getMonth() + 1;
+  var optionsHtml = '';
+  for (var y = currentYear; y <= currentYear + 1; y++) {
+    for (var m = 1; m <= 12; m++) {
+      if (y === currentYear && m < currentMonth - 1) continue;
+      if (y === currentYear + 1 && m > 12) break;
+      var val = y + '-' + (m < 10 ? '0' : '') + m;
+      optionsHtml += '<option value="' + val + '">' + val + '</option>';
+    }
+  }
+  var overlay = document.createElement('div');
+  overlay.className = 'hr-confirmOverlay';
+  overlay.innerHTML =
+    '<div class="hr-confirmBox" style="text-align:left;">' +
+    '<h3 style="text-align:center;">新增排班月份</h3>' +
+    '<div style="margin-bottom:16px;">' +
+    '<label style="display:block;font-size:12px;color:var(--hr-muted);margin-bottom:6px;">选择月份：</label>' +
+    '<select id="addMonthSelect" style="width:100%;padding:8px;border:1px solid var(--hr-line);border-radius:6px;font-size:13px;">' + optionsHtml + '</select>' +
+    '</div>' +
+    '<div class="confirm-btns" style="justify-content:flex-end;">' +
+    '<button class="hr-btn hr-btn-secondary" id="cfCancel">取消</button>' +
+    '<button class="hr-btn hr-btn-primary" id="cfOk">确认</button>' +
+    '</div></div>';
+  document.body.appendChild(overlay);
+  overlay.querySelector('#cfCancel').onclick = function() { document.body.removeChild(overlay); };
+  overlay.querySelector('#cfOk').onclick = function() {
+    var period = overlay.querySelector('#addMonthSelect').value;
+    if (!period) { toast('请选择月份', 'warn'); return; }
+    // 初始化该月份的排班数据
+    var existing = state.schedule.people.find(function(sp) { return sp.period === period; });
+    if (existing) {
+      document.body.removeChild(overlay);
+      toast('月份 ' + period + ' 已存在', 'warn');
+      return;
+    }
     var filteredStaff = state.staff.filter(function(s) { return s.status !== '离职'; });
     for (var i = 0; i < filteredStaff.length; i++) {
       state.schedule.people.push({
@@ -1000,26 +1077,28 @@ function addScheduleMonth() {
         selected: false
       });
     }
-  }
-  state.schedulePeriod = period;
-  // 刷新选择器
-  var select = $('#schedPeriodSelect');
-  if (select) {
-    var exists = false;
-    for (var i = 0; i < select.options.length; i++) {
-      if (select.options[i].value === period) { exists = true; break; }
+    state.schedulePeriod = period;
+    document.body.removeChild(overlay);
+    // 刷新选择器
+    var select = $('#schedPeriodSelect');
+    if (select) {
+      var exists = false;
+      for (var i = 0; i < select.options.length; i++) {
+        if (select.options[i].value === period) { exists = true; break; }
+      }
+      if (!exists) {
+        var opt = document.createElement('option');
+        opt.value = period;
+        opt.textContent = period;
+        select.appendChild(opt);
+      }
+      select.value = period;
     }
-    if (!exists) {
-      var opt = document.createElement('option');
-      opt.value = period;
-      opt.textContent = period;
-      select.appendChild(opt);
-    }
-    select.value = period;
-  }
-  renderScheduleMain();
-  saveToLocal();
-  toast('已新增月份 ' + period, 'success');
+    renderScheduleMain();
+    saveToLocal();
+    toast('已新增月份 ' + period, 'success');
+  };
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) document.body.removeChild(overlay); });
 }
 
 function deleteScheduleMonth() {
@@ -1054,10 +1133,11 @@ function renderScheduleRemarks() {
   });
 
   var html = '<table><thead><tr>' +
-    '<th>日期</th><th>员工姓名</th><th>备注内容</th><th>类型</th><th>操作</th>' +
+    '<th>日期</th><th>员工姓名</th><th>备注内容</th><th>类型</th><th>时长(h)</th><th>操作</th>' +
     '</tr></thead><tbody>';
   for (var i = 0; i < remarks.length; i++) {
     var r = remarks[i];
+    var isOvertime = r.type === '加班';
     html += '<tr>' +
       '<td class="hr-cellEdit"><input value="' + esc(r.date) + '" onchange="updateRemarkField(this,' + i + ',\'date\')"></td>' +
       '<td class="hr-cellEdit"><input value="' + esc(r.name) + '" onchange="updateRemarkField(this,' + i + ',\'name\')"></td>' +
@@ -1068,11 +1148,14 @@ function renderScheduleRemarks() {
       '<option' + (r.type === '加班' ? ' selected' : '') + '>加班</option>' +
       '<option' + (r.type === '其他' ? ' selected' : '') + '>其他</option>' +
       '</select></td>' +
+      '<td class="hr-cellEdit">' + (isOvertime ?
+        '<input type="number" min="0" step="0.5" value="' + (r.hours || 0) + '" onchange="updateRemarkField(this,' + i + ',\'hours\')" style="width:50px;text-align:right;">' :
+        '<span style="color:var(--hr-muted);">—</span>') + '</td>' +
       '<td><button class="hr-miniBtn danger" onclick="deleteRemark(' + i + ')"><i class="fas fa-trash-can"></i></button></td>' +
       '</tr>';
   }
   if (remarks.length === 0) {
-    html += '<tr><td colspan="5" class="empty-cell">暂无备注</td></tr>';
+    html += '<tr><td colspan="6" class="empty-cell">暂无备注</td></tr>';
   }
   html += '</tbody></table>';
   $('#scheduleRemarksTableWrap').innerHTML = html;
@@ -1138,9 +1221,31 @@ function renderScheduleSummary() {
   // 获取该月排班
   var schedPeople = state.schedule.people.filter(function(sp) { return sp.period === period; });
 
+  // 获取该月加班备注（按员工汇总）
+  var periodRemarks = (state.scheduleRemarks || []).filter(function(r) {
+    return r.period === period && r.type === '加班';
+  });
+  var overtimeMap = {};
+  for (var ri = 0; ri < periodRemarks.length; ri++) {
+    var rr = periodRemarks[ri];
+    if (!overtimeMap[rr.name]) overtimeMap[rr.name] = 0;
+    overtimeMap[rr.name] += parseFloat(rr.hours) || 0;
+  }
+
+  // 获取该月调休备注（按员工统计次数）
+  var leaveRemarks = (state.scheduleRemarks || []).filter(function(r) {
+    return r.period === period && r.type === '调休';
+  });
+  var leaveRemarkMap = {};
+  for (var ri = 0; ri < leaveRemarks.length; ri++) {
+    var lr = leaveRemarks[ri];
+    if (!leaveRemarkMap[lr.name]) leaveRemarkMap[lr.name] = 0;
+    leaveRemarkMap[lr.name]++;
+  }
+
   var html = '<table><thead><tr>' +
     '<th>姓名</th><th>项目</th><th>应出勤</th><th>休息</th><th>请假</th><th>旷工</th>' +
-    '<th>加班</th><th>培训</th><th>迟到/早退</th><th>调休</th><th>实际出勤</th>' +
+    '<th>培训</th><th>加班(h)</th><th>调休</th><th>实际出勤</th>' +
     '</tr></thead><tbody>';
 
   for (var i = 0; i < schedPeople.length; i++) {
@@ -1157,6 +1262,8 @@ function renderScheduleSummary() {
     var credit = attendanceCredit(shifts);
     var expected = expectedAttendanceDays(year, month);
     var actual = actualAttendanceDays(shifts);
+    var overtimeHours = overtimeMap[staff.name] || 0;
+    var adjustLeave = leaveRemarkMap[staff.name] || 0;
 
     html += '<tr>' +
       '<td>' + esc(staff.name) + '</td>' +
@@ -1165,16 +1272,15 @@ function renderScheduleSummary() {
       '<td>' + credit.rest + '</td>' +
       '<td>' + credit.leave + '</td>' +
       '<td class="hr-neg">' + credit.absent + '</td>' +
-      '<td>0</td>' +
-      '<td>' + credit.work + '</td>' +
-      '<td>0</td>' +
-      '<td>0</td>' +
+      '<td>' + credit.training + '</td>' +
+      '<td class="hr-pos">' + (overtimeHours > 0 ? overtimeHours : '0') + '</td>' +
+      '<td>' + adjustLeave + '</td>' +
       '<td class="hr-pos">' + actual + '</td>' +
       '</tr>';
   }
 
   if (schedPeople.length === 0) {
-    html += '<tr><td colspan="11" class="empty-cell">暂无汇总数据</td></tr>';
+    html += '<tr><td colspan="10" class="empty-cell">暂无汇总数据</td></tr>';
   }
 
   html += '</tbody></table>';
