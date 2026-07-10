@@ -525,12 +525,15 @@ td.hr-cellEdit select { cursor: pointer; }
 #hrProjectsTableWrap table {
   font-size: 11px;
   min-width: auto;
-  table-layout: auto;
+  table-layout: fixed;
+  width: 100%;
 }
 #hrProjectsTableWrap table th,
 #hrProjectsTableWrap table td {
   padding: 3px 5px;
   border-right: 1px solid var(--hr-line);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 #hrProjectsTableWrap table th {
   white-space: nowrap;
