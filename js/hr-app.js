@@ -152,7 +152,8 @@ var state = {
   projectConfigs: [],
   operations: [],
   monthlyFacts: [],
-  hrProjects: []  // HR独立的项目列表，从PROJECT_TABS初始化，支持增删改
+  hrProjects: [],  // HR独立的项目列表，从PROJECT_TABS初始化，支持增删改
+  hrProjectParent: {}  // 子项目→父项目映射，如 {"讨师":"拼席","博思":"拼席"}
 };
 
 // ==================== 工具函数 ====================
@@ -220,6 +221,8 @@ function brandNameFromProject(proj) {
 function projectMatch(staffProj, filterProj) {
   if (!filterProj || filterProj === '全部') return true;
   if (staffProj === filterProj) return true;
+  // 父子层级匹配
+  if (state.hrProjectParent && state.hrProjectParent[staffProj] === filterProj) return true;
   // 拼席相关项目匹配
   if (filterProj === '拼席') {
     return PINXI_PROJECTS.indexOf(staffProj) >= 0 || staffProj === '拼席';
@@ -523,18 +526,11 @@ function setStaffMode(mode) {
 }
 
 function renderStaffPillTabs() {
-  var projects = ['全部'];
-  var hrP = getHrProjects();
-  for (var i = 0; i < hrP.length; i++) {
-    projects.push(hrP[i]);
-  }
-
-  var html = '';
-  for (var i = 0; i < projects.length; i++) {
-    var cls = projects[i] === state.staffProject ? 'hr-pill active' : 'hr-pill';
-    html += '<div class="' + cls + '" onclick="setStaffProject(\'' + esc(projects[i]) + '\')">' + esc(projects[i]) + '</div>';
-  }
-  $('#staffPillTabs').innerHTML = html;
+  renderProjectPills('staffPillContainer', state.staffProject, function(proj) {
+    state.staffProject = proj;
+    renderStaffPillTabs();
+    renderCurrentStaffView();
+  });
 }
 
 function renderCurrentStaffView() {
@@ -758,21 +754,16 @@ function setScheduleSummaryPeriod(period) {
 }
 
 function renderSchedulePillTabs() {
-  var projects = ['全部'];
-  var hrP = getHrProjects();
-  for (var i = 0; i < hrP.length; i++) {
-    projects.push(hrP[i]);
+  var containers = ['schedProjectPills', 'schedRemarksPillTabs', 'schedSummaryPillTabs'];
+  for (var ci = 0; ci < containers.length; ci++) {
+    renderProjectPills(containers[ci], state.scheduleProject, (function(cid) {
+      return function(proj) {
+        state.scheduleProject = proj;
+        renderSchedulePillTabs();
+        renderCurrentScheduleView();
+      };
+    })(containers[ci]));
   }
-  var html = '';
-  for (var i = 0; i < projects.length; i++) {
-    var cls = projects[i] === state.scheduleProject ? 'hr-pill active' : 'hr-pill';
-    html += '<div class="' + cls + '" onclick="setScheduleProject(\'' + esc(projects[i]) + '\')">' + esc(projects[i]) + '</div>';
-  }
-  var containers = ['schedPillTabs', 'schedRemarksPillTabs', 'schedSummaryPillTabs'];
-  containers.forEach(function(cid) {
-    var el = document.getElementById(cid);
-    if (el) el.innerHTML = html.replace(/onclick="setScheduleProject/g, 'onclick="setScheduleProject');
-  });
 }
 
 function renderCurrentScheduleView() {
@@ -1264,12 +1255,88 @@ function getHrProjects() {
   return state.hrProjects || [];
 }
 
+// 获取项目的所有子项目
+function getChildProjects(parentName) {
+  var children = [];
+  if (!state.hrProjectParent) return children;
+  for (var k in state.hrProjectParent) {
+    if (state.hrProjectParent[k] === parentName) children.push(k);
+  }
+  return children;
+}
+
+// 判断项目是否是目标项目或其子项目
+function isProjectOrChild(staffProject, targetProject) {
+  if (staffProject === targetProject) return true;
+  if (state.hrProjectParent && state.hrProjectParent[staffProject] === targetProject) return true;
+  return false;
+}
+
+// 获取顶层项目列表（按hrProjects顺序，排除子项目）
+function getTopLevelProjects() {
+  var hrP = getHrProjects();
+  var result = [];
+  for (var i = 0; i < hrP.length; i++) {
+    var p = hrP[i];
+    // 如果是子项目，跳过（它会在父项目下显示）
+    if (state.hrProjectParent && state.hrProjectParent[p]) continue;
+    result.push(p);
+  }
+  return result;
+}
+
+// 渲染层级项目 pill 标签
+function renderProjectPills(containerId, activeProject, onClickFn) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  
+  var html = '<span class="' + (activeProject === '全部' ? 'hr-pill active' : 'hr-pill') + '" onclick="">全部</span>';
+  
+  var topProjects = getTopLevelProjects();
+  for (var i = 0; i < topProjects.length; i++) {
+    var p = topProjects[i];
+    var isActive = activeProject === p;
+    html += '<span class="' + (isActive ? 'hr-pill active' : 'hr-pill') + '" onclick="">' + esc(p) + '</span>';
+    
+    // 渲染子项目
+    var children = getChildProjects(p);
+    for (var j = 0; j < children.length; j++) {
+      var c = children[j];
+      var isChildActive = activeProject === c;
+      html += '<span class="hr-pill hr-pill-child ' + (isChildActive ? 'active' : '') + '" onclick="">' + esc(c) + '</span>';
+    }
+  }
+  
+  container.innerHTML = html;
+  
+  // 绑定事件 - 使用闭包捕获项目名
+  var allPills = container.querySelectorAll('.hr-pill');
+  var idx = 0;
+  // "全部"
+  allPills[idx].onclick = function() { onClickFn('全部'); };
+  idx++;
+  
+  for (var i = 0; i < topProjects.length; i++) {
+    var p = topProjects[i];
+    allPills[idx].onclick = (function(proj) { return function() { onClickFn(proj); }; })(p);
+    idx++;
+    
+    var children = getChildProjects(p);
+    for (var j = 0; j < children.length; j++) {
+      var c = children[j];
+      allPills[idx].onclick = (function(proj) { return function() { onClickFn(proj); }; })(c);
+      idx++;
+    }
+  }
+}
+
 function renderHrProjects() {
   var projects = getHrProjects();
   var html = '<table><thead><tr>' +
     '<th style="width:40px;">序号</th>' +
     '<th>项目名称</th>' +
-    '<th>类型</th>' +
+    '<th style="width:60px;">类型</th>' +
+    '<th style="width:80px;">父项目</th>' +
     '<th style="width:60px;">员工数</th>' +
     '<th style="width:100px;">操作</th>' +
     '</tr></thead><tbody>';
@@ -1281,6 +1348,16 @@ function renderHrProjects() {
     var typeText = isPinxi ? '拼席' : '专席';
     var staffCount = state.staff.filter(function(s) { return s.project === p; }).length;
 
+    // 获取所有顶层项目作为父项目选项
+    var parentOptions = '<option value="">无（顶级）</option>';
+    var topProjs = getTopLevelProjects();
+    for (var pi = 0; pi < topProjs.length; pi++) {
+      if (topProjs[pi] !== p) {
+        var sel = (state.hrProjectParent && state.hrProjectParent[p] === topProjs[pi]) ? ' selected' : '';
+        parentOptions += '<option value="' + esc(topProjs[pi]) + '"' + sel + '>' + esc(topProjs[pi]) + '</option>';
+      }
+    }
+
     html += '<tr>' +
       '<td style="text-align:center;">' + (i + 1) + '</td>' +
       '<td class="hr-cellEdit"><input value="' + esc(p) + '" data-idx="' + i + '" data-field="name" onchange="updateHrProject(this)"></td>' +
@@ -1288,6 +1365,7 @@ function renderHrProjects() {
       '<option value="专席"' + (typeText === '专席' ? ' selected' : '') + '>专席</option>' +
       '<option value="拼席"' + (typeText === '拼席' ? ' selected' : '') + '>拼席</option>' +
       '</select></td>' +
+      '<td><select class="hr-select" style="font-size:11px;padding:2px 4px;" data-idx="' + i + '" onchange="updateHrProjectParent(this)">' + parentOptions + '</select></td>' +
       '<td style="text-align:center;">' + staffCount + '</td>' +
       '<td style="display:flex;gap:4px;">' +
       (i > 0 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',-1)" title="上移"><i class="fas fa-arrow-up"></i></button>' : '<span style="width:28px;display:inline-block;"></span>') +
@@ -1298,7 +1376,7 @@ function renderHrProjects() {
   }
 
   if (projects.length === 0) {
-    html += '<tr><td colspan="5" class="empty-cell">暂无项目</td></tr>';
+    html += '<tr><td colspan="6" class="empty-cell">暂无项目</td></tr>';
   }
 
   html += '</tbody></table>';
@@ -1391,6 +1469,20 @@ function updateHrProjectType(el) {
   if (!state.hrProjectTypes) state.hrProjectTypes = {};
   state.hrProjectTypes[state.hrProjects[idx]] = el.value;
   saveToLocal();
+}
+
+function updateHrProjectParent(el) {
+  var idx = parseInt(el.getAttribute('data-idx'));
+  var projectName = state.hrProjects[idx];
+  var parentName = el.value;
+  if (parentName) {
+    if (!state.hrProjectParent) state.hrProjectParent = {};
+    state.hrProjectParent[projectName] = parentName;
+  } else {
+    if (state.hrProjectParent) delete state.hrProjectParent[projectName];
+  }
+  saveToLocal();
+  // 不需要重新渲染表格，选择已直接生效
 }
 
 // ==================== 绩效管理 ====================
@@ -1632,9 +1724,9 @@ function setPerfMode(mode) {
   renderPerformanceModule();
 }
 
-function setPerfExProject(proj) { state.perfExProject = proj; renderPerformance(); }
-function setPerfPxProject(proj) { state.perfPxProject = proj; renderPerformance(); }
-function setPerfTmpProject(proj) { state.perfTmpProject = proj; renderPerformance(); }
+function setPerfExProject(proj) { state.perfExProject = proj; renderPerformanceModule(); }
+function setPerfPxProject(proj) { state.perfPxProject = proj; renderPerformanceModule(); }
+function setPerfTmpProject(proj) { state.perfTmpProject = proj; renderPerformanceModule(); }
 
 function renderPerformanceModule() {
   renderPerfPillTabs('perfExPillTabs', state.perfExProject, setPerfExProject);
@@ -1644,26 +1736,7 @@ function renderPerformanceModule() {
 }
 
 function renderPerfPillTabs(containerId, activeProj, onClickFn) {
-  var projects = ['全部'];
-  var hrP = getHrProjects();
-  for (var i = 0; i < hrP.length; i++) {
-    projects.push(hrP[i]);
-  }
-  var html = '';
-  for (var i = 0; i < projects.length; i++) {
-    var cls = projects[i] === activeProj ? 'hr-pill active' : 'hr-pill';
-    html += '<div class="' + cls + '" onclick="void(0)">' + esc(projects[i]) + '</div>';
-  }
-  var el = document.getElementById(containerId);
-  if (el) {
-    el.innerHTML = html;
-    var pills = el.querySelectorAll('.hr-pill');
-    pills.forEach(function(pill, i) {
-      pill.addEventListener('click', function() {
-        onClickFn(projects[i]);
-      });
-    });
-  }
+  renderProjectPills(containerId, activeProj, onClickFn);
 }
 
 function renderPerformance() {
@@ -1832,6 +1905,24 @@ function init() {
     state.hrProjects = PROJECT_TABS.slice();
   }
 
+  // 初始化默认父子关系
+  if (!state.hrProjectParent || Object.keys(state.hrProjectParent).length === 0) {
+    state.hrProjectParent = {
+      "博思-拼席": "拼席",
+      "妲润-拼席": "拼席",
+      "森昊-拼席": "拼席",
+      "讨师-拼席": "拼席",
+      "益生菌": "拼席",
+      "妲润": "拼席",
+      "森昊": "拼席",
+      "讨师": "拼席",
+      "博思": "拼席",
+      "厨房秤": "拼席",
+      "雪中飞-私域": "拼席",
+      "母婴": "拼席"
+    };
+  }
+
   // 初始渲染
   renderStaffPillTabs();
   renderCurrentStaffView();
@@ -1857,6 +1948,7 @@ function loadLocalOrDefault() {
       state.monthlyFacts = parsed.monthlyFacts || [];
       state.hrProjects = parsed.hrProjects || [];
       state.hrProjectTypes = parsed.hrProjectTypes || {};
+      state.hrProjectParent = parsed.hrProjectParent || {};
     } else {
       loadDefaultData();
     }
@@ -1899,7 +1991,8 @@ function saveToLocal() {
       operations: state.operations,
       monthlyFacts: state.monthlyFacts,
       hrProjects: state.hrProjects,
-      hrProjectTypes: state.hrProjectTypes
+      hrProjectTypes: state.hrProjectTypes,
+      hrProjectParent: state.hrProjectParent
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     updateSyncStatus('ok', '本地存储');

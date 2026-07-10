@@ -68,6 +68,17 @@
   color: #fff;
   border-color: var(--hr-accent);
 }
+.hr-pill-child {
+  padding: 3px 10px;
+  font-size: 11px;
+  margin-left: 8px;
+  opacity: 0.75;
+  border-style: dashed;
+}
+.hr-pill-child.active {
+  opacity: 1;
+  border-style: solid;
+}
 
 /* ========== HR 提示 ========== */
 .hr-hint {
