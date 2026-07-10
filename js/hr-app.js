@@ -151,7 +151,8 @@ var state = {
   schedule: { people: [], dates: [] },
   projectConfigs: [],
   operations: [],
-  monthlyFacts: []
+  monthlyFacts: [],
+  hrProjects: []  // HR独立的项目列表，从PROJECT_TABS初始化，支持增删改
 };
 
 // ==================== 工具函数 ====================
@@ -485,9 +486,9 @@ function scrollOptionBar(containerId) {
 // ==================== 模块切换 ====================
 function switchModule(mod) {
   state.currentModule = mod;
-  // 不再调用 App.switchView，因为 App.renderView 已经在调用 switchModule
-  // 根据模块渲染
-  if (mod === 'staff') {
+  if (mod === 'projects') {
+    renderHrProjects();
+  } else if (mod === 'staff') {
     renderStaffPillTabs();
     renderCurrentStaffView();
   } else if (mod === 'schedule') {
@@ -523,15 +524,16 @@ function setStaffMode(mode) {
 
 function renderStaffPillTabs() {
   var projects = ['全部'];
-  // 收集所有员工项目
+  // 从员工中收集有人的项目
   for (var i = 0; i < state.staff.length; i++) {
     var p = state.staff[i].project;
     if (projects.indexOf(p) < 0) projects.push(p);
   }
-  // 按 PROJECT_ORDER 排序
+  // 按 hrProjects 中的顺序排序
+  var hrP = getHrProjects();
   projects.sort(function(a, b) {
-    var ai = PROJECT_ORDER.indexOf(a);
-    var bi = PROJECT_ORDER.indexOf(b);
+    var ai = hrP.indexOf(a);
+    var bi = hrP.indexOf(b);
     if (ai < 0) ai = 999;
     if (bi < 0) bi = 999;
     return ai - bi;
@@ -773,8 +775,9 @@ function setScheduleSummaryPeriod(period) {
 
 function renderSchedulePillTabs() {
   var projects = ['全部'];
-  for (var i = 0; i < PROJECT_TABS.length; i++) {
-    projects.push(PROJECT_TABS[i]);
+  var hrP = getHrProjects();
+  for (var i = 0; i < hrP.length; i++) {
+    projects.push(hrP[i]);
   }
   var html = '';
   for (var i = 0; i < projects.length; i++) {
@@ -1287,6 +1290,116 @@ function renderScheduleSummary() {
   $('#scheduleSummaryTableWrap').innerHTML = html;
 }
 
+// ==================== HR项目管理 ====================
+function getHrProjects() {
+  return state.hrProjects || [];
+}
+
+function renderHrProjects() {
+  var projects = getHrProjects();
+  var html = '<table><thead><tr>' +
+    '<th style="width:40px;">序号</th>' +
+    '<th>项目名称</th>' +
+    '<th>类型</th>' +
+    '<th style="width:60px;">员工数</th>' +
+    '<th style="width:100px;">操作</th>' +
+    '</tr></thead><tbody>';
+
+  for (var i = 0; i < projects.length; i++) {
+    var p = projects[i];
+    var isPinxi = PINXI_PROJECTS.indexOf(p) >= 0 || PINXI_JOINT_BRANDS.some(function(b) { return p.indexOf(b) === 0; });
+    var typeText = isPinxi ? '拼席' : '专席';
+    var typeBadge = isPinxi ? 'hr-badge hr-badge-amber' : 'hr-badge hr-badge-green';
+    var staffCount = state.staff.filter(function(s) { return s.project === p; }).length;
+
+    html += '<tr>' +
+      '<td style="text-align:center;">' + (i + 1) + '</td>' +
+      '<td class="hr-cellEdit"><input value="' + esc(p) + '" data-idx="' + i + '" data-field="name" onchange="updateHrProject(this)"></td>' +
+      '<td><span class="' + typeBadge + '">' + typeText + '</span></td>' +
+      '<td style="text-align:center;">' + staffCount + '</td>' +
+      '<td><button class="hr-miniBtn danger" onclick="deleteHrProject(' + i + ')" title="删除"><i class="fas fa-trash-can"></i></button></td>' +
+      '</tr>';
+  }
+
+  if (projects.length === 0) {
+    html += '<tr><td colspan="5" class="empty-cell">暂无项目</td></tr>';
+  }
+
+  html += '</tbody></table>';
+  var wrap = $('#hrProjectsTableWrap');
+  if (wrap) wrap.innerHTML = html;
+}
+
+function addHrProject() {
+  var overlay = document.createElement('div');
+  overlay.className = 'hr-confirmOverlay';
+  overlay.innerHTML =
+    '<div class="hr-confirmBox" style="text-align:left;">' +
+    '<h3 style="text-align:center;">新增项目</h3>' +
+    '<div style="margin-bottom:12px;">' +
+    '<label style="display:block;font-size:12px;color:var(--hr-muted);margin-bottom:6px;">项目名称：</label>' +
+    '<input id="newProjectName" style="width:100%;padding:8px;border:1px solid var(--hr-line);border-radius:6px;font-size:13px;box-sizing:border-box;">' +
+    '</div>' +
+    '<div class="confirm-btns" style="justify-content:flex-end;">' +
+    '<button class="hr-btn hr-btn-secondary" id="cfCancel">取消</button>' +
+    '<button class="hr-btn hr-btn-primary" id="cfOk">确认</button>' +
+    '</div></div>';
+  document.body.appendChild(overlay);
+  overlay.querySelector('#cfCancel').onclick = function() { document.body.removeChild(overlay); };
+  overlay.querySelector('#cfOk').onclick = function() {
+    var name = overlay.querySelector('#newProjectName').value.trim();
+    if (!name) { toast('请输入项目名称', 'warn'); return; }
+    if (state.hrProjects.indexOf(name) >= 0) { toast('项目"' + name + '"已存在', 'warn'); return; }
+    state.hrProjects.push(name);
+    document.body.removeChild(overlay);
+    renderHrProjects();
+    saveToLocal();
+    toast('已新增项目：' + name, 'success');
+  };
+  overlay.addEventListener('click', function(e) { if (e.target === overlay) document.body.removeChild(overlay); });
+}
+
+function updateHrProject(el) {
+  var idx = parseInt(el.getAttribute('data-idx'));
+  var oldName = state.hrProjects[idx];
+  var newName = el.value.trim();
+  if (!newName) { el.value = oldName; toast('项目名称不能为空', 'warn'); return; }
+  if (newName !== oldName && state.hrProjects.indexOf(newName) >= 0) {
+    el.value = oldName;
+    toast('项目"' + newName + '"已存在', 'warn');
+    return;
+  }
+  // 同步更新员工表中的项目名
+  if (newName !== oldName) {
+    for (var i = 0; i < state.staff.length; i++) {
+      if (state.staff[i].project === oldName) state.staff[i].project = newName;
+    }
+    // 同步更新排班中该项目的人员引用（项目名存在staff表中，排班通过staff.id关联）
+    state.hrProjects[idx] = newName;
+    saveToLocal();
+    toast('项目已重命名：' + oldName + ' → ' + newName, 'success');
+  }
+}
+
+function deleteHrProject(idx) {
+  var name = state.hrProjects[idx];
+  var staffCount = state.staff.filter(function(s) { return s.project === name; }).length;
+  var msg = '确定删除项目"' + name + '"吗？';
+  if (staffCount > 0) {
+    msg += '<br><span style="color:var(--hr-red);">该项目下有 ' + staffCount + ' 名员工，删除后员工项目字段将清空。</span>';
+  }
+  showConfirm('删除项目', msg, function() {
+    // 清空该项目的员工
+    for (var i = 0; i < state.staff.length; i++) {
+      if (state.staff[i].project === name) state.staff[i].project = '';
+    }
+    state.hrProjects.splice(idx, 1);
+    renderHrProjects();
+    saveToLocal();
+    toast('已删除项目：' + name, 'success');
+  });
+}
+
 // ==================== 绩效管理 ====================
 function setKpiMode(mode) {
   state.kpiMode = mode;
@@ -1307,8 +1420,8 @@ function setKpiProject(proj) {
 
 function renderKpiModule() {
   // 渲染项目选项
-  renderOptionScroller('kpiOptionScroller', PROJECT_TABS, state.kpiProject, setKpiProject);
-  renderOptionScroller('kpiConfigOptionScroller', PROJECT_TABS, state.kpiProject, setKpiProject);
+  renderOptionScroller('kpiOptionScroller', getHrProjects(), state.kpiProject, setKpiProject);
+  renderOptionScroller('kpiConfigOptionScroller', getHrProjects(), state.kpiProject, setKpiProject);
   scrollOptionBar('kpiOptionScroller');
   scrollOptionBar('kpiConfigOptionScroller');
 
@@ -1539,8 +1652,9 @@ function renderPerformanceModule() {
 
 function renderPerfPillTabs(containerId, activeProj, onClickFn) {
   var projects = ['全部'];
-  for (var i = 0; i < PROJECT_TABS.length; i++) {
-    projects.push(PROJECT_TABS[i]);
+  var hrP = getHrProjects();
+  for (var i = 0; i < hrP.length; i++) {
+    projects.push(hrP[i]);
   }
   var html = '';
   for (var i = 0; i < projects.length; i++) {
@@ -1719,6 +1833,11 @@ function init() {
   if (perfEx) perfEx.value = defaultPeriod;
   if (perfPx) perfPx.value = defaultPeriod;
   if (perfTmp) perfTmp.value = defaultPeriod;
+
+  // 初始化HR项目列表（从PROJECT_TABS，若本地已存则用本地的）
+  if (!state.hrProjects || state.hrProjects.length === 0) {
+    state.hrProjects = PROJECT_TABS.slice();
+  }
 
   // 初始渲染
   renderStaffPillTabs();

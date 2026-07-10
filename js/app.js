@@ -68,6 +68,7 @@ const App = {
       case 'invoices-co': await this.renderInvoices(container, '拼席'); break;
       case 'invoices-ex': await this.renderInvoices(container, '专席'); break;
       // HR 模块视图
+      case 'hr-projects': if (typeof switchModule === 'function') switchModule('projects'); break;
       case 'hr-staff': if (typeof switchModule === 'function') switchModule('staff'); break;
       case 'hr-schedule': if (typeof switchModule === 'function') switchModule('schedule'); break;
       case 'hr-kpi': if (typeof switchModule === 'function') switchModule('kpi'); break;
