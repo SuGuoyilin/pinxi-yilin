@@ -530,29 +530,30 @@ td.hr-cellEdit select { cursor: pointer; }
 }
 #hrProjectsTableWrap table th,
 #hrProjectsTableWrap table td {
-  padding: 1px 2px;
+  padding: 3px 2px;
   border-right: 1px solid var(--hr-line);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1.6;
 }
 #hrProjectsTableWrap table th {
   white-space: nowrap;
   font-size: 9px;
-  padding: 2px 2px;
+  padding: 4px 2px;
 }
 #hrProjectsTableWrap input,
 #hrProjectsTableWrap select {
   box-sizing: border-box;
   font-size: 9px;
-  padding: 0 2px;
+  padding: 2px 2px;
   width: 100%;
   border: 1px solid transparent;
   border-radius: 2px;
   background: transparent;
   font-family: inherit;
   color: inherit;
-  line-height: 1.4;
+  line-height: 1.6;
 }
 #hrProjectsTableWrap input:focus,
 #hrProjectsTableWrap select:focus {
