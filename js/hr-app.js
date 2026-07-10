@@ -1332,54 +1332,78 @@ function renderProjectPills(containerId, activeProject, onClickFn) {
 
 function renderHrProjects() {
   var projects = getHrProjects();
-  var html = '<table><thead><tr>' +
-    '<th style="width:40px;">序号</th>' +
+  var topProjs = getTopLevelProjects();
+  var html = '<div class="hr-tableWrap"><table><thead><tr>' +
+    '<th style="width:36px;">#</th>' +
     '<th>项目名称</th>' +
-    '<th style="width:60px;">类型</th>' +
-    '<th style="width:80px;">父项目</th>' +
-    '<th style="width:60px;">员工数</th>' +
-    '<th style="width:100px;">操作</th>' +
+    '<th style="width:56px;">类型</th>' +
+    '<th style="width:70px;">父项目</th>' +
+    '<th style="width:46px;">人数</th>' +
+    '<th style="width:60px;">底薪</th>' +
+    '<th style="width:60px;">绩效</th>' +
+    '<th style="width:46px;">税点%</th>' +
+    '<th style="width:50px;">管理编</th>' +
+    '<th style="width:50px;">客服编</th>' +
+    '<th style="width:56px;">含税</th>' +
+    '<th style="width:60px;">合作时间</th>' +
+    '<th style="width:50px;">操作</th>' +
     '</tr></thead><tbody>';
 
   for (var i = 0; i < projects.length; i++) {
     var p = projects[i];
+    var isChild = state.hrProjectParent && state.hrProjectParent[p];
+    var rowStyle = isChild ? 'padding-left:20px;font-size:11px;' : '';
+
+    // 类型
     var typeFromConfig = (state.hrProjectTypes && state.hrProjectTypes[p]) || '';
     var isPinxi = typeFromConfig === '拼席' || (typeFromConfig === '' && (PINXI_PROJECTS.indexOf(p) >= 0 || PINXI_JOINT_BRANDS.some(function(b) { return p.indexOf(b) === 0; })));
     var typeText = isPinxi ? '拼席' : '专席';
-    var staffCount = state.staff.filter(function(s) { return s.project === p; }).length;
 
-    // 获取所有顶层项目作为父项目选项
-    var parentOptions = '<option value="">无（顶级）</option>';
-    var topProjs = getTopLevelProjects();
+    // 父项目选项
+    var parentOpts = '<option value="">—</option>';
     for (var pi = 0; pi < topProjs.length; pi++) {
       if (topProjs[pi] !== p) {
         var sel = (state.hrProjectParent && state.hrProjectParent[p] === topProjs[pi]) ? ' selected' : '';
-        parentOptions += '<option value="' + esc(topProjs[pi]) + '"' + sel + '>' + esc(topProjs[pi]) + '</option>';
+        parentOpts += '<option value="' + esc(topProjs[pi]) + '"' + sel + '>' + esc(topProjs[pi]) + '</option>';
       }
     }
 
-    html += '<tr>' +
+    // 项目配置
+    var cfg = (state.hrProjectConfigs || []).find(function(c) { return c.project === p; }) || {};
+    var staffCount = state.staff.filter(function(s) { return s.project === p; }).length;
+
+    html += '<tr style="' + rowStyle + '">' +
       '<td style="text-align:center;">' + (i + 1) + '</td>' +
-      '<td class="hr-cellEdit"><input value="' + esc(p) + '" data-idx="' + i + '" data-field="name" onchange="updateHrProject(this)"></td>' +
-      '<td><select class="hr-select" style="font-size:12px;padding:3px 6px;" data-idx="' + i + '" onchange="updateHrProjectType(this)">' +
-      '<option value="专席"' + (typeText === '专席' ? ' selected' : '') + '>专席</option>' +
-      '<option value="拼席"' + (typeText === '拼席' ? ' selected' : '') + '>拼席</option>' +
-      '</select></td>' +
-      '<td><select class="hr-select" style="font-size:11px;padding:2px 4px;" data-idx="' + i + '" onchange="updateHrProjectParent(this)">' + parentOptions + '</select></td>' +
+      '<td class="hr-cellEdit"><input value="' + esc(p) + '" data-idx="' + i + '" onchange="updateHrProject(this)" style="font-size:12px;padding:2px 4px;"></td>' +
+      '<td><select class="hr-select" style="font-size:11px;padding:2px 4px;" data-idx="' + i + '" onchange="updateHrProjectType(this)">' +
+        '<option value="专席"' + (typeText === '专席' ? ' selected' : '') + '>专席</option>' +
+        '<option value="拼席"' + (typeText === '拼席' ? ' selected' : '') + '>拼席</option>' +
+        '</select></td>' +
+      '<td><select class="hr-select" style="font-size:11px;padding:2px 4px;" data-idx="' + i + '" onchange="updateHrProjectParent(this)">' + parentOpts + '</select></td>' +
       '<td style="text-align:center;">' + staffCount + '</td>' +
-      '<td style="display:flex;gap:4px;">' +
-      (i > 0 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',-1)" title="上移"><i class="fas fa-arrow-up"></i></button>' : '<span style="width:28px;display:inline-block;"></span>') +
-      (i < projects.length - 1 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',1)" title="下移"><i class="fas fa-arrow-down"></i></button>' : '<span style="width:28px;display:inline-block;"></span>') +
-      '<button class="hr-miniBtn danger" onclick="deleteHrProject(' + i + ')" title="删除"><i class="fas fa-trash-can"></i></button>' +
-      '</td>' +
+      '<td class="hr-cellEdit"><input type="number" value="' + (cfg.baseSalary || 0) + '" data-proj="' + esc(p) + '" data-field="baseSalary" onchange="updateProjectConfig(this)" style="width:50px;font-size:11px;padding:2px;text-align:right;"></td>' +
+      '<td class="hr-cellEdit"><input type="number" value="' + (cfg.performance || 0) + '" data-proj="' + esc(p) + '" data-field="performance" onchange="updateProjectConfig(this)" style="width:50px;font-size:11px;padding:2px;text-align:right;"></td>' +
+      '<td class="hr-cellEdit"><input type="number" step="0.1" value="' + (cfg.taxRate || 0) + '" data-proj="' + esc(p) + '" data-field="taxRate" onchange="updateProjectConfig(this)" style="width:40px;font-size:11px;padding:2px;text-align:right;"></td>' +
+      '<td class="hr-cellEdit"><input type="number" value="' + (cfg.managerCount || 0) + '" data-proj="' + esc(p) + '" data-field="managerCount" onchange="updateProjectConfig(this)" style="width:36px;font-size:11px;padding:2px;text-align:center;"></td>' +
+      '<td class="hr-cellEdit"><input type="number" value="' + (cfg.staffCount || 0) + '" data-proj="' + esc(p) + '" data-field="staffCount" onchange="updateProjectConfig(this)" style="width:36px;font-size:11px;padding:2px;text-align:center;"></td>' +
+      '<td style="text-align:center;"><select class="hr-select" style="font-size:11px;padding:1px 2px;" data-proj="' + esc(p) + '" data-field="taxIncluded" onchange="updateProjectConfig(this)">' +
+        '<option value="1"' + (cfg.taxIncluded !== '0' ? ' selected' : '') + '>是</option>' +
+        '<option value="0"' + (cfg.taxIncluded === '0' ? ' selected' : '') + '>否</option>' +
+        '</select></td>' +
+      '<td class="hr-cellEdit"><input value="' + esc(cfg.cooperationPeriod || '') + '" data-proj="' + esc(p) + '" data-field="cooperationPeriod" onchange="updateProjectConfig(this)" style="font-size:11px;padding:2px;width:54px;"></td>' +
+      '<td style="white-space:nowrap;">' +
+        (i > 0 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',-1)" title="上移"><i class="fas fa-arrow-up"></i></button>' : '<span style="width:26px;display:inline-block;"></span>') +
+        (i < projects.length - 1 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',1)" title="下移"><i class="fas fa-arrow-down"></i></button>' : '<span style="width:26px;display:inline-block;"></span>') +
+        '<button class="hr-miniBtn danger" onclick="deleteHrProject(' + i + ')" title="删除"><i class="fas fa-trash-can"></i></button>' +
+        '</td>' +
       '</tr>';
   }
 
   if (projects.length === 0) {
-    html += '<tr><td colspan="6" class="empty-cell">暂无项目</td></tr>';
+    html += '<tr><td colspan="13" class="empty-cell">暂无项目</td></tr>';
   }
 
-  html += '</tbody></table>';
+  html += '</tbody></table></div>';
   var wrap = $('#hrProjectsTableWrap');
   if (wrap) wrap.innerHTML = html;
 }
@@ -1483,6 +1507,21 @@ function updateHrProjectParent(el) {
   }
   saveToLocal();
   // 不需要重新渲染表格，选择已直接生效
+}
+
+function updateProjectConfig(el) {
+  var proj = el.getAttribute('data-proj');
+  var field = el.getAttribute('data-field');
+  if (!proj || !field) return;
+  
+  if (!state.projectConfigs) state.projectConfigs = [];
+  var cfg = state.projectConfigs.find(function(c) { return c.project === proj; });
+  if (!cfg) {
+    cfg = { project: proj };
+    state.projectConfigs.push(cfg);
+  }
+  cfg[field] = el.value;
+  saveToLocal();
 }
 
 // ==================== 绩效管理 ====================
@@ -1907,20 +1946,27 @@ function init() {
 
   // 初始化默认父子关系
   if (!state.hrProjectParent || Object.keys(state.hrProjectParent).length === 0) {
-    state.hrProjectParent = {
-      "博思-拼席": "拼席",
-      "妲润-拼席": "拼席",
-      "森昊-拼席": "拼席",
-      "讨师-拼席": "拼席",
-      "益生菌": "拼席",
-      "妲润": "拼席",
-      "森昊": "拼席",
-      "讨师": "拼席",
-      "博思": "拼席",
-      "厨房秤": "拼席",
-      "雪中飞-私域": "拼席",
-      "母婴": "拼席"
+    state.hrProjectParent = {};
+    var defaultChildren = {
+      "拼席": ["讨师", "博思", "益生菌", "妲润", "森昊", "厨房秤", "雪中飞-私域", "母婴", "博思-拼席", "妲润-拼席", "森昊-拼席", "讨师-拼席"]
     };
+    // 只映射 hrProjects 中实际存在的项目
+    for (var parent in defaultChildren) {
+      var children = defaultChildren[parent];
+      for (var ci = 0; ci < children.length; ci++) {
+        if (state.hrProjects.indexOf(children[ci]) >= 0) {
+          state.hrProjectParent[children[ci]] = parent;
+        }
+      }
+    }
+  }
+  // 清理 hrProjectParent 中不存在于 hrProjects 的 key
+  if (state.hrProjectParent) {
+    for (var key in state.hrProjectParent) {
+      if (state.hrProjects.indexOf(key) < 0) {
+        delete state.hrProjectParent[key];
+      }
+    }
   }
 
   // 初始渲染
