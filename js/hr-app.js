@@ -754,16 +754,11 @@ function setScheduleSummaryPeriod(period) {
 }
 
 function renderSchedulePillTabs() {
-  var containers = ['schedProjectPills', 'schedRemarksPillTabs', 'schedSummaryPillTabs'];
-  for (var ci = 0; ci < containers.length; ci++) {
-    renderProjectPills(containers[ci], state.scheduleProject, (function(cid) {
-      return function(proj) {
-        state.scheduleProject = proj;
-        renderSchedulePillTabs();
-        renderCurrentScheduleView();
-      };
-    })(containers[ci]));
-  }
+  renderProjectPills('schedProjectPills', state.scheduleProject, function(proj) {
+    state.scheduleProject = proj;
+    renderSchedulePillTabs();
+    renderCurrentScheduleView();
+  });
 }
 
 function renderCurrentScheduleView() {
@@ -946,7 +941,7 @@ function addScheduleRow() {
   var availableStaff = state.staff.filter(function(s) {
     if (s.status === '离职') return false;
     if (existingIds.indexOf(s.id) >= 0) return false;
-    if (currentProject !== '全部' && s.project !== currentProject) return false;
+    if (!projectMatch(s.project, currentProject)) return false;
     return true;
   });
   if (availableStaff.length === 0) {
