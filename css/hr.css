@@ -523,28 +523,28 @@ td.hr-cellEdit select { cursor: pointer; }
 
 /* 项目管理表格 */
 #hrProjectsTableWrap table {
-  font-size: 11px;
+  font-size: 10px;
   min-width: auto;
   table-layout: fixed;
   width: 100%;
 }
 #hrProjectsTableWrap table th,
 #hrProjectsTableWrap table td {
-  padding: 3px 5px;
+  padding: 2px 4px;
   border-right: 1px solid var(--hr-line);
   overflow: hidden;
   text-overflow: ellipsis;
 }
 #hrProjectsTableWrap table th {
   white-space: nowrap;
-  font-size: 11px;
-  padding: 4px 5px;
+  font-size: 10px;
+  padding: 3px 4px;
 }
 #hrProjectsTableWrap input,
 #hrProjectsTableWrap select {
   box-sizing: border-box;
-  font-size: 11px;
-  padding: 2px 4px;
+  font-size: 10px;
+  padding: 1px 3px;
   width: 100%;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -559,5 +559,5 @@ td.hr-cellEdit select { cursor: pointer; }
 }
 #hrProjectsTableWrap input[type="date"] {
   width: 100%;
-  min-width: 80px;
+  min-width: 72px;
 }

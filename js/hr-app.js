@@ -1330,7 +1330,10 @@ function renderHrProjects() {
   var topProjs = getTopLevelProjects();
   var now = new Date();
 
-  var html = '<div class="hr-tableWrap" style="overflow-x:auto;"><table id="hrProjTable"><thead><tr>' +
+  var html = '<div class="hr-tableWrap" style="overflow-x:auto;"><table id="hrProjTable"><colgroup>' +
+    '<col style="width:100px;"><col><col><col style="width:90px;"><col style="width:90px;"><col>' +
+    '<col><col><col><col><col><col><col><col><col><col style="width:38px;"><col style="width:30px;">' +
+    '</colgroup><thead><tr>' +
     '<th>项目名称</th>' +
     '<th>类型</th>' +
     '<th>父项目</th>' +
@@ -1348,7 +1351,8 @@ function renderHrProjects() {
     '<th>实际人力</th>' +
     '<th>坐席底薪</th>' +
     '<th>坐席绩效</th>' +
-    '<th>操作</th>' +
+    '<th>排序</th>' +
+    '<th>删除</th>' +
     '</tr></thead><tbody>';
 
   for (var i = 0; i < projects.length; i++) {
@@ -1412,16 +1416,16 @@ function renderHrProjects() {
       '<td style="text-align:center;color:var(--hr-accent);font-weight:600;">' + staffList.filter(function(s){return s.role!=='主管'&&s.role!=='组长';}).length + '</td>' +
       '<td><input type="number" value="' + (cfg.baseSalary || 0) + '" data-proj="' + esc(p) + '" data-field="baseSalary" onchange="updateProjectConfig(this)" style="text-align:right;"></td>' +
       '<td><input type="number" value="' + (cfg.performance || 0) + '" data-proj="' + esc(p) + '" data-field="performance" onchange="updateProjectConfig(this)" style="text-align:right;"></td>' +
-      '<td style="white-space:nowrap;">' +
-        (i > 0 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',-1)" title="上移"><i class="fas fa-arrow-up"></i></button>' : '<span style="width:26px;display:inline-block;"></span>') +
-        (i < projects.length - 1 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',1)" title="下移"><i class="fas fa-arrow-down"></i></button>' : '<span style="width:26px;display:inline-block;"></span>') +
-        '<button class="hr-miniBtn danger" onclick="deleteHrProject(' + i + ')" title="删除"><i class="fas fa-trash-can"></i></button>' +
-        '</td>' +
+      '<td style="text-align:right;">' +
+        (i > 0 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',-1)" title="上移"><i class="fas fa-arrow-up"></i></button>' : '') +
+        (i < projects.length - 1 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',1)" title="下移" style="margin-left:1px;"><i class="fas fa-arrow-down"></i></button>' : '') +
+      '</td>' +
+      '<td><button class="hr-miniBtn danger" onclick="deleteHrProject(' + i + ')" title="删除"><i class="fas fa-trash-can"></i></button></td>' +
       '</tr>';
   }
 
   if (projects.length === 0) {
-    html += '<tr><td colspan="18" class="empty-cell">暂无项目</td></tr>';
+    html += '<tr><td colspan="19" class="empty-cell">暂无项目</td></tr>';
   }
 
   html += '</tbody></table></div>';
