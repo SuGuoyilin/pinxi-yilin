@@ -1862,6 +1862,7 @@ function loadLocalOrDefault() {
       state.projectConfigs = parsed.projectConfigs || [];
       state.operations = parsed.operations || [];
       state.monthlyFacts = parsed.monthlyFacts || [];
+      state.hrProjects = parsed.hrProjects || [];
     } else {
       loadDefaultData();
     }
@@ -1902,7 +1903,8 @@ function saveToLocal() {
       schedule: state.schedule,
       projectConfigs: state.projectConfigs,
       operations: state.operations,
-      monthlyFacts: state.monthlyFacts
+      monthlyFacts: state.monthlyFacts,
+      hrProjects: state.hrProjects
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     updateSyncStatus('ok', '本地存储');
