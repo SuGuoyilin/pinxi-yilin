@@ -524,25 +524,9 @@ function setStaffMode(mode) {
 
 function renderStaffPillTabs() {
   var projects = ['全部'];
-  // 从员工中收集有人的项目
-  for (var i = 0; i < state.staff.length; i++) {
-    var p = state.staff[i].project;
-    if (projects.indexOf(p) < 0) projects.push(p);
-  }
-  // 按 hrProjects 中的顺序排序
   var hrP = getHrProjects();
-  projects.sort(function(a, b) {
-    var ai = hrP.indexOf(a);
-    var bi = hrP.indexOf(b);
-    if (ai < 0) ai = 999;
-    if (bi < 0) bi = 999;
-    return ai - bi;
-  });
-  // 确保"全部"始终在最前面
-  if (projects[0] !== '全部') {
-    var allIdx = projects.indexOf('全部');
-    if (allIdx >= 0) projects.splice(allIdx, 1);
-    projects.unshift('全部');
+  for (var i = 0; i < hrP.length; i++) {
+    projects.push(hrP[i]);
   }
 
   var html = '';
