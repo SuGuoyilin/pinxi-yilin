@@ -803,16 +803,33 @@ function updateScheduleShift(staffId, dateKey) {
 function renderMonthPills(containerId, periods, activePeriod, onClickFn) {
   var container = document.getElementById(containerId);
   if (!container) return;
-  var html = '';
+  // 按年份分组
+  var groups = {};
   for (var i = 0; i < periods.length; i++) {
-    var cls = periods[i] === activePeriod ? 'hr-pill active' : 'hr-pill';
-    html += '<span class="' + cls + '" onclick="">' + esc(periods[i]) + '</span>';
+    var year = periods[i].substring(0, 4);
+    if (!groups[year]) groups[year] = [];
+    groups[year].push(periods[i]);
+  }
+  var years = Object.keys(groups).sort();
+  var html = '';
+  for (var yi = 0; yi < years.length; yi++) {
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;' + (yi > 0 ? 'margin-top:6px;padding-top:6px;border-top:1px dashed var(--hr-line);' : '') + '">';
+    if (years.length > 1) {
+      html += '<span style="font-size:11px;color:var(--hr-muted);font-weight:600;margin-right:4px;">' + years[yi] + '</span>';
+    }
+    var months = groups[years[yi]];
+    for (var mi = 0; mi < months.length; mi++) {
+      var cls = months[mi] === activePeriod ? 'hr-pill active' : 'hr-pill';
+      html += '<span class="' + cls + '" data-period="' + esc(months[mi]) + '">' + esc(months[mi]) + '</span>';
+    }
+    html += '</div>';
   }
   container.innerHTML = html;
   // 绑定事件
   var pills = container.querySelectorAll('.hr-pill');
-  pills.forEach(function(pill, i) {
-    pill.onclick = function() { onClickFn(periods[i]); };
+  pills.forEach(function(pill) {
+    var p = pill.getAttribute('data-period');
+    pill.onclick = function() { onClickFn(p); };
   });
 }
 
