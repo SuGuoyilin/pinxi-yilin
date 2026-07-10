@@ -813,16 +813,14 @@ function renderMonthPills(containerId, periods, activePeriod, onClickFn) {
   var years = Object.keys(groups).sort();
   var html = '';
   for (var yi = 0; yi < years.length; yi++) {
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between;' + (yi > 0 ? 'margin-top:6px;padding-top:6px;border-top:1px dashed var(--hr-line);' : '') + '">';
-    if (years.length > 1) {
-      html += '<span style="font-size:11px;color:var(--hr-muted);font-weight:600;margin-right:4px;">' + years[yi] + '</span>';
+    if (years.length > 1 && yi > 0) {
+      html += '<div style="width:100%;height:1px;background:var(--hr-line);margin:4px 0;"></div>';
     }
     var months = groups[years[yi]];
     for (var mi = 0; mi < months.length; mi++) {
       var cls = months[mi] === activePeriod ? 'hr-pill active' : 'hr-pill';
       html += '<span class="' + cls + '" data-period="' + esc(months[mi]) + '">' + esc(months[mi]) + '</span>';
     }
-    html += '</div>';
   }
   container.innerHTML = html;
   // 绑定事件
@@ -1415,17 +1413,17 @@ function renderHrProjects() {
         '<option value="专席"' + (typeText === '专席' ? ' selected' : '') + '>专席</option>' +
         '<option value="拼席"' + (typeText === '拼席' ? ' selected' : '') + '>拼席</option></select></td>' +
       '<td><select class="hr-select" data-idx="' + i + '" onchange="updateHrProjectParent(this)">' + parentOpts + '</select></td>' +
-      '<td><input type="date" value="' + esc(cfg.startDate || '') + '" data-proj="' + esc(p) + '" data-field="startDate" oninput="updateProjectConfig(this)"></td>' +
-      '<td><input type="date" value="' + esc(cfg.endDate || '') + '" data-proj="' + esc(p) + '" data-field="endDate" oninput="updateProjectConfig(this)"></td>' +
+      '<td><input type="date" value="' + esc(cfg.startDate || '') + '" data-proj="' + esc(p) + '" data-field="startDate" onchange="updateProjectConfig(this)"></td>' +
+      '<td><input type="date" value="' + esc(cfg.endDate || '') + '" data-proj="' + esc(p) + '" data-field="endDate" onchange="updateProjectConfig(this)"></td>' +
       '<td style="text-align:center;">' + remainText + '</td>' +
-      '<td><select class="hr-select" data-proj="' + esc(p) + '" data-field="signer" oninput="updateProjectConfig(this)">' +
+      '<td><select class="hr-select" data-proj="' + esc(p) + '" data-field="signer" onchange="updateProjectConfig(this)">' +
         '<option value="玉书"' + (cfg.signer === '玉书' ? ' selected' : '') + '>玉书</option>' +
         '<option value="塑果"' + (cfg.signer === '塑果' ? ' selected' : '') + '>塑果</option></select></td>' +
-      '<td style="text-align:center;"><select class="hr-select" data-proj="' + esc(p) + '" data-field="taxIncluded" oninput="updateProjectConfig(this)">' +
+      '<td style="text-align:center;"><select class="hr-select" data-proj="' + esc(p) + '" data-field="taxIncluded" onchange="updateProjectConfig(this)">' +
         '<option value="1"' + (cfg.taxIncluded !== '0' ? ' selected' : '') + '>是</option>' +
         '<option value="0"' + (cfg.taxIncluded === '0' ? ' selected' : '') + '>否</option></select></td>' +
       '<td><input type="number" step="1" value="' + (cfg.taxRate || 0) + '" data-proj="' + esc(p) + '" data-field="taxRate" oninput="updateProjectConfig(this)" style="text-align:right;"></td>' +
-      '<td><select class="hr-select" data-proj="' + esc(p) + '" data-field="invoiceType" oninput="updateProjectConfig(this)">' +
+      '<td><select class="hr-select" data-proj="' + esc(p) + '" data-field="invoiceType" onchange="updateProjectConfig(this)">' +
         '<option value="增值税专用发票"' + (cfg.invoiceType === '增值税专用发票' ? ' selected' : '') + '>专票</option>' +
         '<option value="增值税普通发票"' + (cfg.invoiceType === '增值税普通发票' ? ' selected' : '') + '>普票</option>' +
         '<option value="不开票"' + (cfg.invoiceType === '不开票' ? ' selected' : '') + '>不开票</option></select></td>' +
