@@ -521,18 +521,20 @@ td.hr-cellEdit select { cursor: pointer; }
   .hr-card { padding: 14px; }
 }
 
-/* 项目管理表格紧凑模式 */
+/* 项目管理表格 */
 #hrProjectsTableWrap table {
-  font-size: 12px;
+  font-size: 11px;
   min-width: auto;
 }
 #hrProjectsTableWrap table th,
 #hrProjectsTableWrap table td {
-  padding: 4px 5px;
+  padding: 3px 4px;
   border-right: 1px solid var(--hr-line);
 }
 #hrProjectsTableWrap table th {
   white-space: nowrap;
+  font-size: 11px;
+  padding: 4px 4px;
 }
 #hrProjectsTableWrap input,
 #hrProjectsTableWrap select {
