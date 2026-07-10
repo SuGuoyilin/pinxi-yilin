@@ -1329,27 +1329,26 @@ function renderHrProjects() {
   var projects = getHrProjects();
   var topProjs = getTopLevelProjects();
   var now = new Date();
-  var todayStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
 
   var html = '<div class="hr-tableWrap" style="overflow-x:auto;"><table id="hrProjTable"><thead><tr>' +
-    '<th style="min-width:90px;">项目名称</th>' +
-    '<th style="min-width:46px;">类型</th>' +
-    '<th style="min-width:60px;">父项目</th>' +
-    '<th style="min-width:76px;">开始时间</th>' +
-    '<th style="min-width:76px;">结束时间</th>' +
-    '<th style="min-width:56px;">剩余</th>' +
-    '<th style="min-width:60px;">签约方</th>' +
-    '<th style="min-width:46px;">含税</th>' +
-    '<th style="min-width:40px;">税点%</th>' +
-    '<th style="min-width:60px;">发票类型</th>' +
-    '<th style="min-width:46px;">管理编</th>' +
-    '<th style="min-width:56px;">管理金额</th>' +
-    '<th style="min-width:46px;">实际人力</th>' +
-    '<th style="min-width:46px;">坐席编</th>' +
-    '<th style="min-width:46px;">实际人力</th>' +
-    '<th style="min-width:56px;">坐席底薪</th>' +
-    '<th style="min-width:56px;">坐席绩效</th>' +
-    '<th style="min-width:66px;">操作</th>' +
+    '<th>项目名称</th>' +
+    '<th>类型</th>' +
+    '<th>父项目</th>' +
+    '<th>开始时间</th>' +
+    '<th>结束时间</th>' +
+    '<th>剩余</th>' +
+    '<th>签约方</th>' +
+    '<th>含税</th>' +
+    '<th>税点%</th>' +
+    '<th>发票类型</th>' +
+    '<th>管理编</th>' +
+    '<th>管理金额</th>' +
+    '<th>实际人力</th>' +
+    '<th>坐席编</th>' +
+    '<th>实际人力</th>' +
+    '<th>坐席底薪</th>' +
+    '<th>坐席绩效</th>' +
+    '<th>操作</th>' +
     '</tr></thead><tbody>';
 
   for (var i = 0; i < projects.length; i++) {
@@ -1374,7 +1373,6 @@ function renderHrProjects() {
     // 项目配置
     var cfg = (state.hrProjectConfigs || []).find(function(c) { return c.project === p; }) || {};
     var staffList = state.staff.filter(function(s) { return s.project === p && s.status !== '离职'; });
-    var staffCount = staffList.length;
 
     // 剩余天数
     var remainText = '—';
@@ -1388,34 +1386,36 @@ function renderHrProjects() {
     }
 
     html += '<tr style="' + rowStyle + '">' +
-      '<td class="hr-cellEdit"><input value="' + esc(p) + '" data-idx="' + i + '" onchange="updateHrProject(this)" style="font-size:11px;padding:1px 3px;"></td>' +
-      '<td><select class="hr-select" style="font-size:10px;padding:1px 2px;" data-idx="' + i + '" onchange="updateHrProjectType(this)">' +
+      '<td class="hr-cellEdit"><input value="' + esc(p) + '" data-idx="' + i + '" onchange="updateHrProject(this)"></td>' +
+      '<td><select class="hr-select" data-idx="' + i + '" onchange="updateHrProjectType(this)">' +
         '<option value="专席"' + (typeText === '专席' ? ' selected' : '') + '>专席</option>' +
         '<option value="拼席"' + (typeText === '拼席' ? ' selected' : '') + '>拼席</option></select></td>' +
-      '<td><select class="hr-select" style="font-size:10px;padding:1px 2px;" data-idx="' + i + '" onchange="updateHrProjectParent(this)">' + parentOpts + '</select></td>' +
-      '<td class="hr-cellEdit"><input type="date" value="' + esc(cfg.startDate || '') + '" data-proj="' + esc(p) + '" data-field="startDate" onchange="updateProjectConfig(this)" style="font-size:10px;padding:1px 2px;width:72px;"></td>' +
-      '<td class="hr-cellEdit"><input type="date" value="' + esc(cfg.endDate || '') + '" data-proj="' + esc(p) + '" data-field="endDate" onchange="updateProjectConfig(this)" style="font-size:10px;padding:1px 2px;width:72px;"></td>' +
-      '<td style="text-align:center;font-size:10px;">' + remainText + '</td>' +
-      '<td class="hr-cellEdit"><input value="' + esc(cfg.signer || '') + '" data-proj="' + esc(p) + '" data-field="signer" onchange="updateProjectConfig(this)" style="font-size:10px;padding:1px 2px;width:54px;"></td>' +
-      '<td style="text-align:center;"><select class="hr-select" style="font-size:10px;padding:0 1px;" data-proj="' + esc(p) + '" data-field="taxIncluded" onchange="updateProjectConfig(this)">' +
+      '<td><select class="hr-select" data-idx="' + i + '" onchange="updateHrProjectParent(this)">' + parentOpts + '</select></td>' +
+      '<td><input type="date" value="' + esc(cfg.startDate || '') + '" data-proj="' + esc(p) + '" data-field="startDate" onchange="updateProjectConfig(this)"></td>' +
+      '<td><input type="date" value="' + esc(cfg.endDate || '') + '" data-proj="' + esc(p) + '" data-field="endDate" onchange="updateProjectConfig(this)"></td>' +
+      '<td style="text-align:center;">' + remainText + '</td>' +
+      '<td><select class="hr-select" data-proj="' + esc(p) + '" data-field="signer" onchange="updateProjectConfig(this)">' +
+        '<option value="玉书"' + (cfg.signer === '玉书' ? ' selected' : '') + '>玉书</option>' +
+        '<option value="塑果"' + (cfg.signer === '塑果' ? ' selected' : '') + '>塑果</option></select></td>' +
+      '<td style="text-align:center;"><select class="hr-select" data-proj="' + esc(p) + '" data-field="taxIncluded" onchange="updateProjectConfig(this)">' +
         '<option value="1"' + (cfg.taxIncluded !== '0' ? ' selected' : '') + '>是</option>' +
         '<option value="0"' + (cfg.taxIncluded === '0' ? ' selected' : '') + '>否</option></select></td>' +
-      '<td class="hr-cellEdit"><input type="number" step="0.1" value="' + (cfg.taxRate || 0) + '" data-proj="' + esc(p) + '" data-field="taxRate" onchange="updateProjectConfig(this)" style="font-size:10px;padding:1px 2px;width:36px;text-align:right;"></td>' +
-      '<td class="hr-cellEdit"><select style="font-size:10px;padding:1px 2px;" data-proj="' + esc(p) + '" data-field="invoiceType" onchange="updateProjectConfig(this)">' +
+      '<td><input type="number" step="1" value="' + (cfg.taxRate || 0) + '" data-proj="' + esc(p) + '" data-field="taxRate" onchange="updateProjectConfig(this)" style="text-align:right;"></td>' +
+      '<td><select class="hr-select" data-proj="' + esc(p) + '" data-field="invoiceType" onchange="updateProjectConfig(this)">' +
         '<option value="增值税专用发票"' + (cfg.invoiceType === '增值税专用发票' ? ' selected' : '') + '>专票</option>' +
         '<option value="增值税普通发票"' + (cfg.invoiceType === '增值税普通发票' ? ' selected' : '') + '>普票</option>' +
         '<option value="不开票"' + (cfg.invoiceType === '不开票' ? ' selected' : '') + '>不开票</option></select></td>' +
-      '<td class="hr-cellEdit"><input type="number" value="' + (cfg.managerCount || 0) + '" data-proj="' + esc(p) + '" data-field="managerCount" onchange="updateProjectConfig(this)" style="font-size:10px;padding:1px 2px;width:34px;text-align:center;"></td>' +
-      '<td class="hr-cellEdit"><input type="number" value="' + (cfg.managerAmount || 0) + '" data-proj="' + esc(p) + '" data-field="managerAmount" onchange="updateProjectConfig(this)" style="font-size:10px;padding:1px 2px;width:50px;text-align:right;"></td>' +
-      '<td style="text-align:center;font-size:10px;color:var(--hr-accent);font-weight:600;">' + staffList.filter(function(s){return s.role==='主管'||s.role==='组长';}).length + '</td>' +
-      '<td class="hr-cellEdit"><input type="number" value="' + (cfg.staffCount || 0) + '" data-proj="' + esc(p) + '" data-field="staffCount" onchange="updateProjectConfig(this)" style="font-size:10px;padding:1px 2px;width:34px;text-align:center;"></td>' +
-      '<td style="text-align:center;font-size:10px;color:var(--hr-accent);font-weight:600;">' + staffList.filter(function(s){return s.role!=='主管'&&s.role!=='组长';}).length + '</td>' +
-      '<td class="hr-cellEdit"><input type="number" value="' + (cfg.baseSalary || 0) + '" data-proj="' + esc(p) + '" data-field="baseSalary" onchange="updateProjectConfig(this)" style="font-size:10px;padding:1px 2px;width:50px;text-align:right;"></td>' +
-      '<td class="hr-cellEdit"><input type="number" value="' + (cfg.performance || 0) + '" data-proj="' + esc(p) + '" data-field="performance" onchange="updateProjectConfig(this)" style="font-size:10px;padding:1px 2px;width:50px;text-align:right;"></td>' +
+      '<td><input type="number" value="' + (cfg.managerCount || 0) + '" data-proj="' + esc(p) + '" data-field="managerCount" onchange="updateProjectConfig(this)" style="text-align:center;"></td>' +
+      '<td><input type="number" value="' + (cfg.managerAmount || 0) + '" data-proj="' + esc(p) + '" data-field="managerAmount" onchange="updateProjectConfig(this)" style="text-align:right;"></td>' +
+      '<td style="text-align:center;color:var(--hr-accent);font-weight:600;">' + staffList.filter(function(s){return s.role==='主管'||s.role==='组长';}).length + '</td>' +
+      '<td><input type="number" value="' + (cfg.staffCount || 0) + '" data-proj="' + esc(p) + '" data-field="staffCount" onchange="updateProjectConfig(this)" style="text-align:center;"></td>' +
+      '<td style="text-align:center;color:var(--hr-accent);font-weight:600;">' + staffList.filter(function(s){return s.role!=='主管'&&s.role!=='组长';}).length + '</td>' +
+      '<td><input type="number" value="' + (cfg.baseSalary || 0) + '" data-proj="' + esc(p) + '" data-field="baseSalary" onchange="updateProjectConfig(this)" style="text-align:right;"></td>' +
+      '<td><input type="number" value="' + (cfg.performance || 0) + '" data-proj="' + esc(p) + '" data-field="performance" onchange="updateProjectConfig(this)" style="text-align:right;"></td>' +
       '<td style="white-space:nowrap;">' +
-        (i > 0 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',-1)" title="上移" style="width:22px;height:22px;font-size:10px;"><i class="fas fa-arrow-up"></i></button>' : '<span style="width:22px;display:inline-block;"></span>') +
-        (i < projects.length - 1 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',1)" title="下移" style="width:22px;height:22px;font-size:10px;"><i class="fas fa-arrow-down"></i></button>' : '<span style="width:22px;display:inline-block;"></span>') +
-        '<button class="hr-miniBtn danger" onclick="deleteHrProject(' + i + ')" title="删除" style="width:22px;height:22px;font-size:10px;"><i class="fas fa-trash-can"></i></button>' +
+        (i > 0 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',-1)" title="上移"><i class="fas fa-arrow-up"></i></button>' : '<span style="width:26px;display:inline-block;"></span>') +
+        (i < projects.length - 1 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',1)" title="下移"><i class="fas fa-arrow-down"></i></button>' : '<span style="width:26px;display:inline-block;"></span>') +
+        '<button class="hr-miniBtn danger" onclick="deleteHrProject(' + i + ')" title="删除"><i class="fas fa-trash-can"></i></button>' +
         '</td>' +
       '</tr>';
   }
