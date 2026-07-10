@@ -118,7 +118,7 @@
             <div class="hr-pillTabs" id="schedMonthPills"></div>
             <span style="display:inline-flex;gap:6px;"><button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleMonth()"><i class="fas fa-plus"></i> 新增月份</button><button class="hr-btn hr-btn-danger hr-btn-sm" onclick="deleteScheduleMonth()"><i class="fas fa-trash"></i> 删除月份</button></span>
             <div class="hr-spacer"></div>
-            <span style="display:inline-flex;gap:6px;"><button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleRow()"><i class="fas fa-plus"></i> 新增行</button><button class="hr-btn hr-btn-danger hr-btn-sm" onclick="batchDeleteScheduleRows()"><i class="fas fa-trash-can"></i> 批量删除</button></span>
+            <span style="display:inline-flex;gap:6px;"><button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleRow()" disabled style="opacity:0.5;cursor:not-allowed;"><i class="fas fa-plus"></i> 新增行 <span style="font-size:9px;background:var(--hr-red);color:#fff;padding:0 4px;border-radius:3px;margin-left:2px;">无效</span></button><button class="hr-btn hr-btn-danger hr-btn-sm" onclick="batchDeleteScheduleRows()"><i class="fas fa-trash-can"></i> 批量删除</button></span>
           </div>
           <div class="hr-hint"><i class="fas fa-circle-info"></i> 点击单元格切换班次，右键或长按可快速选择</div>
           <div class="hr-scheduleFreezeWrap" id="scheduleFreezeWrap" style="max-height:600px;overflow:auto;"></div>
