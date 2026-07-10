@@ -813,21 +813,31 @@ function updateScheduleShift(staffId, dateKey) {
   saveToLocal();
 }
 
+// 渲染月份 pill 标签（通用）
+function renderMonthPills(containerId, periods, activePeriod, onClickFn) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  var html = '';
+  for (var i = 0; i < periods.length; i++) {
+    var cls = periods[i] === activePeriod ? 'hr-pill active' : 'hr-pill';
+    html += '<span class="' + cls + '" onclick="">' + esc(periods[i]) + '</span>';
+  }
+  container.innerHTML = html;
+  // 绑定事件
+  var pills = container.querySelectorAll('.hr-pill');
+  pills.forEach(function(pill, i) {
+    pill.onclick = function() { onClickFn(periods[i]); };
+  });
+}
+
 // 渲染排班主表
 function renderScheduleMain() {
-  // 填充周期选择器
-  var periods = schedulePeriods();
-  var select = $('#schedPeriodSelect');
-  if (select && select.options.length === 0) {
-    var defaultPeriods = allPeriods();
-    for (var i = 0; i < defaultPeriods.length; i++) {
-      var opt = document.createElement('option');
-      opt.value = defaultPeriods[i];
-      opt.textContent = defaultPeriods[i];
-      if (defaultPeriods[i] === state.schedulePeriod) opt.selected = true;
-      select.appendChild(opt);
-    }
-  }
+  // 填充月份 pill 标签
+  renderMonthPills('schedMonthPills', allPeriods(), state.schedulePeriod, function(p) {
+    state.schedulePeriod = p;
+    renderMonthPills('schedMonthPills', allPeriods(), p, arguments.callee);
+    renderScheduleMain();
+  });
   if (!state.schedulePeriod) {
     state.schedulePeriod = latestPeriod();
   }
@@ -1066,21 +1076,6 @@ function addScheduleMonth() {
     }
     state.schedulePeriod = period;
     document.body.removeChild(overlay);
-    // 刷新选择器
-    var select = $('#schedPeriodSelect');
-    if (select) {
-      var exists = false;
-      for (var i = 0; i < select.options.length; i++) {
-        if (select.options[i].value === period) { exists = true; break; }
-      }
-      if (!exists) {
-        var opt = document.createElement('option');
-        opt.value = period;
-        opt.textContent = period;
-        select.appendChild(opt);
-      }
-      select.value = period;
-    }
     renderScheduleMain();
     saveToLocal();
     toast('已新增月份 ' + period, 'success');
@@ -1090,10 +1085,12 @@ function addScheduleMonth() {
 
 function deleteScheduleMonth() {
   if (!state.schedulePeriod) { toast('请先选择月份', 'warn'); return; }
-  showConfirm('删除月份', '确定删除 ' + state.schedulePeriod + ' 的所有排班数据？', function() {
+  var delPeriod = state.schedulePeriod;
+  showConfirm('删除月份', '确定删除 ' + delPeriod + ' 的所有排班数据？', function() {
     state.schedule.people = state.schedule.people.filter(function(sp) {
-      return sp.period !== state.schedulePeriod;
+      return sp.period !== delPeriod;
     });
+    state.schedulePeriod = latestPeriod();
     renderScheduleMain();
     saveToLocal();
     toast('已删除月份排班', 'success');
@@ -1102,17 +1099,11 @@ function deleteScheduleMonth() {
 
 // 渲染排班备注
 function renderScheduleRemarks() {
-  var select = $('#schedRemarksPeriodSelect');
-  if (select && select.options.length === 0) {
-    var periods = allPeriods();
-    for (var i = 0; i < periods.length; i++) {
-      var opt = document.createElement('option');
-      opt.value = periods[i];
-      opt.textContent = periods[i];
-      select.appendChild(opt);
-    }
-    select.value = state.scheduleRemarksPeriod || latestPeriod();
-  }
+  renderMonthPills('schedRemarksMonthPills', allPeriods(), state.scheduleRemarksPeriod, function(p) {
+    state.scheduleRemarksPeriod = p;
+    renderMonthPills('schedRemarksMonthPills', allPeriods(), p, arguments.callee);
+    renderScheduleRemarks();
+  });
   if (!state.scheduleRemarksPeriod) state.scheduleRemarksPeriod = latestPeriod();
 
   var remarks = (state.scheduleRemarks || []).filter(function(r) {
@@ -1181,17 +1172,11 @@ function deleteRemark(idx) {
 
 // 渲染综合汇总
 function renderScheduleSummary() {
-  var select = $('#schedSummaryPeriodSelect');
-  if (select && select.options.length === 0) {
-    var periods = allPeriods();
-    for (var i = 0; i < periods.length; i++) {
-      var opt = document.createElement('option');
-      opt.value = periods[i];
-      opt.textContent = periods[i];
-      select.appendChild(opt);
-    }
-    select.value = state.scheduleSummaryPeriod || latestPeriod();
-  }
+  renderMonthPills('schedSummaryMonthPills', allPeriods(), state.scheduleSummaryPeriod, function(p) {
+    state.scheduleSummaryPeriod = p;
+    renderMonthPills('schedSummaryMonthPills', allPeriods(), p, arguments.callee);
+    renderScheduleSummary();
+  });
   if (!state.scheduleSummaryPeriod) state.scheduleSummaryPeriod = latestPeriod();
 
   var period = state.scheduleSummaryPeriod;
@@ -1291,17 +1276,24 @@ function renderHrProjects() {
 
   for (var i = 0; i < projects.length; i++) {
     var p = projects[i];
-    var isPinxi = PINXI_PROJECTS.indexOf(p) >= 0 || PINXI_JOINT_BRANDS.some(function(b) { return p.indexOf(b) === 0; });
+    var typeFromConfig = (state.hrProjectTypes && state.hrProjectTypes[p]) || '';
+    var isPinxi = typeFromConfig === '拼席' || (typeFromConfig === '' && (PINXI_PROJECTS.indexOf(p) >= 0 || PINXI_JOINT_BRANDS.some(function(b) { return p.indexOf(b) === 0; })));
     var typeText = isPinxi ? '拼席' : '专席';
-    var typeBadge = isPinxi ? 'hr-badge hr-badge-amber' : 'hr-badge hr-badge-green';
     var staffCount = state.staff.filter(function(s) { return s.project === p; }).length;
 
     html += '<tr>' +
       '<td style="text-align:center;">' + (i + 1) + '</td>' +
       '<td class="hr-cellEdit"><input value="' + esc(p) + '" data-idx="' + i + '" data-field="name" onchange="updateHrProject(this)"></td>' +
-      '<td><span class="' + typeBadge + '">' + typeText + '</span></td>' +
+      '<td><select class="hr-select" style="font-size:12px;padding:3px 6px;" data-idx="' + i + '" onchange="updateHrProjectType(this)">' +
+      '<option value="专席"' + (typeText === '专席' ? ' selected' : '') + '>专席</option>' +
+      '<option value="拼席"' + (typeText === '拼席' ? ' selected' : '') + '>拼席</option>' +
+      '</select></td>' +
       '<td style="text-align:center;">' + staffCount + '</td>' +
-      '<td><button class="hr-miniBtn danger" onclick="deleteHrProject(' + i + ')" title="删除"><i class="fas fa-trash-can"></i></button></td>' +
+      '<td style="display:flex;gap:4px;">' +
+      (i > 0 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',-1)" title="上移"><i class="fas fa-arrow-up"></i></button>' : '<span style="width:28px;display:inline-block;"></span>') +
+      (i < projects.length - 1 ? '<button class="hr-miniBtn" onclick="moveHrProject(' + i + ',1)" title="下移"><i class="fas fa-arrow-down"></i></button>' : '<span style="width:28px;display:inline-block;"></span>') +
+      '<button class="hr-miniBtn danger" onclick="deleteHrProject(' + i + ')" title="删除"><i class="fas fa-trash-can"></i></button>' +
+      '</td>' +
       '</tr>';
   }
 
@@ -1382,6 +1374,23 @@ function deleteHrProject(idx) {
     saveToLocal();
     toast('已删除项目：' + name, 'success');
   });
+}
+
+function moveHrProject(idx, direction) {
+  var targetIdx = idx + direction;
+  if (targetIdx < 0 || targetIdx >= state.hrProjects.length) return;
+  var temp = state.hrProjects[idx];
+  state.hrProjects[idx] = state.hrProjects[targetIdx];
+  state.hrProjects[targetIdx] = temp;
+  renderHrProjects();
+  saveToLocal();
+}
+
+function updateHrProjectType(el) {
+  var idx = parseInt(el.getAttribute('data-idx'));
+  if (!state.hrProjectTypes) state.hrProjectTypes = {};
+  state.hrProjectTypes[state.hrProjects[idx]] = el.value;
+  saveToLocal();
 }
 
 // ==================== 绩效管理 ====================
@@ -1847,6 +1856,7 @@ function loadLocalOrDefault() {
       state.operations = parsed.operations || [];
       state.monthlyFacts = parsed.monthlyFacts || [];
       state.hrProjects = parsed.hrProjects || [];
+      state.hrProjectTypes = parsed.hrProjectTypes || {};
     } else {
       loadDefaultData();
     }
@@ -1888,7 +1898,8 @@ function saveToLocal() {
       projectConfigs: state.projectConfigs,
       operations: state.operations,
       monthlyFacts: state.monthlyFacts,
-      hrProjects: state.hrProjects
+      hrProjects: state.hrProjects,
+      hrProjectTypes: state.hrProjectTypes
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     updateSyncStatus('ok', '本地存储');

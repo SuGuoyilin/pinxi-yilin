@@ -164,15 +164,15 @@
 .hr-tableWrap table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
-  min-width: 800px;
+  font-size: 12px;
+  min-width: 600px;
 }
 .hr-tableWrap table th {
   background: var(--hr-cream);
   color: var(--hr-navy);
   font-weight: 600;
   text-align: left;
-  padding: 10px 12px;
+  padding: 6px 8px;
   border-bottom: 2px solid var(--hr-line);
   position: sticky;
   top: 0;
@@ -180,7 +180,7 @@
   z-index: 2;
 }
 .hr-tableWrap table td {
-  padding: 8px 12px;
+  padding: 5px 8px;
   border-bottom: 1px solid var(--hr-line);
   vertical-align: middle;
 }

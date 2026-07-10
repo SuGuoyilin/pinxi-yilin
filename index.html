@@ -115,8 +115,7 @@
         <div id="sched-main-panel">
           <div class="hr-pillTabs" id="schedPillTabs"></div>
           <div class="hr-toolRow">
-            <label class="hr-label">月份：</label>
-            <select id="schedPeriodSelect" class="hr-select" onchange="setSchedulePeriod(this.value)"></select>
+            <div class="hr-pillTabs" id="schedMonthPills"></div>
             <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleMonth()"><i class="fas fa-plus"></i> 新增月份</button>
             <button class="hr-btn hr-btn-danger hr-btn-sm" onclick="deleteScheduleMonth()"><i class="fas fa-trash"></i> 删除月份</button>
             <div class="hr-spacer"></div>
@@ -129,8 +128,7 @@
         <div id="sched-remarks-panel" style="display:none;">
           <div class="hr-pillTabs" id="schedRemarksPillTabs"></div>
           <div class="hr-toolRow">
-            <label class="hr-label">月份：</label>
-            <select id="schedRemarksPeriodSelect" class="hr-select" onchange="setScheduleRemarksPeriod(this.value)"></select>
+            <div class="hr-pillTabs" id="schedRemarksMonthPills"></div>
             <button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleRemark()"><i class="fas fa-plus"></i> 新增备注</button>
             <div class="hr-spacer"></div>
           </div>
@@ -139,8 +137,7 @@
         <div id="sched-summary-panel" style="display:none;">
           <div class="hr-pillTabs" id="schedSummaryPillTabs"></div>
           <div class="hr-toolRow">
-            <label class="hr-label">月份：</label>
-            <select id="schedSummaryPeriodSelect" class="hr-select" onchange="setScheduleSummaryPeriod(this.value)"></select>
+            <div class="hr-pillTabs" id="schedSummaryMonthPills"></div>
             <div class="hr-spacer"></div>
           </div>
           <div class="hr-tableWrap" id="scheduleSummaryTableWrap"></div>
