@@ -813,7 +813,7 @@ function renderMonthPills(containerId, periods, activePeriod, onClickFn) {
   var years = Object.keys(groups).sort();
   var html = '';
   for (var yi = 0; yi < years.length; yi++) {
-    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;' + (yi > 0 ? 'margin-top:6px;padding-top:6px;border-top:1px dashed var(--hr-line);' : '') + '">';
+    html += '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between;' + (yi > 0 ? 'margin-top:6px;padding-top:6px;border-top:1px dashed var(--hr-line);' : '') + '">';
     if (years.length > 1) {
       html += '<span style="font-size:11px;color:var(--hr-muted);font-weight:600;margin-right:4px;">' + years[yi] + '</span>';
     }
@@ -836,11 +836,12 @@ function renderMonthPills(containerId, periods, activePeriod, onClickFn) {
 // 渲染排班主表
 function renderScheduleMain() {
   // 填充月份 pill 标签
-  renderMonthPills('schedMonthPills', allPeriods(), state.schedulePeriod, function(p) {
+  var _schedMonthClick = function(p) {
     state.schedulePeriod = p;
-    renderMonthPills('schedMonthPills', allPeriods(), p, arguments.callee);
+    renderMonthPills('schedMonthPills', allPeriods(), p, _schedMonthClick);
     renderScheduleMain();
-  });
+  };
+  renderMonthPills('schedMonthPills', allPeriods(), state.schedulePeriod || latestPeriod(), _schedMonthClick);
   if (!state.schedulePeriod) {
     state.schedulePeriod = latestPeriod();
   }
@@ -1102,11 +1103,12 @@ function deleteScheduleMonth() {
 
 // 渲染排班备注
 function renderScheduleRemarks() {
-  renderMonthPills('schedRemarksMonthPills', allPeriods(), state.scheduleRemarksPeriod, function(p) {
+  var _remarksMonthClick = function(p) {
     state.scheduleRemarksPeriod = p;
-    renderMonthPills('schedRemarksMonthPills', allPeriods(), p, arguments.callee);
+    renderMonthPills('schedRemarksMonthPills', allPeriods(), p, _remarksMonthClick);
     renderScheduleRemarks();
-  });
+  };
+  renderMonthPills('schedRemarksMonthPills', allPeriods(), state.scheduleRemarksPeriod || latestPeriod(), _remarksMonthClick);
   if (!state.scheduleRemarksPeriod) state.scheduleRemarksPeriod = latestPeriod();
 
   var remarks = (state.scheduleRemarks || []).filter(function(r) {
@@ -1175,11 +1177,12 @@ function deleteRemark(idx) {
 
 // 渲染综合汇总
 function renderScheduleSummary() {
-  renderMonthPills('schedSummaryMonthPills', allPeriods(), state.scheduleSummaryPeriod, function(p) {
+  var _summaryMonthClick = function(p) {
     state.scheduleSummaryPeriod = p;
-    renderMonthPills('schedSummaryMonthPills', allPeriods(), p, arguments.callee);
+    renderMonthPills('schedSummaryMonthPills', allPeriods(), p, _summaryMonthClick);
     renderScheduleSummary();
-  });
+  };
+  renderMonthPills('schedSummaryMonthPills', allPeriods(), state.scheduleSummaryPeriod || latestPeriod(), _summaryMonthClick);
   if (!state.scheduleSummaryPeriod) state.scheduleSummaryPeriod = latestPeriod();
 
   var period = state.scheduleSummaryPeriod;
