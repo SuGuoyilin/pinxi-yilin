@@ -1,12 +1,12 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>拼席月度结算管理系统</title>
-  <link rel="stylesheet" href="css/style.css?v=712">
+  <link rel="stylesheet" href="css/style.css?v=20260711b">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="css/hr.css?v=712">
+  <link rel="stylesheet" href="css/hr.css?v=20260711b">
   <script src="js/dexie.min.js"></script>
   <script src="js/chart.umd.min.js"></script>
   <script src="js/xlsx.full.min.js"></script>
@@ -116,11 +116,11 @@
           <div class="hr-pillTabs" id="schedProjectPills"></div>
           <div class="hr-toolRow" style="align-items:flex-start;">
             <div class="hr-pillTabs" id="schedMonthPills" style="flex:1;min-width:0;"></div>
-            <span style="display:inline-flex;gap:6px;flex-shrink:0;"><button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleMonth()"><i class="fas fa-plus"></i> 新增月份</button><button class="hr-btn hr-btn-danger hr-btn-sm" onclick="deleteScheduleMonth()"><i class="fas fa-trash"></i> 删除月份</button></span>
+            <span style="display:inline-flex;gap:6px;flex-shrink:0;"><button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleMonth()" style="min-width:80px;justify-content:center;"><i class="fas fa-plus"></i> 新增月份</button><button class="hr-btn hr-btn-danger hr-btn-sm" onclick="deleteScheduleMonth()" style="min-width:80px;justify-content:center;"><i class="fas fa-trash"></i> 删除月份</button></span>
           </div>
           <div class="hr-toolRow">
             <div class="hr-spacer"></div>
-            <span style="display:inline-flex;gap:6px;"><button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleRow()" disabled style="opacity:0.5;cursor:not-allowed;"><i class="fas fa-plus"></i> 新增行 <span style="font-size:9px;background:var(--hr-red);color:#fff;padding:0 4px;border-radius:3px;margin-left:2px;">无效</span></button><button class="hr-btn hr-btn-danger hr-btn-sm" onclick="batchDeleteScheduleRows()"><i class="fas fa-trash-can"></i> 批量删除</button></span>
+            <span style="display:inline-flex;gap:6px;"><button class="hr-btn hr-btn-primary hr-btn-sm" onclick="addScheduleRow()" disabled style="opacity:0.5;cursor:not-allowed;min-width:80px;justify-content:center;"><i class="fas fa-plus"></i> 新增行 <span style="font-size:9px;background:var(--hr-red);color:#fff;padding:0 4px;border-radius:3px;margin-left:2px;">无效</span></button><button class="hr-btn hr-btn-danger hr-btn-sm" onclick="batchDeleteScheduleRows()" style="min-width:80px;justify-content:center;"><i class="fas fa-trash-can"></i> 批量删除</button></span>
           </div>
           <div class="hr-hint"><i class="fas fa-circle-info"></i> 点击单元格切换班次，右键或长按可快速选择</div>
           <div class="hr-scheduleFreezeWrap" id="scheduleFreezeWrap" style="max-height:600px;overflow:auto;"></div>
@@ -221,12 +221,12 @@
       </div>
     </div>
   </main>
-  <script src="js/db.js?v=712"></script>
-  <script src="js/data.js?v=712"></script>
-  <script src="js/calculator.js?v=712"></script>
-  <script src="js/export.js?v=712"></script>
-  <script src="js/charts.js?v=712"></script>
-  <script src="js/app.js?v=712"></script>
-  <script src="js/hr-app.js?v=712"></script>
+  <script src="js/db.js?v=20260711b"></script>
+  <script src="js/data.js?v=20260711b"></script>
+  <script src="js/calculator.js?v=20260711b"></script>
+  <script src="js/export.js?v=20260711b"></script>
+  <script src="js/charts.js?v=20260711b"></script>
+  <script src="js/app.js?v=20260711b"></script>
+  <script src="js/hr-app.js?v=20260711b"></script>
 </body>
 </html>
