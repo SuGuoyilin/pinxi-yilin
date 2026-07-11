@@ -879,9 +879,9 @@ function renderScheduleMain() {
 
   // 构建表格
   var html = '<table><thead><tr>';
-  html += '<th class="freeze-col th-freeze" style="min-width:28px;"><input type="checkbox" onchange="toggleAllScheduleRows(this)"></th>';
-  html += '<th class="freeze-col th-freeze" style="min-width:40px;">项目</th>';
-  html += '<th class="freeze-col th-freeze" style="min-width:50px;">姓名</th>';
+  html += '<th class="freeze-col th-freeze" style="min-width:30px;"><input type="checkbox" onchange="toggleAllScheduleRows(this)"></th>';
+  html += '<th class="freeze-col th-freeze" style="min-width:50px;">项目</th>';
+  html += '<th class="freeze-col th-freeze" style="min-width:60px;">姓名</th>';
 
   // 日期列
   for (var d = 1; d <= days; d++) {
@@ -901,8 +901,8 @@ function renderScheduleMain() {
     if (isHoliday) html += '<br>' + holidayInfo.name;
     html += '</span></th>';
   }
-  html += '<th class="freeze-right th-freeze-right" style="min-width:32px;">工时</th>';
-  html += '<th class="freeze-right th-freeze-right" style="min-width:32px;">出勤</th>';
+  html += '<th class="freeze-right th-freeze-right" style="min-width:42px;">工时</th>';
+  html += '<th class="freeze-right th-freeze-right" style="min-width:42px;">出勤</th>';
   html += '</tr></thead><tbody>';
 
   for (var i = 0; i < schedPeople.length; i++) {

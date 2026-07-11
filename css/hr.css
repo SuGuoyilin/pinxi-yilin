@@ -330,7 +330,7 @@ td.hr-cellEdit select { cursor: pointer; }
 }
 .hr-scheduleFreezeWrap td.sched-cell {
   cursor: pointer;
-  min-width: 24px;
+  min-width: 28px;
   user-select: none;
   transition: all 0.1s;
 }
